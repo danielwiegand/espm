@@ -1,24 +1,12 @@
 library(dplyr)
 library(ggplot2)
 library(nleqslv)
+library(bench)
 
-# Geteilte Funktion ####
-
-f1 <- function(x) {3 * .97 ^ x}
-f2 <- function(x) {-x+30}
-f3 <- function(x) {e_min}
-
-g <- function(x) {
-  dat <- data.frame(emission = 3, t = 0:82)
-  dat$emission[i] <- dat$emission[i-1] * x[1]
-  y[y < .2] <- f2(x[y < 2])
-  y[y <= e_min] <- f3(x[y <= e_min])
-  
-}
 
 # Optimierung ####
 
-emis_by <- 3.03870921601875
+emis_by <- 3.03870921601875 
 base_year <- 2020
 budget <- 22 #21.8043361981087
 emis_neg <- -.2
@@ -61,288 +49,195 @@ optimize_function <- function(fun, neg) {
   return(opt_x)
 }
 
-# RM-1 const ####
+create_fun <- function(rm) {
+  fun <<- function(x){
+    emis <- rep(emis_by, 82)
+    t <- 0:81
+    year <- 2019:2100
+    rr <- rep(rr_20, 82)
+    for(i in 2:82){
+      if(rm == "rm1") {
+        emis[i] <- emis[i-1] * (1 + x)
+      } else if (rm == "rm2") {
+        rr[i] <- ifelse(year[i] == 2020, rr_20, rr[i-1] * (1 + x))
+        emis[i] <- emis[i-1] * (1 + rr[i])
+      } else if (rm == "rm3") {
+        rr[i] <- ifelse(year[i] == 2020, rr_20, rr[i-1] + x)
+        emis[i] <- emis[i-1] * (1 + rr[i])
+      } else if (rm == "rm4") {
+        rr[i] <- ifelse(year[i] == 2020, rr_20, x * (year[i] - base_year)^2 + rr_20)
+        emis[i] <- emis[i-1] * (1 + rr[i])
+      } else if (rm == "rm5") {
+        rr[i] <- ifelse(year[i] == 2020, rr_20, x * sqrt(year[i] - 0.5 - base_year) + rr_20)
+        emis[i] <- emis[i-1] * (1 + rr[i])
+      } else if (rm == "rm6") {
+        emis[i] <- emis[i-1] + x
+      }
+    } 
+    
+    emis <- make_linear(emis, rm = rm)
+    emis <- make_horizontal(emis)
+    
+    ret <- numeric(1)
+    ret[1] <- sum(emis[-1]) - budget
+    return(ret)
+  }
+}
 
-fun <- function(x){
+calculate_result <- function(x, rm) {
   emis <- rep(emis_by, 82)
   t <- 0:81
   year <- 2019:2100
+  rr <- rep(rr_20, 82)
   for(i in 2:82){
-    emis[i] <- emis[i-1] * (1 + x)
+    if(rm == "rm1") {
+      emis[i] <- emis[i-1] * (1 + x)
+    } else if (rm == "rm2") {
+      rr[i] <- ifelse(year[i] == 2020, rr_20, rr[i-1] * (1 + x))
+      emis[i] <- emis[i-1] * (1 + rr[i])
+    } else if (rm == "rm3") {
+      rr[i] <- ifelse(year[i] == 2020, rr_20, rr[i-1] + x)
+      emis[i] <- emis[i-1] * (1 + rr[i])
+    } else if (rm == "rm4") {
+      rr[i] <- ifelse(year[i] == 2020, rr_20, x * (year[i] - base_year)^2 + rr_20)
+      emis[i] <- emis[i-1] * (1 + rr[i])
+    } else if (rm == "rm5") {
+      rr[i] <- ifelse(year[i] == 2020, rr_20, x * sqrt(year[i] - 0.5 - base_year) + rr_20)
+      emis[i] <- emis[i-1] * (1 + rr[i])
+    } else if (rm == "rm6") {
+      emis[i] <- emis[i-1] + x
+    }
   } 
-  emis <- make_linear(emis, rm = "rm1")
+  
+  emis <- make_linear(emis, rm = rm)
   emis <- make_horizontal(emis)
   
-  ret <- numeric(1)
-  ret[1] <- sum(emis[-1]) - budget
-  return(ret)
+  dat <- data.frame(t = t,
+                    year = year,
+                    emissions = emis,
+                    rr = rr)
+  return(dat)
 }
+
+plot_result <- function(x) {
+  ggplot(x, aes(x = year, y = emissions)) +
+    geom_line()
+}
+
+# BENCHMARK ####
+
+create_fun_neu <- function(rm) {
+  fun <<- function(x){
+    emis <- rep(emis_by, 82)
+    t <- 0:81
+    year <- 2019:2100
+    rr <- rep(rr_20, 82)
+    for(i in 2:82){
+      if(rm == "rm1") {
+        emis[i] <- emis[i-1] * (1 + x)
+      } else if (rm == "rm2") {
+        rr[i] <- ifelse(year[i] == 2020, rr_20, rr[i-1] * (1 + x))
+        emis[i] <- emis[i-1] * (1 + rr[i])
+      } else if (rm == "rm3") {
+        rr[i] <- ifelse(year[i] == 2020, rr_20, rr[i-1] + x)
+        emis[i] <- emis[i-1] * (1 + rr[i])
+      } else if (rm == "rm4") {
+        rr[i] <- ifelse(year[i] == 2020, rr_20, x * (year[i] - base_year)^2 + rr_20)
+        emis[i] <- emis[i-1] * (1 + rr[i])
+      } else if (rm == "rm5") {
+        rr[i] <- ifelse(year[i] == 2020, rr_20, x * sqrt(year[i] - 0.5 - base_year) + rr_20)
+        emis[i] <- emis[i-1] * (1 + rr[i])
+      } else if (rm == "rm6") {
+        emis[i] <- emis[i-1] + x
+      }
+    } 
+    
+    emis <- make_linear(emis, rm = rm)
+    emis <- make_horizontal(emis)
+    
+    ret <- numeric(1)
+    ret[1] <- sum(emis[-1]) - budget
+    return(ret)
+  }
+}
+
+mark(
+  create_fun_neu(rm = "rm1"),
+)
+mark(
+  optimize_function(fun, neg = T)  # 1.19s | 
+)
+mark(
+  calculate_result(x = opt_x[[1]][which(opt_x[[1]] < 0)], rm = "rm1")
+)
+
+# RM-1 const ####
+
+create_fun(rm = "rm1")
 
 opt_x <- optimize_function(fun, neg = T)
 
-fun(x = opt_x[[1]][1])
-opt_x[[1]][1]
+result_rm1 <- calculate_result(x = opt_x[[1]][which(opt_x[[1]] < 0)],
+                 rm = "rm1")
 
-# Test
-
-x <- -0.09278078498705640000
-
-dat <- data.frame(emission = emis_by, t = 0:81, year = 2019:2100)
-for(i in 2:82){
-  dat$emission[i] <- dat$emission[i-1] * (1 + x)
-} 
-dat$emission <- make_linear(dat$emission, rm = "rm1")
-dat$emission <- make_horizontal(dat$emission)
-
-sum(dat$emission[-1]) # 22.495188954231
-
-# Check
-
-dat <- data.frame(emission = emis_by, t = 0:81, year = 2019:2100)
-for(i in 2:82){
-  dat$emission[i] <- dat$emission[i-1] * (1 + opt_x[[1]][which(opt_x[[1]] < 0)]) # only allow negative x
-} 
-dat$emission <- make_linear(dat$emission, rm = "rm1")
-dat$emission <- make_horizontal(dat$emission)
-
-sum(dat$emission[-1])
-all.equal(sum(dat$emission[-1]), budget)
-
-# Plot
-
-dat %>%
-  ggplot(aes(x = t, y = emission)) +
-  geom_line()
-
+plot_result(result_rm1)
 
 
 # RM-2 exp ####
 
 # RR = RR_t-1 * (1 + a)
 
-fun <- function(x){
-
-  emis <- rep(emis_by, 82)
-  t <- 0:81
-  year <- 2019:2100  
-  rr <- rep(rr_20, 82)
-  
-  for(i in 2:82){
-    rr[i] <- ifelse(year[i] == 2020, rr_20, rr[i-1] * (1 + x))
-    emis[i] <- emis[i-1] * (1 + rr[i])
-  } 
-  emis <- make_linear(emis, rm = "rm2")
-  emis <- make_horizontal(emis)
-  
-  ret <- numeric(1)
-  ret[1] <- sum(emis[-1]) - budget
-  return(ret)
-}
+create_fun(rm = "rm2")
 
 opt_x <- optimize_function(fun, neg = F)
 
-fun(x = .6)
-fun(x = opt_x[[1]][1])
-opt_x[[1]][1]
+result_rm2 <- calculate_result(x = opt_x[[1]][which(opt_x[[1]] > 0)], # only allow positive x
+                               rm = "rm2")
 
-
-# Test
-
-x <- 0.163923990121359
-
-dat <- data.frame(emission = emis_by, t = 0:81, rr = rr_20, year = 2019:2100)
-for(i in 2:82){
-  dat$rr[i] <- ifelse(dat$year[i] == 2020, rr_20, dat$rr[i-1] * (1 + x))
-  dat$emission[i] <- dat$emission[i-1] * (1 + dat$rr[i])
-} 
-dat$emission <- make_linear(dat$emission, rm = "rm2")
-dat$emission <- make_horizontal(dat$emission)
-
-dat %>%
-  ggplot(aes(x = t, y = emission)) +
-  geom_line()
-
-sum(dat$emission[-1]) # 21.93514822285140
-
-# Check
-
-dat <- data.frame(emission = emis_by, t = 0:81, rr = rr_20, year = 2019:2100)
-for(i in 2:82){
-  dat$rr[i] <- ifelse(dat$year[i] == 2020, rr_20, dat$rr[i-1] * (1 + opt_x[[1]][which(opt_x[[1]] > 0)])) # only allow positive x
-  dat$emission[i] <- dat$emission[i-1] * (1 + dat$rr[i])
-} 
-dat$emission <- make_linear(dat$emission, rm = "rm2")
-dat$emission <- make_horizontal(dat$emission)
-
-sum(dat$emission[-1])
-all.equal(sum(dat$emission[-1]), budget)
-
-# Plot
-
-dat %>%
-  ggplot(aes(x = t, y = emission)) +
-  geom_line()
+plot_result(result_rm2)
 
 
 # RM-3 lin ####
 
 # RR = RR_t-1 * (1 + a)
 
-fun <- function(x){
-  
-  emis <- rep(emis_by, 82)
-  t <- 0:81
-  year <- 2019:2100  
-  rr <- rep(rr_20, 82)
-  
-  for(i in 2:82){
-    rr[i] <- ifelse(year[i] == 2020, rr_20, rr[i-1] + x)
-    emis[i] <- emis[i-1] * (1 + rr[i])
-  } 
-  emis <- make_linear(emis, rm = "rm3")
-  emis <- make_horizontal(emis)
-  
-  ret <- numeric(1)
-  ret[1] <- sum(emis[-1]) - budget
-  return(ret)
-}
+create_fun(rm = "rm3")
 
 opt_x <- optimize_function(fun, neg = T)
 
-opt_x[[1]]
-fun(x = .6)
-fun(x = opt_x[[1]][1])
+result_rm3 <- calculate_result(x = opt_x[[1]][which(opt_x[[1]] < 0)], # only allow negative x
+                               rm = "rm3")
 
-
-# TEST
-
-x <- -0.00899369958670053
-
-dat <- data.frame(emission = emis_by, t = 0:81, rr = rr_20, year = 2019:2100)
-for(i in 2:82){
-  dat$rr[i] <- ifelse(dat$year[i] == 2020, rr_20, dat$rr[i-1] + x)
-  dat$emission[i] <- dat$emission[i-1] * (1 + dat$rr[i])
-} 
-dat$emission <- make_linear(dat$emission, rm = "rm3")
-dat$emission <- make_horizontal(dat$emission)
-
-all.equal(sum(dat$emission[-1]), budget)
-sum(dat$emission[-1]) # 22.3150808047117
-
-dat %>%
-  ggplot(aes(x = t, y = emission)) +
-  geom_line()
-
-
-# Check
-
-dat <- data.frame(emission = emis_by, t = 0:81, rr = rr_20, year = 2019:2100)
-for(i in 2:82){
-  dat$rr[i] <- ifelse(dat$year[i] == 2020, rr_20, dat$rr[i-1] + opt_x[[1]][which(opt_x[[1]] < 0)]) # only allow negative x
-  dat$emission[i] <- dat$emission[i-1] * (1 + dat$rr[i])
-} 
-dat$emission <- make_linear(dat$emission, rm = "rm3")
-dat$emission <- make_horizontal(dat$emission)
-
-all.equal(sum(dat$emission[-1]), budget)
-
-dat %>%
-  ggplot(aes(x = t, y = emission)) +
-  geom_line()
+plot_result(result_rm3)
 
 
 # RM-4 quadr ####
 
 # RR = a * (t - (BY + 1))^2 + RR_BY+1
 
-fun <- function(x){
-  
-  emis <- rep(emis_by, 82)
-  t <- 0:81
-  year <- 2019:2100  
-  rr <- rep(rr_20, 82)
-  
-  for(i in 2:82){
-    rr[i] <- ifelse(year[i] == 2020, rr_20, x * (year[i] - base_year)^2 + rr_20)
-    emis[i] <- emis[i-1] * (1 + rr[i])
-  } 
-  emis <- make_linear(emis, rm = "rm4")
-  emis <- make_horizontal(emis)
-  
-  ret <- numeric(1)
-  ret[1] <- sum(emis[-1]) - budget
-  return(ret)
-}
+create_fun(rm = "rm4")
 
 opt_x <- optimize_function(fun, neg = T)
 
-opt_x[[1]]
-fun(x = opt_x[[1]][1])
+result_rm4 <- calculate_result(x = opt_x[[1]][which(opt_x[[1]] < 0)], # only allow negative x
+                               rm = "rm4")
 
-
-# Check
-
-dat <- data.frame(emission = emis_by, t = 0:81, rr = rr_20, year = 2019:2100)
-for(i in 2:82){
-  dat$rr[i] <- ifelse(dat$year[i] == 2020, rr_20, opt_x[[1]][which(opt_x[[1]] < 0)] * (dat$year[i] - base_year)^2 + rr_20) # only allow negative x
-  dat$emission[i] <- dat$emission[i-1] * (1 + dat$rr[i])
-} 
-dat$emission <- make_linear(dat$emission, rm = "rm4")
-dat$emission <- make_horizontal(dat$emission)
-
-sum(dat$emission[-1])
-all.equal(sum(dat$emission[-1]), budget)
-
-dat %>%
-  ggplot(aes(x = t, y = emission)) +
-  geom_line()
+plot_result(result_rm4)
 
 
 # RM-5 rad ####
 
 # RR = a * sqrt(t - (BY + 1) - 0.5) + RR_BY+1
 
-fun <- function(x){
-  
-  emis <- rep(emis_by, 82)
-  t <- 0:81
-  year <- 2019:2100  
-  rr <- rep(rr_20, 82)
-  
-  for(i in 2:82){
-    rr[i] <- ifelse(year[i] == 2020, rr_20, x * sqrt(year[i] - 0.5 - base_year) + rr_20)
-    emis[i] <- emis[i-1] * (1 + rr[i])
-  } 
-  emis <- make_linear(emis, rm = "rm5")
-  emis <- make_horizontal(emis)
-  
-  ret <- numeric(1)
-  ret[1] <- sum(emis[-1]) - budget
-  return(ret)
-}
+create_fun(rm = "rm5")
 
 opt_x <- optimize_function(fun, neg = T)
 
-opt_x[[1]]
-fun(x = opt_x[[1]][1])
+result_rm5 <- calculate_result(x = opt_x[[1]][which(opt_x[[1]] < 0)], # only allow negative x
+                               rm = "rm5")
 
+plot_result(result_rm5)
 
-# Check
-
-dat <- data.frame(emission = emis_by, t = 0:81, rr = rr_20, year = 2019:2100)
-for(i in 2:82){
-  dat$rr[i] <- ifelse(dat$year[i] == 2020, rr_20, opt_x[[1]][which(opt_x[[1]] < 0)] *  sqrt(dat$year[i] - 0.5 - base_year) + rr_20) # only allow negative x
-  dat$emission[i] <- dat$emission[i-1] * (1 + dat$rr[i])
-} 
-dat$emission <- make_linear(dat$emission, rm = "rm5")
-dat$emission <- make_horizontal(dat$emission)
-
-sum(dat$emission[-1])
-all.equal(sum(dat$emission[-1]), budget)
-
-dat %>%
-  ggplot(aes(x = t, y = emission)) +
-  geom_line()
 
 
 ## WIESO HIER CORRECTING FACTOR???
@@ -350,35 +245,11 @@ dat %>%
 
 # RM-6 abs ####
 
-fun <- function(x){
-  
-  emis <- rep(emis_by, 82)
-  t <- 0:81
-  year <- 2019:2100  
-
-  for(i in 2:82){
-    emis[i] <- emis[i-1] + x
-  } 
-  emis <- make_horizontal(emis)
-  
-  ret <- numeric(1)
-  ret[1] <- sum(emis[-1]) - budget
-  return(ret)
-}
+create_fun(rm = "rm6")
 
 opt_x <- optimize_function(fun, neg = T)
 
-# Check
+result_rm6 <- calculate_result(x = opt_x[[1]][which(opt_x[[1]] < 0)], # only allow negative x
+                               rm = "rm6")
 
-dat <- data.frame(emission = emis_byabs, year = 2019:2100)
-for(i in 2:82){
-  dat$emission[i] <- dat$emission[i-1] + opt_x[[1]][which(opt_x[[1]] < 0)] # only allow negative x
-} 
-dat$emission <- make_horizontal(dat$emission)
-
-sum(dat$emission[-1])
-all.equal(sum(dat$emission[-1]), budget)
-
-dat %>%
-  ggplot(aes(x = year, y = emission)) +
-  geom_line()
+plot_result(result_rm6)
