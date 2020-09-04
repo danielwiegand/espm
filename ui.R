@@ -20,22 +20,40 @@ ui <- fluidPage(
     
     sidebarPanel(
       
-      selectInput("selected_rm", label = "Select pathway type", 
+      h3("1. Wahl des Funktionstyps"),
+      
+      selectInput("selected_rm", label = "", 
                   choices = c("RM-1", "RM-2", "RM-3", "RM-4", "RM-5", "RM-6"),
                   selected = "RM-1"),
       
-      numericInput("global_emission_budget_gt_2018", label = "Global emission budget", value = 420),
+      h3("2. Bestimmung des EU-Emissionsbudgets"),
       
-      sliderInput("pop_weighting", label = "Population weighting", min = 0, max = 100, step = 10, value = 50),
+      numericInput("global_emission_budget_gt_2018", label = "Globales Emissionsbudget (Gt CO2)", value = 420),
       
-      sliderInput("max_negative_emissions_perc", label = "Maximum negative emissions", 
-                  min = 0, max = 10, step = 1, value = 8)
-
-      ),
+      tableOutput("global_budget"),
+      
+      tags$br(),
+      
+      sliderInput("pop_weighting", label = "Gewichtung Bevölkerung vs. Emissionen (%)", 
+                  min = 0, max = 100, step = 10, value = 50, pre = "Bevölkerung: ", post = "%"),
+      
+      tableOutput("weighted_key"),
+      
+      h3("3. Wahl der maximal möglichen Negativemissionen"),
+      
+      sliderInput("max_negative_emissions_perc", label = "Maximal mögliche Netto-Negativemissionen (%)", 
+                  min = 0, max = 10, step = 1, value = 8),
+      
+      tableOutput("negative_emissions"),
+      
+      div(style = "width:100%; text-align:center;",
+          actionButton("go", label = "Aktualisierung", icon = icon("retweet"))
+      )
+    ),
     
     mainPanel(
       
-      div(class = "plot-container", style = "clear:left; width:100%;",
+      div(class = "plot-container", style = "clear:left; width:90%;",
           girafeOutput("emis_pathway")
       )
       

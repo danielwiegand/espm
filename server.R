@@ -15,6 +15,25 @@ server <- function(input, output) {
     input$global_emission_budget_gt_2018 - 2 * annual_global_emissions_gt
   })
   
+  output$global_budget <- renderTable(
+    data.frame(x = c("Emissionen der Jahre 2018 und 2019: ", "Globales Budget ab 2020: "), 
+               y = c(paste0(2 * annual_global_emissions_gt, " Gt CO2"), paste0(global_emission_budget_gt(), " Gt CO2"))),
+    colnames = F, align = c("lr")
+    )
+  
+  output$weighted_key <- renderTable(
+    data.frame(x = c("Anteil der EU an den globalen Emissionen", "Anteil der EU an der globalen Bevölkerung", "Gewichtungsschlüssel", "EU-Emissionsbudget"),
+               y = c("7,2%", "5,8%", paste0(round(weighted_key() * 100, 1), "%"),
+                     paste0(round(eu_emission_budget_gt(), 1), " Gt"))),
+    colnames = F
+  )
+  
+  output$negative_emissions <- renderTable(
+    data.frame(x = "Maximal mögliche Netto-Negativemissionen: ",
+               y = paste0(round(max_negative_emissions_gt()*-1, 2), " Gt")),
+    colnames = F
+  )
+  
   # EU: weighted key and emission budget
   
   weighted_key <- reactive({
@@ -152,36 +171,47 @@ server <- function(input, output) {
 
   optimize_function <- function(fun, neg) {
     if(neg == T) {
-      xstart <- matrix(runif(800, min = -1, max = 0), ncol = 1)
+      xstart <- matrix(runif(10, min = -1, max = 0), ncol = 1)
     } else {
-      xstart <- matrix(runif(800, min = 0, max = 1), ncol = 1)
+      xstart <- matrix(runif(10, min = 0, max = 1), ncol = 1)
     }
     opt_x <- searchZeros(xstart, fun,  method = "Broyden", global = "dbldog",  control = list(btol = 1e-6))
+    
     return(opt_x)
   }
   
   calculate_pathway <- function(rm, neg) {
     
-    create_fun(rm = rm)
+    withProgress(message = 'Aktualisierung', value = 0, {
+      
+      incProgress(0, detail = "Erstellen der Funktion")
     
-    opt_x <- optimize_function(fun, neg = neg)
+      create_fun(rm = rm)
+        
+      incProgress(0.30, detail = "Optimieren der Funktion")
+      
+      opt_x <- optimize_function(fun, neg = neg)
+      
+      # Benchmark
+        # Normal: Mem: 27mb | time: 58,5
+        # RCPP einzeln: Mem: 125mb | time: 25,7
+        # RCPP einmalig: Mem: NA | time: 17,7
+      
+      incProgress(0.80, detail = "Erstellen der Grafik")
+      
+      if(is.null(opt_x)) {
+        result <- NULL
+      } else {
+        if(neg == T) {
+          result <- calculate_result(x = opt_x[[1]][which(opt_x[[1]] < 0)],
+                                     rm = rm)
+        } else {
+          result <- calculate_result(x = opt_x[[1]][which(opt_x[[1]] > 0)],
+                                     rm = rm)
+        }
+      }
     
-    # #!!!!!!
-    # return(opt_x)
-    # #!!!!!
-    
-    # Benchmark
-      # Normal: Mem: 27mb | time: 58,5
-      # RCPP einzeln: Mem: 125mb | time: 25,7
-      # RCPP einmalig: Mem: NA | time: 17,7
-
-    if(neg == T) {
-      result <- calculate_result(x = opt_x[[1]][which(opt_x[[1]] < 0)],
-                                 rm = rm)
-    } else {
-      result <- calculate_result(x = opt_x[[1]][which(opt_x[[1]] > 0)],
-                                 rm = rm)
-    }
+    })
 
     return(result)
     
@@ -223,13 +253,32 @@ server <- function(input, output) {
   }
   
   plot_result <- function(x) {
-    ggplot(x, aes(x = year, y = emissions)) +
-      geom_line() +
-      geom_point_interactive(aes(tooltip = paste0(year, ": ", emissions))) +
-      theme_minimal()
+    if(is.null(x)) {
+      ggplot() + 
+        theme_classic() + 
+        geom_label(aes(2060, 1.5, family = "sans-serif", color = "red",
+                       label = "Keine Lösung für diesen Funktionstyp - bitte andere Einstellungen wählen!"), size = 3) +
+        xlim(2020, 2100) +
+        ylim(0, 3) +
+        theme(text = element_text(size = 10, family = "sans-serif"),
+              legend.position = "none") +
+        labs(x = "Jahr", y = "Emissionen (Gt)")
+    } else {
+      total_emissions <- round(sum(x$emissions[-1]), 1)
+      year_zero_emissions <- x$year[which(x$emissions < 0)[1]]
+      ggplot(x, aes(x = year, y = emissions)) +
+        geom_hline(yintercept = 0, color = "grey", linetype = "dashed") +
+        geom_line() +
+        geom_point_interactive(aes(tooltip = paste0(year, ": ", round(emissions, 1), " Gt"))) +
+        geom_label(aes(2045, 1.5, hjust = 0,
+                        label = paste0("Gesamtemissionen: ", total_emissions, " Gt", "\n", "Netto-Nullemissionen im Jahr ", year_zero_emissions)), 
+                   size = 3) +
+        theme_classic() +
+        labs(x = "Jahr", y = "Emissionen (Gt)")
+    }
   }
   
-  result <- reactive({
+  result <- eventReactive(input$go, {
     if(input$selected_rm == "RM-1") {
       calculate_pathway(rm = "rm1", neg = T)
     } else if(input$selected_rm == "RM-2") {
@@ -245,10 +294,8 @@ server <- function(input, output) {
     }
   })
   
-  observe(print(result()))
-  
   output$emis_pathway <- renderGirafe({
     girafe(ggobj = plot_result(result()), width_svg = 7, height_svg = 4)
   })
-
+  
 }

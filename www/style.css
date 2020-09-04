@@ -2,3 +2,27 @@
 	max-width: 100%!important; /* For ggiraph outputs inside .pull-left elements; otherwise, plots are not displayed */
 	max-height: 100%!important;
 }
+
+#global_budget table tbody tr:last-child td:last-child {
+	background: #ececec;
+	border: 1px solid #d2cfcf!important;
+}
+
+#weighted_key table tbody tr:last-child td:last-child {
+	background: #ececec;
+	border: 1px solid #d2cfcf!important;
+}
+
+#weighted_key table tbody tr:nth-last-child(2) td:last-child {
+	background: #ececec;
+	border: 1px solid #d2cfcf!important;
+}
+
+#negative_emissions table tbody tr:last-child td:last-child {
+	background: #ececec;
+	border: 1px solid #d2cfcf!important;
+}
+
+table > tbody > tr > td {
+	border-top:0px!important;
+}
