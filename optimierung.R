@@ -8,12 +8,11 @@ library(bench)
 
 emis_by <- 3.03870921601875 
 base_year <- 2020
-budget <- 22 #21.8043361981087
-emis_neg <- -.2
+budget <- 21.827 #22 #21.8043361981087
 rr_20 <- -0.0217324116377584
 threshold_linear_rm1 <- 0.136741914720844000
 threshold_linear_other <- 0.106354822560656
-threshold_horizontal <- -0.2
+threshold_horizontal <- -0.2430967
 
 make_linear <- function(x, rm) {
   for(i in 3:length(x)) {
@@ -124,52 +123,6 @@ plot_result <- function(x) {
     geom_line()
 }
 
-# BENCHMARK ####
-
-create_fun_neu <- function(rm) {
-  fun <<- function(x){
-    emis <- rep(emis_by, 82)
-    t <- 0:81
-    year <- 2019:2100
-    rr <- rep(rr_20, 82)
-    for(i in 2:82){
-      if(rm == "rm1") {
-        emis[i] <- emis[i-1] * (1 + x)
-      } else if (rm == "rm2") {
-        rr[i] <- ifelse(year[i] == 2020, rr_20, rr[i-1] * (1 + x))
-        emis[i] <- emis[i-1] * (1 + rr[i])
-      } else if (rm == "rm3") {
-        rr[i] <- ifelse(year[i] == 2020, rr_20, rr[i-1] + x)
-        emis[i] <- emis[i-1] * (1 + rr[i])
-      } else if (rm == "rm4") {
-        rr[i] <- ifelse(year[i] == 2020, rr_20, x * (year[i] - base_year)^2 + rr_20)
-        emis[i] <- emis[i-1] * (1 + rr[i])
-      } else if (rm == "rm5") {
-        rr[i] <- ifelse(year[i] == 2020, rr_20, x * sqrt(year[i] - 0.5 - base_year) + rr_20)
-        emis[i] <- emis[i-1] * (1 + rr[i])
-      } else if (rm == "rm6") {
-        emis[i] <- emis[i-1] + x
-      }
-    } 
-    
-    emis <- make_linear(emis, rm = rm)
-    emis <- make_horizontal(emis)
-    
-    ret <- numeric(1)
-    ret[1] <- sum(emis[-1]) - budget
-    return(ret)
-  }
-}
-
-mark(
-  create_fun_neu(rm = "rm1"),
-)
-mark(
-  optimize_function(fun, neg = T)  # 1.19s | 
-)
-mark(
-  calculate_result(x = opt_x[[1]][which(opt_x[[1]] < 0)], rm = "rm1")
-)
 
 # RM-1 const ####
 
