@@ -10,6 +10,10 @@ library(Rcpp)
 
 ui <- fluidPage(
   
+  tags$head(
+    tags$link(rel="stylesheet", type="text/css", href = "style.css")
+  ),
+  
   titlePanel("ESPM"),
   
   sidebarLayout(
@@ -18,7 +22,7 @@ ui <- fluidPage(
       
       selectInput("selected_rm", label = "Select pathway type", 
                   choices = c("RM-1", "RM-2", "RM-3", "RM-4", "RM-5", "RM-6"),
-                  selected = "RM-3"),
+                  selected = "RM-1"),
       
       numericInput("global_emission_budget_gt_2018", label = "Global emission budget", value = 420),
       
@@ -31,7 +35,9 @@ ui <- fluidPage(
     
     mainPanel(
       
-      plotOutput("emis_pathway")
+      div(class = "plot-container", style = "clear:left; width:100%;",
+          girafeOutput("emis_pathway")
+      )
       
     )
   )

@@ -1,0 +1,4 @@
+.plot-container div div svg {
+	max-width: 100%!important; /* For ggiraph outputs inside .pull-left elements; otherwise, plots are not displayed */
+	max-height: 100%!important;
+}

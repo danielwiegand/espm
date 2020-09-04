@@ -166,24 +166,24 @@ server <- function(input, output) {
     
     opt_x <- optimize_function(fun, neg = neg)
     
-    #!!!!!!
-    return(opt_x)
-    #!!!!!
+    # #!!!!!!
+    # return(opt_x)
+    # #!!!!!
     
     # Benchmark
       # Normal: Mem: 27mb | time: 58,5
       # RCPP einzeln: Mem: 125mb | time: 25,7
       # RCPP einmalig: Mem: NA | time: 17,7
 
-    # if(neg == T) {
-    #   result <- calculate_result(x = opt_x[[1]][which(opt_x[[1]] < 0)],
-    #                              rm = rm)
-    # } else {
-    #   result <- calculate_result(x = opt_x[[1]][which(opt_x[[1]] > 0)],
-    #                              rm = rm)
-    # }
-    # 
-    # return(result)
+    if(neg == T) {
+      result <- calculate_result(x = opt_x[[1]][which(opt_x[[1]] < 0)],
+                                 rm = rm)
+    } else {
+      result <- calculate_result(x = opt_x[[1]][which(opt_x[[1]] > 0)],
+                                 rm = rm)
+    }
+
+    return(result)
     
   }
   
@@ -224,7 +224,9 @@ server <- function(input, output) {
   
   plot_result <- function(x) {
     ggplot(x, aes(x = year, y = emissions)) +
-      geom_line()
+      geom_line() +
+      geom_point_interactive(aes(tooltip = paste0(year, ": ", emissions))) +
+      theme_minimal()
   }
   
   result <- reactive({
@@ -245,8 +247,8 @@ server <- function(input, output) {
   
   observe(print(result()))
   
-  # output$emis_pathway <- renderPlot({
-  #   plot_result(result())
-  # })
+  output$emis_pathway <- renderGirafe({
+    girafe(ggobj = plot_result(result()), width_svg = 7, height_svg = 4)
+  })
 
 }
