@@ -10,6 +10,11 @@ server <- function(input, output) {
   threshold_linear_rm1 <- 0.136741914720844000 # Threshold from when on the path becomes linear (rm1)
   threshold_linear_other <- 0.106354822560656 # Threshold from when on the path becomes linear (all other rms)
   initial_reduction_rate <- -0.0217324116377584 # Emission reduction rate to start with (in RM 2-5); is EU emission change between 2019 and 2020 (percent)
+  eu_past_emissions <- data.frame(
+    year = seq(2010, 2019, 1),
+    emissions = c(3.347, 3.249, 3.158, 3.070, 2.954, 3.021, 3.043, 3.112, 3.039, eu_emissions_2019),
+    historical = "y"
+  )
   
   global_emission_budget_gt <- reactive({
     input$global_emission_budget_gt_2018 - 2 * annual_global_emissions_gt
@@ -53,49 +58,47 @@ server <- function(input, output) {
 
   # PATHWAY CALCULATION
   
-  # calculate_rolling_rms
-  cppFunction('
-        NumericVector calculate_rolling_rms(String rm, NumericVector emis, NumericVector year, double x, double first_year, double initial_reduction_rate, NumericVector rr){
-        for (int i = 2; i < 83; ++i){
-          if(rm == "rm1") {
-            emis[i] = emis[i-1] * (1 + x);
-          } else if(rm == "rm2") {
-            if(year[i] == first_year) {
-              rr[i] = initial_reduction_rate;
-            } else {
-              rr[i] = rr[i-1] * (1 + x);
-            }
-            emis[i] = emis[i-1] * (1 + rr[i]);
-          } else if(rm == "rm3") {
-            if(year[i] == first_year) {
-              rr[i] = initial_reduction_rate;
-            } else {
-            /*######################################*/
-              rr[i] = rr[i-1] + x;
-            /*######################################*/
-            }
-            emis[i] = emis[i-1] * (1 + rr[i]);
-          } else if(rm == "rm4") {
-            if(year[i] == first_year) {
-              rr[i] = initial_reduction_rate;
-            } else {
-              rr[i] = x * pow((year[i] - first_year), 2) + initial_reduction_rate;
-            }
-            emis[i] = emis[i-1] * (1 + rr[i]);
-          } else if(rm == "rm5") {
-            if(year[i] == first_year) {
-              rr[i] = initial_reduction_rate;
-            } else {
-              rr[i] = x * sqrt(year[i] - 0.5 - first_year) + initial_reduction_rate;
-            }
-            emis[i] = emis[i-1] * (1 + rr[i]);
-          } else if(rm == "rm6") {
-            emis[i] = emis[i-1] + x;
-          }
-        }
-        return(emis);
-        }
-      ')
+  # calculate_rolling_rms # Currently deactivated; delivers imprecise results
+  # cppFunction('
+  #       NumericVector calculate_rolling_rms(String rm, NumericVector emis, NumericVector year, double x, double first_year, double initial_reduction_rate, NumericVector rr){
+  #       for (int i = 2; i < 83; ++i){
+  #         if(rm == "rm1") {
+  #           emis[i] = emis[i-1] * (1 + x);
+  #         } else if(rm == "rm2") {
+  #           if(year[i] == first_year) {
+  #             rr[i] = initial_reduction_rate;
+  #           } else {
+  #             rr[i] = rr[i-1] * (1 + x);
+  #           }
+  #           emis[i] = emis[i-1] * (1 + rr[i]);
+  #         } else if(rm == "rm3") {
+  #           if(year[i] == first_year) {
+  #             rr[i] = initial_reduction_rate;
+  #           } else {
+  #             rr[i] = rr[i-1] + x;
+  #           }
+  #           emis[i] = emis[i-1] * (1 + rr[i]);
+  #         } else if(rm == "rm4") {
+  #           if(year[i] == first_year) {
+  #             rr[i] = initial_reduction_rate;
+  #           } else {
+  #             rr[i] = x * pow((year[i] - first_year), 2) + initial_reduction_rate;
+  #           }
+  #           emis[i] = emis[i-1] * (1 + rr[i]);
+  #         } else if(rm == "rm5") {
+  #           if(year[i] == first_year) {
+  #             rr[i] = initial_reduction_rate;
+  #           } else {
+  #             rr[i] = x * sqrt(year[i] - 0.5 - first_year) + initial_reduction_rate;
+  #           }
+  #           emis[i] = emis[i-1] * (1 + rr[i]);
+  #         } else if(rm == "rm6") {
+  #           emis[i] = emis[i-1] + x;
+  #         }
+  #       }
+  #       return(emis);
+  #       }
+  #     ')
   
   make_linear <- function(x, rm) {
     for(i in 3:length(x)) {
@@ -130,35 +133,35 @@ server <- function(input, output) {
       
       # VARIANTE 1: SCHLEIFEN
       
-      # for(i in 2:82){
-      #   if(rm == "rm1") {
-      #     emis[i] <- emis[i-1] * (1 + x)
-      #   } else if (rm == "rm2") {
-      #     rr[i] <- ifelse(year[i] == 2020, initial_reduction_rate, rr[i-1] * (1 + x))
-      #     emis[i] <- emis[i-1] * (1 + rr[i])
-      #   } else if (rm == "rm3") {
-      #     rr[i] <- ifelse(year[i] == 2020, initial_reduction_rate, rr[i-1] + x)
-      #     emis[i] <- emis[i-1] * (1 + rr[i])
-      #   } else if (rm == "rm4") {
-      #     rr[i] <- ifelse(year[i] == 2020, initial_reduction_rate, x * (year[i] - first_year)^2 + initial_reduction_rate)
-      #     emis[i] <- emis[i-1] * (1 + rr[i])
-      #   } else if (rm == "rm5") {
-      #     rr[i] <- ifelse(year[i] == 2020, initial_reduction_rate, x * sqrt(year[i] - 0.5 - first_year) + initial_reduction_rate)
-      #     emis[i] <- emis[i-1] * (1 + rr[i])
-      #   } else if (rm == "rm6") {
-      #     emis[i] <- emis[i-1] + x
-      #   }
-      # }
+      for(i in 2:82){
+        if(rm == "rm1") {
+          emis[i] <- emis[i-1] * (1 + x)
+        } else if (rm == "rm2") {
+          rr[i] <- ifelse(year[i] == 2020, initial_reduction_rate, rr[i-1] * (1 + x))
+          emis[i] <- emis[i-1] * (1 + rr[i])
+        } else if (rm == "rm3") {
+          rr[i] <- ifelse(year[i] == 2020, initial_reduction_rate, rr[i-1] + x)
+          emis[i] <- emis[i-1] * (1 + rr[i])
+        } else if (rm == "rm4") {
+          rr[i] <- ifelse(year[i] == 2020, initial_reduction_rate, x * (year[i] - first_year)^2 + initial_reduction_rate)
+          emis[i] <- emis[i-1] * (1 + rr[i])
+        } else if (rm == "rm5") {
+          rr[i] <- ifelse(year[i] == 2020, initial_reduction_rate, x * sqrt(year[i] - 0.5 - first_year) + initial_reduction_rate)
+          emis[i] <- emis[i-1] * (1 + rr[i])
+        } else if (rm == "rm6") {
+          emis[i] <- emis[i-1] + x
+        }
+      }
       
       # VARIANTE 2: RCPP-FUNKTION
-      calculate_rolling_rms(rm = rm, 
-                            emis = emis, 
-                            year = year, 
-                            x = x, 
-                            first_year = first_year,
-                            initial_reduction_rate = initial_reduction_rate,
-                            rr = rr
-      )
+      # calculate_rolling_rms(rm = rm, 
+      #                       emis = emis, 
+      #                       year = year, 
+      #                       x = x, 
+      #                       first_year = first_year,
+      #                       initial_reduction_rate = initial_reduction_rate,
+      #                       rr = rr
+      # )
       
       emis <- make_linear(emis, rm = rm)
       emis <- make_horizontal(emis)
@@ -168,7 +171,7 @@ server <- function(input, output) {
       return(ret)
     }
   }
-
+  
   optimize_function <- function(fun, neg) {
     if(neg == T) {
       xstart <- matrix(runif(10, min = -1, max = 0), ncol = 1)
@@ -179,6 +182,7 @@ server <- function(input, output) {
     
     return(opt_x)
   }
+  
   
   calculate_pathway <- function(rm, neg) {
     
@@ -210,7 +214,7 @@ server <- function(input, output) {
                                      rm = rm)
         }
       }
-    
+
     })
 
     return(result)
@@ -258,22 +262,28 @@ server <- function(input, output) {
         theme_classic() + 
         geom_label(aes(2060, 1.5, family = "sans-serif", color = "red",
                        label = "Keine Lösung für diesen Funktionstyp - bitte andere Einstellungen wählen!"), size = 3) +
-        xlim(2020, 2100) +
+        xlim(2010, 2100) +
         ylim(0, 3) +
         theme(text = element_text(size = 10, family = "sans-serif"),
               legend.position = "none") +
         labs(x = "Jahr", y = "Emissionen (Gt)")
     } else {
       total_emissions <- round(sum(x$emissions[-1]), 1)
-      year_zero_emissions <- x$year[which(x$emissions < 0)[1]]
+      year_zero_emissions <- x$year[which(x$emissions <= 0)[1]]
       ggplot(x, aes(x = year, y = emissions)) +
         geom_hline(yintercept = 0, color = "grey", linetype = "dashed") +
-        geom_line() +
-        geom_point_interactive(aes(tooltip = paste0(year, ": ", round(emissions, 1), " Gt"))) +
+        geom_vline(xintercept = 2019.5, color = "grey", linetype = "dashed") +
+        geom_line(color = "grey") +
+        geom_point_interactive(aes(tooltip = paste0(year, ": ", round(emissions, 1), " Gt"), data_id = year)) +
+        geom_point_interactive(data = eu_past_emissions, color = "grey", 
+                               aes(x = year, y = emissions, data_id = year,
+                                   tooltip = paste0(year, ": ", round(emissions, 1), " Gt"))) +
         geom_label(aes(2045, 1.5, hjust = 0,
                         label = paste0("Gesamtemissionen: ", total_emissions, " Gt", "\n", "Netto-Nullemissionen im Jahr ", year_zero_emissions)), 
                    size = 3) +
         theme_classic() +
+        scale_x_continuous(breaks = scales::extended_breaks(n = 9)(2010:2100)) +
+        scale_y_continuous(breaks = scales::extended_breaks(n = 9)(-0.5:3.5)) +
         labs(x = "Jahr", y = "Emissionen (Gt)")
     }
   }
@@ -294,8 +304,12 @@ server <- function(input, output) {
     }
   })
   
+  observe(print(sum(result()$emissions[-1])))
+  observe(print(result()))
+  
   output$emis_pathway <- renderGirafe({
-    girafe(ggobj = plot_result(result()), width_svg = 7, height_svg = 4)
+    girafe(ggobj = plot_result(result()), width_svg = 7, height_svg = 4) %>%
+      girafe_options(opts_hover(css = "fill:wheat; stroke:orange;;"))
   })
   
 }

@@ -8,11 +8,11 @@ library(bench)
 
 emis_by <- 3.03870921601875 
 base_year <- 2020
-budget <- 21.827 #22 #21.8043361981087
+budget <- 22 #21.827 #22 #21.8043361981087
 rr_20 <- -0.0217324116377584
 threshold_linear_rm1 <- 0.136741914720844000
 threshold_linear_other <- 0.106354822560656
-threshold_horizontal <- -0.2430967
+threshold_horizontal <- -0.2 #-0.2430967
 
 make_linear <- function(x, rm) {
   for(i in 3:length(x)) {

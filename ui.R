@@ -1,10 +1,8 @@
 ## LIBRARIES
 
 library(tidyverse)
-library(shiny)
 library(ggiraph)
 library(nleqslv)
-library(bench)
 library(Rcpp)
 
 
@@ -14,7 +12,7 @@ ui <- fluidPage(
     tags$link(rel="stylesheet", type="text/css", href = "style.css")
   ),
   
-  titlePanel("ESPM"),
+  titlePanel("Extended Smooth Pathway Model (ESPM)"),
   
   sidebarLayout(
     
