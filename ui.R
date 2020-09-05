@@ -4,6 +4,7 @@ library(tidyverse)
 library(ggiraph)
 library(nleqslv)
 library(Rcpp)
+library(shinyWidgets)
 
 
 ui <- fluidPage(
@@ -20,9 +21,17 @@ ui <- fluidPage(
       
       h3("1. Wahl des Funktionstyps"),
       
-      selectInput("selected_rm", label = "", 
-                  choices = c("RM-1", "RM-2", "RM-3", "RM-4", "RM-5", "RM-6"),
-                  selected = "RM-1"),
+      checkboxGroupButtons(
+        inputId = "selected_rm",
+        label = "", 
+        choiceNames = c("RM-1", "RM-2", "RM-3", "RM-4", "RM-5", "RM-6"),
+        choiceValues = c("rm1", "rm2", "rm3", "rm4", "rm5", "rm6"),
+        selected = c("rm1", "rm2", "rm3", "rm4", "rm5", "rm6")
+      ),
+
+      # selectInput("selected_rm", label = "", 
+      #             choices = c("RM-1", "RM-2", "RM-3", "RM-4", "RM-5", "RM-6"),
+      #             selected = "RM-1"),
       
       h3("2. Bestimmung des EU-Emissionsbudgets"),
       

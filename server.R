@@ -24,7 +24,7 @@ server <- function(input, output) {
     data.frame(x = c("Emissionen der Jahre 2018 und 2019: ", "Globales Budget ab 2020: "), 
                y = c(paste0(2 * annual_global_emissions_gt, " Gt CO2"), paste0(global_emission_budget_gt(), " Gt CO2"))),
     colnames = F, align = c("lr")
-    )
+  )
   
   output$weighted_key <- renderTable(
     data.frame(x = c("Anteil der EU an den globalen Emissionen", "Anteil der EU an der globalen Bevölkerung", "Gewichtungsschlüssel", "EU-Emissionsbudget"),
@@ -55,50 +55,8 @@ server <- function(input, output) {
     input$max_negative_emissions_perc / 100 * eu_emissions_2019 * -1
   })
   
-
-  # PATHWAY CALCULATION
   
-  # calculate_rolling_rms # Currently deactivated; delivers imprecise results
-  # cppFunction('
-  #       NumericVector calculate_rolling_rms(String rm, NumericVector emis, NumericVector year, double x, double first_year, double initial_reduction_rate, NumericVector rr){
-  #       for (int i = 2; i < 83; ++i){
-  #         if(rm == "rm1") {
-  #           emis[i] = emis[i-1] * (1 + x);
-  #         } else if(rm == "rm2") {
-  #           if(year[i] == first_year) {
-  #             rr[i] = initial_reduction_rate;
-  #           } else {
-  #             rr[i] = rr[i-1] * (1 + x);
-  #           }
-  #           emis[i] = emis[i-1] * (1 + rr[i]);
-  #         } else if(rm == "rm3") {
-  #           if(year[i] == first_year) {
-  #             rr[i] = initial_reduction_rate;
-  #           } else {
-  #             rr[i] = rr[i-1] + x;
-  #           }
-  #           emis[i] = emis[i-1] * (1 + rr[i]);
-  #         } else if(rm == "rm4") {
-  #           if(year[i] == first_year) {
-  #             rr[i] = initial_reduction_rate;
-  #           } else {
-  #             rr[i] = x * pow((year[i] - first_year), 2) + initial_reduction_rate;
-  #           }
-  #           emis[i] = emis[i-1] * (1 + rr[i]);
-  #         } else if(rm == "rm5") {
-  #           if(year[i] == first_year) {
-  #             rr[i] = initial_reduction_rate;
-  #           } else {
-  #             rr[i] = x * sqrt(year[i] - 0.5 - first_year) + initial_reduction_rate;
-  #           }
-  #           emis[i] = emis[i-1] * (1 + rr[i]);
-  #         } else if(rm == "rm6") {
-  #           emis[i] = emis[i-1] + x;
-  #         }
-  #       }
-  #       return(emis);
-  #       }
-  #     ')
+  # PATHWAY CALCULATION
   
   make_linear <- function(x, rm) {
     for(i in 3:length(x)) {
@@ -114,7 +72,7 @@ server <- function(input, output) {
     }
     return(x)
   }
-
+  
   make_horizontal <- function(x) {
     for(i in 3:length(x)) {
       if(x[i] <= max_negative_emissions_gt()) {
@@ -125,13 +83,12 @@ server <- function(input, output) {
   }
   
   create_fun <- function(rm, budget) {
+    
     fun <<- function(x){
       emis <- rep(eu_emissions_2019, 82)
       t <- 0:81
       year <- 2019:2100
       rr <- rep(initial_reduction_rate, 82)
-      
-      # VARIANTE 1: SCHLEIFEN
       
       for(i in 2:82){
         if(rm == "rm1") {
@@ -153,72 +110,27 @@ server <- function(input, output) {
         }
       }
       
-      # VARIANTE 2: RCPP-FUNKTION
-      # calculate_rolling_rms(rm = rm, 
-      #                       emis = emis, 
-      #                       year = year, 
-      #                       x = x, 
-      #                       first_year = first_year,
-      #                       initial_reduction_rate = initial_reduction_rate,
-      #                       rr = rr
-      # )
-      
       emis <- make_linear(emis, rm = rm)
       emis <- make_horizontal(emis)
       
       ret <- numeric(1)
-      ret[1] <- sum(emis[-1]) - eu_emission_budget_gt()
+      ret[1] <- sum(emis[-1]) - budget
+      # ret[2] <- abs(sum(rr)) - sum(abs(rr))
       return(ret)
     }
   }
   
   optimize_function <- function(fun, neg) {
+    
     if(neg == T) {
-      xstart <- matrix(runif(10, min = -1, max = 0), ncol = 1)
+      xstart <- matrix(runif(20, min = -1, max = 0), ncol = 1)
     } else {
-      xstart <- matrix(runif(10, min = 0, max = 1), ncol = 1)
+      xstart <- matrix(runif(20, min = 0, max = 1), ncol = 1)
     }
-    opt_x <- searchZeros(xstart, fun,  method = "Broyden", global = "dbldog",  control = list(btol = 1e-6))
+    
+    opt_x <- searchZeros(xstart, fun,  method = "Broyden", global = "dbldog") #,  control = list(btol = 1e1, ftol = 1e-8, xtol = 1e1, cndtol = 1e1))
     
     return(opt_x)
-  }
-  
-  
-  calculate_pathway <- function(rm, neg) {
-    
-    withProgress(message = 'Aktualisierung', value = 0, {
-      
-      incProgress(0, detail = "Erstellen der Funktion")
-    
-      create_fun(rm = rm)
-        
-      incProgress(0.30, detail = "Optimieren der Funktion")
-      
-      opt_x <- optimize_function(fun, neg = neg)
-      
-      # Benchmark
-        # Normal: Mem: 27mb | time: 58,5
-        # RCPP einzeln: Mem: 125mb | time: 25,7
-        # RCPP einmalig: Mem: NA | time: 17,7
-      
-      incProgress(0.80, detail = "Erstellen der Grafik")
-      
-      if(is.null(opt_x)) {
-        result <- NULL
-      } else {
-        if(neg == T) {
-          result <- calculate_result(x = opt_x[[1]][which(opt_x[[1]] < 0)],
-                                     rm = rm)
-        } else {
-          result <- calculate_result(x = opt_x[[1]][which(opt_x[[1]] > 0)],
-                                     rm = rm)
-        }
-      }
-
-    })
-
-    return(result)
-    
   }
   
   calculate_result <- function(x, rm) {
@@ -252,12 +164,13 @@ server <- function(input, output) {
     dat <- data.frame(t = t,
                       year = year,
                       emissions = emis,
-                      rr = rr)
+                      rr = rr, 
+                      rm = rm)
     return(dat)
   }
   
   plot_result <- function(x) {
-    if(is.null(x)) {
+    if(nrow(x) == 0) {
       ggplot() + 
         theme_classic() + 
         geom_label(aes(2060, 1.5, family = "sans-serif", color = "red",
@@ -270,16 +183,16 @@ server <- function(input, output) {
     } else {
       total_emissions <- round(sum(x$emissions[-1]), 1)
       year_zero_emissions <- x$year[which(x$emissions <= 0)[1]]
-      ggplot(x, aes(x = year, y = emissions)) +
+      ggplot(x, aes(x = year, y = emissions, col = rm)) +
         geom_hline(yintercept = 0, color = "grey", linetype = "dashed") +
         geom_vline(xintercept = 2019.5, color = "grey", linetype = "dashed") +
-        geom_line(color = "grey") +
+        geom_line() +
         geom_point_interactive(aes(tooltip = paste0(year, ": ", round(emissions, 1), " Gt"), data_id = year)) +
         geom_point_interactive(data = eu_past_emissions, color = "grey", 
                                aes(x = year, y = emissions, data_id = year,
                                    tooltip = paste0(year, ": ", round(emissions, 1), " Gt"))) +
         geom_label(aes(2045, 1.5, hjust = 0,
-                        label = paste0("Gesamtemissionen: ", total_emissions, " Gt", "\n", "Netto-Nullemissionen im Jahr ", year_zero_emissions)), 
+                       label = paste0("Gesamtemissionen: ", total_emissions, " Gt", "\n", "Netto-Nullemissionen im Jahr ", year_zero_emissions)), 
                    size = 3) +
         theme_classic() +
         scale_x_continuous(breaks = scales::extended_breaks(n = 9)(2010:2100)) +
@@ -288,28 +201,72 @@ server <- function(input, output) {
     }
   }
   
+  calculate_pathway <- function(rm) {
+    
+    output <- data.frame(t = numeric(), year = numeric(), emissions = numeric(), rr = numeric(), rm = character())
+    
+    withProgress(message = 'Aktualisierung', value = 0, {
+      
+      for(i in 1:length(rm)) {
+        
+        neg <- ifelse(rm[i] == "rm2", F, T)
+        
+        opt_x <- NULL
+        
+        for(j in c(1, 0.95, 1.05)) { 
+          
+          # Slightly vary the budget so that an optimum is found
+          
+          if(is.null(opt_x)) {
+            
+            create_fun(rm = rm[i], budget = eu_emission_budget_gt() * j)
+            
+            opt_x <- optimize_function(fun, neg = neg)
+            
+          } else {
+            # Do nothing
+          }
+          
+        }
+        
+        if(is.null(opt_x)) {
+          result <- NULL
+        } else {
+          result <- calculate_result(x = opt_x[[1]], rm = rm[i])
+          
+          # if(neg == T) {
+          #   result <- calculate_result(x = opt_x[[1]][which(opt_x[[1]] < 0)],
+          #                              rm = rm[i])
+          # } else {
+          #   result <- calculate_result(x = opt_x[[1]][which(opt_x[[1]] > 0)],
+          #                              rm = rm[i])
+          # }
+          
+        }
+        
+        if(is.null(result)) {
+          # do nothing
+        } else {
+          output <- rbind(output, result)
+        }
+        
+        incProgress(1/length(rm), detail = paste("Erstelle Funktion", i))
+        
+      }
+      
+    }) # end withProgress
+    
+    return(output)
+    
+  }
+  
   result <- eventReactive(input$go, {
-    if(input$selected_rm == "RM-1") {
-      calculate_pathway(rm = "rm1", neg = T)
-    } else if(input$selected_rm == "RM-2") {
-      calculate_pathway(rm = "rm2", neg = F) # optimized value is positive
-    } else if(input$selected_rm == "RM-3") {
-      calculate_pathway(rm = "rm3", neg = T)
-    } else if(input$selected_rm == "RM-4") {
-      calculate_pathway(rm = "rm4", neg = T)
-    } else if(input$selected_rm == "RM-5") {
-      calculate_pathway(rm = "rm5", neg = T)
-    } else if(input$selected_rm == "RM-6") {
-      calculate_pathway(rm = "rm6", neg = T)
-    }
+    calculate_pathway(rm = input$selected_rm)
   })
   
-  observe(print(sum(result()$emissions[-1])))
-  observe(print(result()))
-  
   output$emis_pathway <- renderGirafe({
-    girafe(ggobj = plot_result(result()), width_svg = 7, height_svg = 4) %>%
-      girafe_options(opts_hover(css = "fill:wheat; stroke:orange;;"))
+      girafe(ggobj = plot_result(result()), width_svg = 7, height_svg = 4) %>%
+        girafe_options(opts_hover(css = "fill:wheat; stroke:orange;;"))
   })
   
 }
