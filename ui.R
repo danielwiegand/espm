@@ -5,6 +5,7 @@ library(ggiraph)
 library(nleqslv)
 library(Rcpp)
 library(shinyWidgets)
+library(RColorBrewer)
 
 
 ui <- fluidPage(
@@ -24,9 +25,10 @@ ui <- fluidPage(
       checkboxGroupButtons(
         inputId = "selected_rm",
         label = "", 
-        choiceNames = c("RM-1", "RM-2", "RM-3", "RM-4", "RM-5", "RM-6"),
-        choiceValues = c("rm1", "rm2", "rm3", "rm4", "rm5", "rm6"),
-        selected = c("rm1", "rm2", "rm3", "rm4", "rm5", "rm6")
+        choices = c("RM-1", "RM-2", "RM-3", "RM-4", "RM-5", "RM-6"),
+        # choiceNames = c("RM-1", "RM-2", "RM-3", "RM-4", "RM-5", "RM-6"),
+        # choiceValues = c("rm1", "rm2", "rm3", "rm4", "rm5", "rm6"),
+        selected = c("RM-1", "RM-2", "RM-3", "RM-4", "RM-5", "RM-6")
       ),
 
       # selectInput("selected_rm", label = "", 
@@ -60,10 +62,31 @@ ui <- fluidPage(
     
     mainPanel(
       
-      div(class = "plot-container", style = "clear:left; width:90%;",
-          girafeOutput("emis_pathway")
+      fluidRow(
+        
+        column(12,
+               
+               div(class = "plot-container", style = "clear:left; width:100%;",
+                   girafeOutput("emis_pathway")
+                   )
+          
+        ),
+        
+        column(6,
+               
+               div(class = "plot-container", style = "clear:left; width:100%;",
+                   girafeOutput("comparison_1990")
+               )
+        ),
+        
+        column(6,
+               
+               div(class = "plot-container", style = "clear:left; width:100%;",
+                   girafeOutput("overshoot_amounts")
+               )
+               
+        )
       )
-      
     )
   )
 )
