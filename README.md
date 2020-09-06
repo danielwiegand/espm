@@ -8,4 +8,6 @@ Once the starting point (emissions 2019), the emission budget between 2020 and 2
 
 The full mathematical methodology of the so called "Extended Smooth Pathway Model" can be found under https://klima-retten.info/downloads.html.
 
+Screenshot of the app:
+
 ![alt text](https://github.com/danielwiegand/espm/blob/master/www/espm-screenshot.png?raw=true)
