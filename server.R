@@ -116,7 +116,7 @@ server <- function(input, output) {
       
       ret <- numeric(1)
       ret[1] <- sum(emis[-1]) - budget
-      # ret[2] <- abs(sum(rr)) - sum(abs(rr))
+      # ret[2] <- abs(sum(rr)) - sum(abs(rr)) # Condition to have a steady function - does not work
       return(ret)
     }
   }
@@ -129,7 +129,7 @@ server <- function(input, output) {
       xstart <- matrix(runif(20, min = 0, max = 1), ncol = 1)
     }
     
-    opt_x <- searchZeros(xstart, fun,  method = "Broyden", global = "dbldog") #,  control = list(btol = 1e1, ftol = 1e-8, xtol = 1e1, cndtol = 1e1))
+    opt_x <- searchZeros(xstart, fun,  method = "Broyden", global = "dbldog")
     
     return(opt_x)
   }
@@ -193,7 +193,8 @@ server <- function(input, output) {
         geom_hline(yintercept = 0, color = "grey", linetype = "dashed") +
         geom_vline(xintercept = 2019.5, color = "grey", linetype = "dashed") +
         geom_line_interactive(aes(data_id = rm, hover_css = "fill:none;", tooltip = rm)) +
-        geom_point_interactive(aes(tooltip = paste0(rm, " (", year, "): ", round(emissions, 2), " Gt"), data_id = data_id), size = 0.6) +
+        geom_point_interactive(aes(tooltip = paste0(rm, " (", year, "): ", round(emissions, 2), " Gt"), data_id = data_id), 
+                               size = 0.6) +
         geom_point_interactive(data = eu_past_emissions, color = "grey", size = 1,
                                aes(x = year, y = emissions, data_id = year,
                                    tooltip = paste0(year, ": ", round(emissions, 2), " Gt"))) +
@@ -219,7 +220,8 @@ server <- function(input, output) {
         opt_x <- NULL
         is_steady <- T
         
-        for(j in c(1, 0.95, 1.05, 0.9, 1.1, 0.85, 1.15, 0.8, 1.2, 0.75, 1.25)) {  # Slightly vary the budget so that an optimum is found for a steady function
+        # Slightly vary the budget so that an optimum is found for a steady function
+        for(j in c(1, 0.95, 1.05, 0.9, 1.1, 0.85, 1.15, 0.8, 1.2, 0.75, 1.25)) {  
           
           if(is.null(opt_x) | is_steady == F) {
             
@@ -267,6 +269,8 @@ server <- function(input, output) {
       girafe_options(opts_hover(css = "fill:black; stroke:black;"))
   })
   
+  # Bar plot: Change compared to 1990
+  
   comparison_1990 <- reactive({
     result() %>%
       filter(year %in% c(2020, 2030, 2040, 2050)) %>%
@@ -288,6 +292,9 @@ server <- function(input, output) {
       girafe_options(opts_hover(css = "fill:black; stroke:black;"))
   )
   
+  
+  # Bar plot: Overshoot amounts per RM
+  
   overshoot_amounts <- reactive({
     result() %>%
       filter(emissions < 0) %>%
@@ -308,7 +315,5 @@ server <- function(input, output) {
     girafe(ggobj = overshoot_amounts(), width_svg = 4, height_svg = 3) %>%
       girafe_options(opts_hover(css = "fill:black; stroke:black;"))
   )
-  
-  observe(print(overshoot_amounts()))
   
 }
