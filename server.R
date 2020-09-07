@@ -16,26 +16,37 @@ server <- function(input, output) {
     emissions = c(3.347, 3.249, 3.158, 3.070, 2.954, 3.021, 3.043, 3.112, 3.039, eu_emissions_2019),
     historical = "y"
   )
+  date_display_range <- reactive({
+    if(input$date_display_range == T) {2100} else {2050}
+  })
+  colors_to_display <- reactive({
+    data.frame("rm" = c("RM-1", "RM-2", "RM-3", "RM-4", "RM-5", "RM-6"),
+               "color" = c("#4f81bd", "#c0504d", "#9bbb59", "#000000", "#f79646", "#808080")) %>%
+      filter(rm %in% input$selected_rm) %>%
+      select(color) %>% as.list()
+  }) 
+  
+  observe(print(colors_to_display()))
   
   global_emission_budget_gt <- reactive({
     input$global_emission_budget_gt_2018 - 2 * annual_global_emissions_gt
   })
   
   output$global_budget <- renderTable(
-    data.frame(x = c("Emissionen der Jahre 2018 und 2019: ", "Globales Budget ab 2020: "), 
+    data.frame(x = c("Emissions of 2018 and 2019: ", "Global budget from 2020 on: "), 
                y = c(paste0(2 * annual_global_emissions_gt, " Gt CO2"), paste0(global_emission_budget_gt(), " Gt CO2"))),
     colnames = F, align = c("lr")
   )
   
   output$weighted_key <- renderTable(
-    data.frame(x = c("Anteil der EU an den globalen Emissionen", "Anteil der EU an der globalen Bevölkerung", "Gewichtungsschlüssel", "EU-Emissionsbudget"),
+    data.frame(x = c("EU share of global emissions", "EU share of global population", "Weighted key", "EU emission budget"),
                y = c("7,2%", "5,8%", paste0(round(weighted_key() * 100, 1), "%"),
                      paste0(round(eu_emission_budget_gt(), 1), " Gt"))),
     colnames = F
   )
   
   output$negative_emissions <- renderTable(
-    data.frame(x = "Maximal mögliche Netto-Negativemissionen (p.a.): ",
+    data.frame(x = "Maximum possible negative emissions (p.a.): ",
                y = paste0(round(max_negative_emissions_gt()*-1, 2), " Gt")),
     colnames = F
   )
@@ -176,19 +187,26 @@ server <- function(input, output) {
       ggplot() + 
         theme_classic() + 
         geom_label(aes(2060, 1.5, family = "sans-serif", color = "red",
-                       label = "Keine Lösung für diesen Funktionstyp - bitte andere Einstellungen wählen!"), size = 3) +
+                       label = "No solution for this scenario type - please choose other options!"), size = 3) +
         xlim(2010, 2100) +
         ylim(0, 3) +
         theme(text = element_text(size = 10, family = "sans-serif"),
               legend.position = "none") +
-        labs(x = "Jahr", y = "Emissionen (Gt)")
+        labs(x = "Year", y = "Emissions (Gt)")
       
     } else {
       
       total_emissions <- round(sum(x$emissions[-1]), 1)
       year_zero_emissions <- x$year[which(x$emissions <= 0)[1]]
+      overshoot_amounts <- x %>%
+        rename("RM" = rm) %>%
+        filter(emissions < 0) %>%
+        group_by(RM) %>%
+        summarize("Overshoot (Gt)" = round(sum(emissions) * -1, 2)) 
+      
       x %>%
         rownames_to_column("data_id") %>%
+        filter(year <= date_display_range()) %>%
         ggplot(aes(x = year, y = emissions, color = rm)) +
         geom_hline(yintercept = 0, color = "grey", linetype = "dashed") +
         geom_vline(xintercept = 2019.5, color = "grey", linetype = "dashed") +
@@ -198,10 +216,12 @@ server <- function(input, output) {
         geom_point_interactive(data = eu_past_emissions, color = "grey", size = 1,
                                aes(x = year, y = emissions, data_id = year,
                                    tooltip = paste0(year, ": ", round(emissions, 2), " Gt"))) +
+        annotation_custom(tableGrob(overshoot_amounts, rows = NULL, theme = ttheme_minimal(base_size = 7, padding = unit(c(2, 2), "mm"))), 
+                          xmin = 2035, xmax = 2050, ymin = 1.5, ymax = 3) +
         theme_classic() +
         scale_x_continuous(breaks = scales::extended_breaks(n = 9)(2010:2100)) +
         scale_y_continuous(breaks = scales::extended_breaks(n = 9)(-0.5:3.5)) +
-        labs(x = "Jahr", y = "Emissionen (Gt)", color = "Funktionstyp") +
+        labs(x = "Year", y = "Emissions (Gt)", color = "Scenario type", subtitle = "Emissions over time") +
         theme(text = element_text(size = 10)) +
         scale_color_brewer(palette = "YlOrRd")
     }
@@ -262,29 +282,35 @@ server <- function(input, output) {
   
   result <- eventReactive(input$go, {
     calculate_pathway(rm = input$selected_rm)
-  })
+  }, ignoreNULL = F) # Fire also at startup
   
   output$emis_pathway <- renderGirafe({
     girafe(ggobj = plot_result(result()), width_svg = 7, height_svg = 2.5) %>%
       girafe_options(opts_hover(css = "fill:black; stroke:black;"))
   })
   
+  observe(print(input$date_display_range))
+  
   # Bar plot: Change compared to 1990
   
   comparison_1990 <- reactive({
     result() %>%
-      filter(year %in% c(2020, 2030, 2040, 2050)) %>%
-      mutate(change = (1 - emissions / eu_emissions_1990) * -100) %>%
+      filter(year %in% c(2020, 2030, 2035, 2040, 2050)) %>%
+      mutate(change = (1 - emissions / eu_emissions_1990) * -100,
+             year = as.character(year),
+             is_2030 = ifelse(year == 2030, "Y", "N")) %>%
       rownames_to_column("data_id") %>%
-      ggplot(aes(x = rm, y = change, fill = rm)) +
+      ggplot(aes(x = year, y = change, fill = year, color = is_2030)) +
       geom_col_interactive(aes(tooltip = paste0(rm, " (", year, "): ", round(change, 1), "%"), data_id = data_id), width = .7) +
-      facet_wrap(~year) +
+      facet_wrap(~rm) +
       theme_classic() +
-      labs(y = "Veränderung (%)", x = "", fill = "Funktionstyp") +
+      labs(y = "Change (%)", x = "", fill = "Scenario type", subtitle = "Change compared to 1990") +
       theme(text = element_text(size = 12),
             axis.text.x = element_text(size = 6),
             legend.position = "none") +
-      scale_fill_brewer(palette = "YlOrRd")
+      scale_color_manual(values = c(colors_to_display()$color)) +
+      # scale_fill_brewer(palette = "YlOrRd") +
+      scale_color_manual(values = c(NA, "black"))
   })
   
   output$comparison_1990 <- renderGirafe(
@@ -292,28 +318,62 @@ server <- function(input, output) {
       girafe_options(opts_hover(css = "fill:black; stroke:black;"))
   )
   
+  # Line plot: Emission change rate
   
-  # Bar plot: Overshoot amounts per RM
-  
-  overshoot_amounts <- reactive({
+  emission_change_rates <- reactive({
     result() %>%
-      filter(emissions < 0) %>%
-      group_by(rm) %>%
-      summarize(overshoot = sum(emissions) * -1) %>%
+      mutate(rr_eff = ifelse(emissions > threshold_linear_other, (emissions / lag(emissions) -1) * 100, 0)) %>%
       rownames_to_column("data_id") %>%
-      ggplot(aes(x = rm, y = overshoot, fill = rm)) +
-      geom_col_interactive(aes(data_id = data_id, tooltip = paste0(rm, ": ", round(overshoot, 1), " Gt")), width = 0.7) +
+      filter(year <= date_display_range() & year > 2019) %>%
+      mutate(rr = rr * 100) %>%
+      ggplot(aes(x = year, y = rr_eff, color = rm)) +
+      geom_line_interactive(aes(data_id = rm, hover_css = "fill:none;", tooltip = rm)) +
+      geom_point_interactive(aes(tooltip = paste0(rm, " (", year, "): ", round(rr_eff, 2), " %"), data_id = data_id), 
+                             size = 0.6) +
       theme_classic() +
-      labs(y = "Overshoot 2020-2100 (Gt)", x = "", fill = "Funktionstyp") +
-      theme(text = element_text(size = 12),
-            axis.text.x = element_text(size = 6),
+      scale_x_continuous(breaks = scales::extended_breaks(n = 8)(2020:2100)) +
+      theme(axis.text.x = element_text(size = 6),
             legend.position = "none") +
-      scale_fill_brewer(palette = "YlOrRd")
+      labs(x = "", y = "Change (%)", subtitle = "Emission change rate")
   })
   
-  output$overshoot_amounts <- renderGirafe(
-    girafe(ggobj = overshoot_amounts(), width_svg = 4, height_svg = 3) %>%
+  output$emission_change_rates <- renderGirafe(
+    girafe(ggobj = emission_change_rates(), width_svg = 3.8, height_svg = 2.8) %>%
       girafe_options(opts_hover(css = "fill:black; stroke:black;"))
   )
+  
+  
+  # # Bar plot: Overshoot amounts per RM
+  # 
+  # overshoot_amounts <- reactive({
+  #   result() %>%
+  #     filter(emissions < 0) %>%
+  #     group_by(rm) %>%
+  #     summarize(overshoot = sum(emissions) * -1) %>%
+  #     rownames_to_column("data_id") %>%
+  #     ggplot(aes(x = rm, y = overshoot, fill = rm)) +
+  #     geom_col_interactive(aes(data_id = data_id, tooltip = paste0(rm, ": ", round(overshoot, 1), " Gt")), width = 0.7) +
+  #     theme_classic() +
+  #     labs(y = "Overshoot 2020-2100 (Gt)", x = "", fill = "Scenario type") +
+  #     theme(text = element_text(size = 12),
+  #           axis.text.x = element_text(size = 6),
+  #           legend.position = "none") +
+  #     scale_fill_brewer(palette = "YlOrRd")
+  # })
+  # 
+  # output$overshoot_amounts <- renderGirafe(
+  #   girafe(ggobj = overshoot_amounts(), width_svg = 4, height_svg = 3) %>%
+  #     girafe_options(opts_hover(css = "fill:black; stroke:black;"))
+  # )
+  
+  # Notifications
+  
+  observeEvent(input$link_info_scenario_type, {
+    shinyjs::toggle("info_scenario_type")
+  })
+
+  output$box_info_scenario_type <- renderUI({
+    hidden(div(class = "info-box", id = "info_scenario_type", "Get more information on scenario types on", tags$a(href = "https://www.klima-retten.info/Downloads/RM-Scenario-Types.pdf", "this webpage.")))
+  })
   
 }

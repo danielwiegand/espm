@@ -5,9 +5,12 @@ library(ggiraph)
 library(nleqslv)
 library(shinyWidgets)
 library(RColorBrewer)
-
+library(shinyjs)
+library(gridExtra)
 
 ui <- fluidPage(
+  
+  useShinyjs(),
   
   tags$head(
     tags$link(rel="stylesheet", type="text/css", href = "style.css")
@@ -19,50 +22,80 @@ ui <- fluidPage(
     
     sidebarPanel(
       
-      h3("1. Wahl des Funktionstyps"),
+      h3("1. Select a scenario type", style = "float:left;"),
+      
+      actionLink("link_info_scenario_type", "", icon = icon("info-circle"), style = "float:left; margin-top:20px; margin-left:10px;"),
+      
+      uiOutput("box_info_scenario_type"),
       
       checkboxGroupButtons(
         inputId = "selected_rm",
         label = "", 
-        choices = c("RM-1", "RM-2", "RM-3", "RM-4", "RM-5", "RM-6"),
-        selected = c("RM-1", "RM-2", "RM-3", "RM-4", "RM-5", "RM-6")
+        choiceNames = c("RM-1 const", "RM-2 exp", "RM-3 lin", "RM-4 quadr", "RM-5 rad", "RM-6 const"),
+        choiceValues = c("RM-1", "RM-2", "RM-3", "RM-4", "RM-5", "RM-6"),
+        selected = c("RM-2", "RM-3", "RM-5", "RM-6")
       ),
 
-      h3("2. Bestimmung des EU-Emissionsbudgets"),
+      h3("2. Calculate the EU's emission budget"),
       
-      numericInput("global_emission_budget_gt_2018", label = "Globales Emissionsbudget (Gt CO2)", value = 420),
+      numericInput("global_emission_budget_gt_2018", label = "Global emission budget (Gt CO2)", value = 420),
       
       tableOutput("global_budget"),
       
       tags$br(),
       
-      sliderInput("pop_weighting", label = "Gewichtung Bevölkerung vs. Emissionen (%)", 
-                  min = 0, max = 100, step = 10, value = 50, pre = "Bevölkerung: ", post = "%"),
+      sliderInput("pop_weighting", label = "Weighting population vs. emissions (%)", 
+                  min = 0, max = 100, step = 10, value = 50, pre = "Population: ", post = "%"),
       
       tableOutput("weighted_key"),
       
-      h3("3. Wahl der maximal möglichen Negativemissionen"),
+      h3("3. Select the maximum possible negative emissions"),
       
-      sliderInput("max_negative_emissions_perc", label = "Maximal mögliche Netto-Negativemissionen (%)", 
+      sliderInput("max_negative_emissions_perc", label = "Maximum possible negative emissions (%)", 
                   min = 0, max = 10, step = 1, value = 8),
       
       tableOutput("negative_emissions"),
       
       div(style = "width:100%; text-align:center;",
-          actionButton("go", label = "Aktualisierung", icon = icon("retweet"))
+          actionButton("go", label = "Update", icon = icon("retweet"))
+      ),
+      
+      switchInput(
+        inputId = "date_display_range",
+        onLabel = "2100",
+        offLabel = "2050",
+        size = "mini",
+        onStatus = "info",
+        offStatus = "info",
+        label = "Date range",
+        labelWidth = "80px"
       )
+      
     ),
     
     mainPanel(
-      
+
       fluidRow(
         
         column(12,
                
+               # absolutePanel(draggable = T,
+               #               
+               #               wellPanel(sliderInput("display_year",
+               #                                     "Maximum year to display",
+               #                                     min = 2030,
+               #                                     max = 2100,
+               #                                     value = 2050,
+               #                                     step = 10),
+               #                         
+               #                         style = "z-index: 10; opacity: 0.85; font-size:16px;", 
+               #                         top = "0%", right = "16%", fixed = T, width = "22%", align = "justify"
+               #               )
+               # ),
+               
                div(class = "plot-container", style = "clear:left; width:100%;",
                    girafeOutput("emis_pathway")
                    )
-          
         ),
         
         column(6,
@@ -75,7 +108,7 @@ ui <- fluidPage(
         column(6,
                
                div(class = "plot-container", style = "clear:left; width:100%;",
-                   girafeOutput("overshoot_amounts")
+                   girafeOutput("emission_change_rates")
                )
                
         )
