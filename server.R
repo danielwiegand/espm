@@ -240,16 +240,19 @@ server <- function(input, output) {
       year_zero_emissions <- x$year[which(x$emissions <= 0)[1]]
       overshoot_amounts <- eventReactive(input$go, ignoreNULL = F, {
         if(nrow(x[x$emissions < 0,]) == 0) {
-          tibble("RM" = c(input$selected_rm),
-               "Overshoot (Gt)" = 0)
+          out <- tibble("RM" = c(input$selected_rm),
+                        "Overshoot (Gt)" = 0)
           } else {
-            x %>%
+            out <- x %>%
               rename("RM" = rm) %>%
               filter(emissions < 0) %>%
               group_by(RM) %>%
               summarize("Overshoot (Gt)" = round(sum(emissions, na.rm = T) * -1, 1)) 
           }
+        return(out)
       })
+      
+      observe(print(overshoot_amounts()))
       
       x %>%
         rownames_to_column("data_id") %>%
@@ -263,7 +266,7 @@ server <- function(input, output) {
         geom_point_interactive(data = eu_past_emissions, color = "grey", size = 1,
                                aes(x = year, y = emissions, data_id = year,
                                    tooltip = paste0(year, ": ", round(emissions, 2), " Gt"))) +
-        annotation_custom(tableGrob(overshoot_amounts, rows = NULL, theme = ttheme_minimal(base_size = 7, padding = unit(c(2, 2), "mm"))), 
+        annotation_custom(tableGrob(overshoot_amounts(), rows = NULL, theme = ttheme_minimal(base_size = 7, padding = unit(c(2, 2), "mm"))), 
                           xmin = ifelse(date_display_range() == 2100, 2060, 2035), ymin = 1.5, ymax = 3) +
         theme_classic() +
         scale_x_continuous(breaks = scales::extended_breaks(n = 9)(2010:2100)) +
