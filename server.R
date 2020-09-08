@@ -26,6 +26,32 @@ server <- function(input, output) {
     b <- a[input$selected_rm]
   }) 
   
+  output$title <- renderUI({
+    output = tagList()
+    output[[1]] <- HTML("Extended Smooth Pathway Model (ESPM)<br><span style = 'font-size:20px;'>Calculating Paris-compatible emission goals using the example of the EU</span>")
+    output[[2]] <- actionLink("link_info_general", "", icon = icon("info-circle"), style = "font-size:20px; margin-top:20px; margin-left:10px;")
+    output[[3]] <- hidden(div(class = "info-box", style = "left:330px; width:500px;", id = "info_general", 
+    HTML("The Extended Smooth Pathway Model (ESPM) is a model to determine 
+    emission paths which are in line with the Paris agreement. It consists of two calculation steps: Determination 
+    of a national budget and derivation of plausible national emission paths from this budget.<br /><br />
+    This app focuses on the EU. A weighting model is offered to determine its emission budget. The 
+    weighting is based on the EU's share of global emissions and of global population. The weighted 
+    key is then applied to the global budget to determine the EU's budget 2020 - 2100. <br /><br />The scenario 
+    types used to determine the emission paths differ in their assumptions about the annual emission 
+    changes (see plot 'Emission change rate'). A comprehensive mathematical description of the scenario 
+    types can be downloaded <a href = 'https://www.klima-retten.info/Downloads/RM-Scenario-Types.pdf'>here</a>.<br /> <br />
+    An important question concerns the possibility of future negative 
+    emissions. The app allows you specify the potential for net negative emissions by specifying a 
+    percentage that is applied to the current EU emissions. This percentage then determines the minimum 
+    value of the emission paths until 2100. If net negative emissions are allowed, the EU budget may be 
+    temporarily exceeded. This overshoot will then be offset by net negative emissions by 2100.<br /><br /> 
+    However, it should be noted that overshoot can also lead to dangerous tipping points in the 
+    climate system being exceeded.<br /><br />"),
+    actionLink("close_info_general", icon = icon("window-close"), label = "Close")))
+    
+    return(output)
+  })
+  
   showModal(modalDialog(
     title = "The Extended Smooth Pathway Model (ESPM)",
     HTML("The Extended Smooth Pathway Model (ESPM) is a model to determine emission paths which are in line with the Paris agreement.
@@ -36,7 +62,8 @@ server <- function(input, output) {
     A comprehensive mathematical description of the scenario types can be downloaded <a href = 'https://www.klima-retten.info/Downloads/RM-Scenario-Types.pdf'>here</a>.<br /><br />
     An important question concerns the possibility of future negative emissions. The app allows you specify the potential for 
     net negative emissions by specifying a percentage that is applied to the current EU emissions. This percentage then 
-    determines the minimum value of the emission paths until 2100."),
+    determines the minimum value of the emission paths until 2100.<br /><br />
+    If net negative emissions are allowed, the EU budget may be temporarily exceeded. This overshoot will then be offset by net negative emissions by 2100. However, it should be noted that overshoot can also lead to dangerous tipping points in the climate system being exceeded."),
     easyClose = TRUE,
     footer = NULL
   ))
@@ -53,7 +80,7 @@ server <- function(input, output) {
   
   output$weighted_key <- renderTable(
     data.frame(x = c("EU share of global emissions", "EU share of global population", "Weighted key", "EU emission budget"),
-               y = c("7,2%", "5,8%", paste0(round(weighted_key() * 100, 1), "%"),
+               y = c("7.2%", "5.8%", paste0(round(weighted_key() * 100, 1), "%"),
                      paste0(round(eu_emission_budget_gt(), 1), " Gt"))),
     colnames = F
   )
@@ -219,7 +246,7 @@ server <- function(input, output) {
           rename("RM" = rm) %>%
           filter(emissions < 0) %>%
           group_by(RM) %>%
-          summarize("Overshoot (Gt)" = round(sum(emissions, na.rm = T) * -1, 2)) 
+          summarize("Overshoot (Gt)" = round(sum(emissions, na.rm = T) * -1, 1)) 
       }
       
       x %>%
@@ -342,8 +369,8 @@ server <- function(input, output) {
     result() %>%
       mutate(rr_eff = ifelse(emissions > threshold_linear_other, (emissions / lag(emissions) -1) * 100, 0)) %>%
       rownames_to_column("data_id") %>%
-      filter(year <= date_display_range() & year > 2019) %>%
-      mutate(rr = rr * 100) %>%
+      filter(year <= date_display_range() & year > 2019,
+             rr_eff < 0 | rr_eff > 0) %>%
       ggplot(aes(x = year, y = rr_eff, color = rm)) +
       geom_line_interactive(aes(data_id = rm, hover_css = "fill:none;", tooltip = rm)) +
       geom_point_interactive(aes(tooltip = paste0(rm, " (", year, "): ", round(rr_eff, 2), " %"), data_id = data_id), 
@@ -352,7 +379,7 @@ server <- function(input, output) {
       scale_x_continuous(breaks = scales::extended_breaks(n = 8)(2020:2100)) +
       theme(axis.text.x = element_text(size = 6),
             legend.position = "none") +
-      labs(x = "", y = "Change (%)", subtitle = "Emission change rate") +
+      labs(x = "", y = "Change (%)", subtitle = "Emission change rates") +
       scale_color_manual(values = c(colors_to_display()))
   })
   
@@ -387,13 +414,35 @@ server <- function(input, output) {
   
   # Notifications
   
+  # Scenario type
+  
   observeEvent(input$link_info_scenario_type, {
     shinyjs::toggle("info_scenario_type")
   })
 
   output$box_info_scenario_type <- renderUI({
-    hidden(div(class = "info-box", style = "left:330px;", id = "info_scenario_type", "Scenario types differ regarding the annual emission changes associated with them (see plot 'Emission change rate'). Get more information on scenario types on", tags$a(href = "https://www.klima-retten.info/Downloads/RM-Scenario-Types.pdf", "this webpage.")))
+    hidden(div(class = "info-box", style = "left:330px;", id = "info_scenario_type", "Scenario types differ regarding the annual 
+               emission changes associated with them (see plot 'Emission change rate'). Get more information on scenario types ", 
+               tags$a(href = "https://www.klima-retten.info/Downloads/RM-Scenario-Types.pdf", "here"), HTML(".<br />"),
+               actionLink("close_info_scenario_type", icon = icon("window-close"), label = "Close")
+               ))
   })
+  
+  observeEvent(input$close_info_scenario_type, {
+    shinyjs::hide("info_scenario_type")
+  })
+  
+  # General
+  
+  observeEvent(input$link_info_general, {
+    shinyjs::toggle("info_general")
+  })
+
+  observeEvent(input$close_info_general, {
+    shinyjs::hide("info_general")
+  })
+  
+  # Budget
   
   observeEvent(input$link_info_budget, {
     shinyjs::toggle("info_budget")
@@ -409,8 +458,17 @@ server <- function(input, output) {
   )
   
   output$box_info_budget <- renderUI({
-    hidden(div(class = "info-box", style = "left:470px; width:500px;", id = "info_budget", tableOutput("base_data_for_display")))
+    hidden(div(class = "info-box", style = "left:470px; width:500px;", id = "info_budget", 
+               tableOutput("base_data_for_display"),
+               HTML("Regarding the global emission budget, we refer in particular to the IPCC Special Report 2018 (chapter 2, table 2.2, www.ipcc.ch/sr15/).<br /><br />"),
+               actionLink("close_info_budget", icon = icon("window-close"), label = "Close")))
   })
+  
+  observeEvent(input$close_info_budget, {
+    shinyjs::hide("info_budget")
+  })
+  
+  # Author & Contact
   
   observeEvent(input$link_author, {
     shinyjs::toggle("info_contact")
@@ -421,9 +479,30 @@ server <- function(input, output) {
   })
 
   output$box_contact <- renderUI({
-    hidden(div(class = "author-box", id = "info_contact", HTML("<img src = 'daniel_wiegand.gif', style = 'float:left; width:200px; margin-right:20px'>Daniel Wiegand works as a CSR consultant and data scientist."), actionLink("close_author", icon = icon("window-close"), label = ""), HTML("Currently he is doing his doctorate in business ethics at the university of philosophy in Munich.<br /><br />
+    hidden(div(class = "author-box", id = "info_contact", HTML("<img src = 'daniel_wiegand.gif', style = 'float:left; width:200px; margin-right:20px'>Daniel Wiegand works as a CSR consultant and data scientist. Currently he is doing his doctorate in business ethics at the university of philosophy in Munich.<br /><br />
     For information regarding the Extended Smooth Pathway Model, refer to <a href = 'http://klima-retten.info/'>klima-retten.info</a>.<br /><br />
-    For more information, refer to my <a href = 'https://danielwiegand.github.io/'>personal website</a>. All code to create this website is available on my <a href = 'https://github.com/danielwiegand/espm'>GitHub page</a>. For comments and suggestions contact me on daniel.a.wiegand [at] posteo.de.")))
+    For more information, refer to my <a href = 'https://danielwiegand.github.io/'>personal website</a>. All code to create this website is available on my <a href = 'https://github.com/danielwiegand/espm'>GitHub page</a>. For comments and suggestions contact me on daniel.a.wiegand [at] posteo.de.<br />"),
+               actionLink("close_author", icon = icon("window-close"), label = "Close", style = "float:right;")))
   })
+  
+  # Negative emissions
+  output$box_info_negative_emissions <- renderUI({
+    hidden(div(class = "info-box", style = "left:580px; width:500px;", id = "info_negative_emissions", 
+               HTML("An important question concerns the possibility of future negative emissions. The app allows you specify the potential 
+               for net negative emissions by specifying a percentage that is applied to the current EU emissions. This percentage then 
+               determines the minimum value of the emission paths by 2100.<br />If net negative emissions are allowed, the EU budget 
+               may be temporarily exceeded. This overshoot will then be offset by net negative emissions by 2100. However, it should be 
+               noted that overshoot can also lead to dangerous tipping points in the climate system being exceeded.<br />"),
+               actionLink("close_info_negative_emissions", icon = icon("window-close"), label = "Close")))
+  })
+  
+  observeEvent(input$link_info_negative_emissions, {
+    shinyjs::toggle("info_negative_emissions")
+  })
+  
+  observeEvent(input$close_info_negative_emissions, {
+    shinyjs::hide("info_negative_emissions")
+  })
+
   
 }

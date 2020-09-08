@@ -44,7 +44,6 @@ table > tbody > tr > td {
 .author-box {
 	z-index: 101; 
 	width:680px;
-	opacity:.9; 
 	background-color: lightgrey;
 	font-size: 14px;
 	padding:15px;

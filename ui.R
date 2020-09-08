@@ -16,8 +16,12 @@ ui <- fluidPage(
     tags$link(rel="stylesheet", type="text/css", href = "style.css")
   ),
   
-  titlePanel("Extended Smooth Pathway Model (ESPM)"),
+  # titlePanel(title = HTML("Extended Smooth Pathway Model (ESPM)<br><span style = 'font-size:20px;'>Calculating Paris-compatible emission goals using the example of the EU</span>"),
+  #            windowTitle = "Extended Smooth Pathway Model (ESPM)"),
   
+  titlePanel(title = uiOutput("title"),
+             windowTitle = "Extended Smooth Pathway Model (ESPM)"),
+
   absolutePanel(top = "10px", right = "10px", actionLink("link_author", label = "Author & Contact", icon = icon("info-circle"))),
   
   uiOutput("box_contact"),
@@ -29,7 +33,6 @@ ui <- fluidPage(
       h3("1. Select a scenario type", style = "float:left;"),
       
       actionLink("link_info_scenario_type", "", icon = icon("info-circle"), style = "float:left; margin-top:20px; margin-left:10px;"),
-      
       uiOutput("box_info_scenario_type"),
       
       checkboxGroupButtons(
@@ -37,13 +40,13 @@ ui <- fluidPage(
         label = "", 
         choiceNames = c("RM-1 const", "RM-2 exp", "RM-3 lin", "RM-4 quadr", "RM-5 rad", "RM-6 const"),
         choiceValues = c("RM-1", "RM-2", "RM-3", "RM-4", "RM-5", "RM-6"),
-        selected = c("RM-2", "RM-3", "RM-5", "RM-6")
+        selected= "RM-1"
+        # selected = c("RM-2", "RM-3", "RM-5", "RM-6")
       ),
 
       h3("2. Calculate the EU's emission budget", style = "float:left;"),
       
       actionLink("link_info_budget", "", icon = icon("info-circle"), style = "float:left; margin-top:20px; margin-left:10px;"),
-      
       uiOutput("box_info_budget"),
       
       numericInput("global_emission_budget_gt_2018", label = "Global emission budget (Gt CO2)", value = 420, width = "70%"),
@@ -57,7 +60,10 @@ ui <- fluidPage(
       
       tableOutput("weighted_key"),
       
-      h3("3. Select the maximum possible negative emissions"),
+      h3("3. Select maximum possible negative emissions", style = "float:left;"),
+      
+      actionLink("link_info_negative_emissions", "", icon = icon("info-circle"), style = "float:left; margin-top:20px; margin-left:10px;"),
+      uiOutput("box_info_negative_emissions"),
       
       sliderInput("max_negative_emissions_perc", label = "Maximum possible negative emissions (%)", 
                   min = 0, max = 10, step = 1, value = 8),
