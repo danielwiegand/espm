@@ -16,17 +16,30 @@ server <- function(input, output) {
     emissions = c(3.347, 3.249, 3.158, 3.070, 2.954, 3.021, 3.043, 3.112, 3.039, eu_emissions_2019),
     historical = "y"
   )
+  
   date_display_range <- reactive({
     if(input$date_display_range == T) {2100} else {2050}
   })
-  colors_to_display <- reactive({
-    data.frame("rm" = c("RM-1", "RM-2", "RM-3", "RM-4", "RM-5", "RM-6"),
-               "color" = c("#4f81bd", "#c0504d", "#9bbb59", "#000000", "#f79646", "#808080")) %>%
-      filter(rm %in% input$selected_rm) %>%
-      select(color) %>% as.list()
+  
+  colors_to_display <- eventReactive(input$go, ignoreNULL = F, {
+    a <- c("RM-1" = "#4b8abd", "RM-2" = "#b9594d", "RM-3" = "#a7b25d", "RM-4" = "#7970a2", "RM-5" = "#f1974b", "RM-6" = "#818181")
+    b <- a[input$selected_rm]
   }) 
   
-  observe(print(colors_to_display()))
+  showModal(modalDialog(
+    title = "The Extended Smooth Pathway Model (ESPM)",
+    HTML("The Extended Smooth Pathway Model (ESPM) is a model to determine emission paths which are in line with the Paris agreement.
+    It consists of two calculation steps: Determination of a national budget and derivation of plausible national emission paths from this budget.<br /><br />
+    This app focuses on the EU. A weighting model is offered to determine its emission budget. The weighting is based on the EU's share
+    of global emissions and of global population. The weighted key is then applied to the global budget to determine the EU's budget 2020 - 2100.<br /><br />
+    The scenario types used to determine the emission paths differ in their assumptions about the annual emission changes (see plot 'Emission change rate').
+    A comprehensive mathematical description of the scenario types can be downloaded <a href = 'https://www.klima-retten.info/Downloads/RM-Scenario-Types.pdf'>here</a>.<br /><br />
+    An important question concerns the possibility of future negative emissions. The app allows you specify the potential for 
+    net negative emissions by specifying a percentage that is applied to the current EU emissions. This percentage then 
+    determines the minimum value of the emission paths until 2100."),
+    easyClose = TRUE,
+    footer = NULL
+  ))
   
   global_emission_budget_gt <- reactive({
     input$global_emission_budget_gt_2018 - 2 * annual_global_emissions_gt
@@ -198,11 +211,16 @@ server <- function(input, output) {
       
       total_emissions <- round(sum(x$emissions[-1]), 1)
       year_zero_emissions <- x$year[which(x$emissions <= 0)[1]]
-      overshoot_amounts <- x %>%
-        rename("RM" = rm) %>%
-        filter(emissions < 0) %>%
-        group_by(RM) %>%
-        summarize("Overshoot (Gt)" = round(sum(emissions) * -1, 2)) 
+      overshoot_amounts <- if(nrow(x[x$emissions < 0,]) == 0) {
+        tibble("RM" = c(input$selected_rm),
+               "Overshoot (Gt)" = 0)
+      } else {
+        x %>%
+          rename("RM" = rm) %>%
+          filter(emissions < 0) %>%
+          group_by(RM) %>%
+          summarize("Overshoot (Gt)" = round(sum(emissions, na.rm = T) * -1, 2)) 
+      }
       
       x %>%
         rownames_to_column("data_id") %>%
@@ -217,13 +235,14 @@ server <- function(input, output) {
                                aes(x = year, y = emissions, data_id = year,
                                    tooltip = paste0(year, ": ", round(emissions, 2), " Gt"))) +
         annotation_custom(tableGrob(overshoot_amounts, rows = NULL, theme = ttheme_minimal(base_size = 7, padding = unit(c(2, 2), "mm"))), 
-                          xmin = 2035, xmax = 2050, ymin = 1.5, ymax = 3) +
+                          xmin = ifelse(date_display_range() == 2100, 2060, 2035), ymin = 1.5, ymax = 3) +
         theme_classic() +
         scale_x_continuous(breaks = scales::extended_breaks(n = 9)(2010:2100)) +
         scale_y_continuous(breaks = scales::extended_breaks(n = 9)(-0.5:3.5)) +
         labs(x = "Year", y = "Emissions (Gt)", color = "Scenario type", subtitle = "Emissions over time") +
         theme(text = element_text(size = 10)) +
-        scale_color_brewer(palette = "YlOrRd")
+        scale_color_manual(values = c(colors_to_display()))
+        # scale_color_brewer(palette = "YlOrRd")
     }
   }
   
@@ -289,8 +308,6 @@ server <- function(input, output) {
       girafe_options(opts_hover(css = "fill:black; stroke:black;"))
   })
   
-  observe(print(input$date_display_range))
-  
   # Bar plot: Change compared to 1990
   
   comparison_1990 <- reactive({
@@ -300,7 +317,7 @@ server <- function(input, output) {
              year = as.character(year),
              is_2030 = ifelse(year == 2030, "Y", "N")) %>%
       rownames_to_column("data_id") %>%
-      ggplot(aes(x = year, y = change, fill = year, color = is_2030)) +
+      ggplot(aes(x = year, y = change, fill = rm, color = is_2030)) +
       geom_col_interactive(aes(tooltip = paste0(rm, " (", year, "): ", round(change, 1), "%"), data_id = data_id), width = .7) +
       facet_wrap(~rm) +
       theme_classic() +
@@ -308,8 +325,8 @@ server <- function(input, output) {
       theme(text = element_text(size = 12),
             axis.text.x = element_text(size = 6),
             legend.position = "none") +
-      scale_color_manual(values = c(colors_to_display()$color)) +
       # scale_fill_brewer(palette = "YlOrRd") +
+      scale_fill_manual(values = c(colors_to_display(), name = "rm")) +
       scale_color_manual(values = c(NA, "black"))
   })
   
@@ -317,6 +334,7 @@ server <- function(input, output) {
     girafe(ggobj = comparison_1990(), width_svg = 4, height_svg = 3) %>%
       girafe_options(opts_hover(css = "fill:black; stroke:black;"))
   )
+  
   
   # Line plot: Emission change rate
   
@@ -334,7 +352,8 @@ server <- function(input, output) {
       scale_x_continuous(breaks = scales::extended_breaks(n = 8)(2020:2100)) +
       theme(axis.text.x = element_text(size = 6),
             legend.position = "none") +
-      labs(x = "", y = "Change (%)", subtitle = "Emission change rate")
+      labs(x = "", y = "Change (%)", subtitle = "Emission change rate") +
+      scale_color_manual(values = c(colors_to_display()))
   })
   
   output$emission_change_rates <- renderGirafe(
@@ -373,7 +392,38 @@ server <- function(input, output) {
   })
 
   output$box_info_scenario_type <- renderUI({
-    hidden(div(class = "info-box", id = "info_scenario_type", "Get more information on scenario types on", tags$a(href = "https://www.klima-retten.info/Downloads/RM-Scenario-Types.pdf", "this webpage.")))
+    hidden(div(class = "info-box", style = "left:330px;", id = "info_scenario_type", "Scenario types differ regarding the annual emission changes associated with them (see plot 'Emission change rate'). Get more information on scenario types on", tags$a(href = "https://www.klima-retten.info/Downloads/RM-Scenario-Types.pdf", "this webpage.")))
+  })
+  
+  observeEvent(input$link_info_budget, {
+    shinyjs::toggle("info_budget")
+  })
+  
+  output$base_data_for_display <- renderTable(
+    tibble(
+      "Data" = c("Annual emissions EU27 (database: EEA)", "Annual global emissions (database: GCP)"),
+      "1990" = c(3.75, ""),
+      "2019" = c(3.04, 42.10),
+      "Unit" = c("Gt", "Gt")
+    ), bordered = T, width = "600px"
+  )
+  
+  output$box_info_budget <- renderUI({
+    hidden(div(class = "info-box", style = "left:470px; width:500px;", id = "info_budget", tableOutput("base_data_for_display")))
+  })
+  
+  observeEvent(input$link_author, {
+    shinyjs::toggle("info_contact")
+  })
+  
+  observeEvent(input$close_author, {
+    shinyjs::hide("info_contact")
+  })
+
+  output$box_contact <- renderUI({
+    hidden(div(class = "author-box", id = "info_contact", HTML("<img src = 'daniel_wiegand.gif', style = 'float:left; width:200px; margin-right:20px'>Daniel Wiegand works as a CSR consultant and data scientist."), actionLink("close_author", icon = icon("window-close"), label = ""), HTML("Currently he is doing his doctorate in business ethics at the university of philosophy in Munich.<br /><br />
+    For information regarding the Extended Smooth Pathway Model, refer to <a href = 'http://klima-retten.info/'>klima-retten.info</a>.<br /><br />
+    For more information, refer to my <a href = 'https://danielwiegand.github.io/'>personal website</a>. All code to create this website is available on my <a href = 'https://github.com/danielwiegand/espm'>GitHub page</a>. For comments and suggestions contact me on daniel.a.wiegand [at] posteo.de.")))
   })
   
 }

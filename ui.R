@@ -18,6 +18,10 @@ ui <- fluidPage(
   
   titlePanel("Extended Smooth Pathway Model (ESPM)"),
   
+  absolutePanel(top = "10px", right = "10px", actionLink("link_author", label = "Author & Contact", icon = icon("info-circle"))),
+  
+  uiOutput("box_contact"),
+  
   sidebarLayout(
     
     sidebarPanel(
@@ -36,9 +40,13 @@ ui <- fluidPage(
         selected = c("RM-2", "RM-3", "RM-5", "RM-6")
       ),
 
-      h3("2. Calculate the EU's emission budget"),
+      h3("2. Calculate the EU's emission budget", style = "float:left;"),
       
-      numericInput("global_emission_budget_gt_2018", label = "Global emission budget (Gt CO2)", value = 420),
+      actionLink("link_info_budget", "", icon = icon("info-circle"), style = "float:left; margin-top:20px; margin-left:10px;"),
+      
+      uiOutput("box_info_budget"),
+      
+      numericInput("global_emission_budget_gt_2018", label = "Global emission budget (Gt CO2)", value = 420, width = "70%"),
       
       tableOutput("global_budget"),
       
