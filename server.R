@@ -64,8 +64,8 @@ server <- function(input, output) {
     net negative emissions by specifying a percentage that is applied to the current EU emissions. This percentage then 
     determines the minimum value of the emission paths until 2100.<br /><br />
     If net negative emissions are allowed, the EU budget may be temporarily exceeded. This overshoot will then be offset by net negative emissions by 2100. However, it should be noted that overshoot can also lead to dangerous tipping points in the climate system being exceeded."),
-    easyClose = TRUE,
-    footer = NULL
+    easyClose = FALSE,
+    footer = modalButton("Close")
   ))
   
   global_emission_budget_gt <- reactive({

@@ -16,9 +16,6 @@ ui <- fluidPage(
     tags$link(rel="stylesheet", type="text/css", href = "style.css")
   ),
   
-  # titlePanel(title = HTML("Extended Smooth Pathway Model (ESPM)<br><span style = 'font-size:20px;'>Calculating Paris-compatible emission goals using the example of the EU</span>"),
-  #            windowTitle = "Extended Smooth Pathway Model (ESPM)"),
-  
   titlePanel(title = uiOutput("title"),
              windowTitle = "Extended Smooth Pathway Model (ESPM)"),
 
@@ -40,8 +37,7 @@ ui <- fluidPage(
         label = "", 
         choiceNames = c("RM-1 const", "RM-2 exp", "RM-3 lin", "RM-4 quadr", "RM-5 rad", "RM-6 const"),
         choiceValues = c("RM-1", "RM-2", "RM-3", "RM-4", "RM-5", "RM-6"),
-        selected= "RM-1"
-        # selected = c("RM-2", "RM-3", "RM-5", "RM-6")
+        selected = c("RM-2", "RM-3", "RM-5", "RM-6")
       ),
 
       h3("2. Calculate the EU's emission budget", style = "float:left;"),
