@@ -238,16 +238,18 @@ server <- function(input, output) {
       
       total_emissions <- round(sum(x$emissions[-1]), 1)
       year_zero_emissions <- x$year[which(x$emissions <= 0)[1]]
-      overshoot_amounts <- if(nrow(x[x$emissions < 0,]) == 0) {
-        tibble("RM" = c(input$selected_rm),
+      overshoot_amounts <- eventReactive(input$go, ignoreNULL = F, {
+        if(nrow(x[x$emissions < 0,]) == 0) {
+          tibble("RM" = c(input$selected_rm),
                "Overshoot (Gt)" = 0)
-      } else {
-        x %>%
-          rename("RM" = rm) %>%
-          filter(emissions < 0) %>%
-          group_by(RM) %>%
-          summarize("Overshoot (Gt)" = round(sum(emissions, na.rm = T) * -1, 1)) 
-      }
+          } else {
+            x %>%
+              rename("RM" = rm) %>%
+              filter(emissions < 0) %>%
+              group_by(RM) %>%
+              summarize("Overshoot (Gt)" = round(sum(emissions, na.rm = T) * -1, 1)) 
+          }
+      })
       
       x %>%
         rownames_to_column("data_id") %>%
