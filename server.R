@@ -28,7 +28,7 @@ server <- function(input, output) {
   
   output$title <- renderUI({
     output = tagList()
-    output[[1]] <- HTML("Extended Smooth Pathway Model (ESPM)<br><span style = 'font-size:20px;'>Calculating Paris-compatible emission goals using the example of the EU</span>")
+    output[[1]] <- HTML("Extended Smooth Pathway Model (ESPM)<br><span style = 'font-size:20px;'>Calculating Paris compatible emission goals using the example of the EU</span>")
     output[[2]] <- actionLink("link_info_general", "", icon = icon("info-circle"), style = "font-size:20px; margin-top:20px; margin-left:10px;")
     output[[3]] <- hidden(div(class = "info-box", style = "left:330px; width:500px;", id = "info_general", 
     HTML("The Extended Smooth Pathway Model (ESPM) is a model to determine 
@@ -44,7 +44,7 @@ server <- function(input, output) {
     emissions. The app allows you specify the potential for net negative emissions by specifying a 
     percentage that is applied to the current EU emissions. This percentage then determines the minimum 
     value of the emission paths until 2100. If net negative emissions are allowed, the EU budget may be 
-    temporarily exceeded. This overshoot will then be offset by net negative emissions by 2100.<br /><br /> 
+    temporarily exceeded. This overshoot will then be offset by net negative emissions by 2100. 
     However, it should be noted that overshoot can also lead to dangerous tipping points in the 
     climate system being exceeded.<br /><br />"),
     actionLink("close_info_general", icon = icon("window-close"), label = "Close")))
@@ -252,8 +252,6 @@ server <- function(input, output) {
         return(out)
       })
       
-      observe(print(overshoot_amounts()))
-      
       x %>%
         rownames_to_column("data_id") %>%
         filter(year <= date_display_range()) %>%
@@ -290,9 +288,11 @@ server <- function(input, output) {
         
         opt_x <- NULL
         is_steady <- T
+        sequence <- seq(1, 0.90, -0.005)
+        set.seed(3)
         
         # Slightly vary the budget so that an optimum is found for a steady function
-        for(j in c(1, 0.95, 1.05, 0.9, 1.1, 0.85, 1.15, 0.8, 1.2, 0.75, 1.25)) {  
+        for(j in sequence) {
           
           if(is.null(opt_x) | is_steady == F) {
             
@@ -311,6 +311,7 @@ server <- function(input, output) {
               is_steady <- abs(sum(result$rr)) == sum(abs(result$rr)) 
               # This condition checks if the function is steady
               # If it is not steady, the loop continues
+              
             }
           }
         }
@@ -352,6 +353,7 @@ server <- function(input, output) {
       ggplot(aes(x = year, y = change, fill = rm, color = is_2030)) +
       geom_col_interactive(aes(tooltip = paste0(rm, " (", year, "): ", round(change, 1), "%"), data_id = data_id), width = .7) +
       facet_wrap(~rm) +
+      geom_text(size = 2, aes(label = paste0(round(change, 0), "%")), vjust = -1, color = "black") +
       theme_classic() +
       labs(y = "Change (%)", x = "", fill = "Scenario type", subtitle = "Change compared to 1990") +
       theme(text = element_text(size = 12),
@@ -457,7 +459,7 @@ server <- function(input, output) {
     tibble(
       "Data" = c("Annual emissions EU27 (database: EEA)", "Annual global emissions (database: GCP)"),
       "1990" = c(3.75, ""),
-      "2019" = c(3.04, 42.10),
+      "2018" = c(3.04, 42.10),
       "Unit" = c("Gt", "Gt")
     ), bordered = T, width = "600px"
   )
@@ -465,7 +467,7 @@ server <- function(input, output) {
   output$box_info_budget <- renderUI({
     hidden(div(class = "info-box", style = "left:470px; width:500px;", id = "info_budget", 
                tableOutput("base_data_for_display"),
-               HTML("Regarding the global emission budget, we refer in particular to the IPCC Special Report 2018 (chapter 2, table 2.2, www.ipcc.ch/sr15/).<br /><br />"),
+               HTML("Regarding the global emission budget, we refer in particular to the IPCC Special Report 2018 (chapter 2, table 2.2, <a href = 'www.ipcc.ch/sr15'>www.ipcc.ch/sr15/</a>).<br /><br />"),
                actionLink("close_info_budget", icon = icon("window-close"), label = "Close")))
   })
   
@@ -485,7 +487,7 @@ server <- function(input, output) {
 
   output$box_contact <- renderUI({
     hidden(div(class = "author-box", id = "info_contact", HTML("<img src = 'daniel_wiegand.gif', style = 'float:left; width:200px; margin-right:20px'>Daniel Wiegand works as a CSR consultant and data scientist. Currently he is doing his doctorate in business ethics at the university of philosophy in Munich.<br /><br />
-    For information regarding the Extended Smooth Pathway Model, refer to <a href = 'http://klima-retten.info/'>klima-retten.info</a>.<br /><br />
+    For information regarding the Extended Smooth Pathway Model, refer to <a href = 'http://save-the-climate.info'>www.save-the-climate.info</a>.<br /><br />
     For more information, refer to my <a href = 'https://danielwiegand.github.io/'>personal website</a>. All code to create this website is available on my <a href = 'https://github.com/danielwiegand/espm'>GitHub page</a>. For comments and suggestions contact me on daniel.a.wiegand [at] posteo.de.<br />"),
                actionLink("close_author", icon = icon("window-close"), label = "Close", style = "float:right;")))
   })
