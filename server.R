@@ -478,7 +478,7 @@ server <- function(input, output) {
     hidden(div(class = "info-box", style = "left:470px; width:500px;", id = "info_budget", 
                tableOutput("base_data_for_display"),
                HTML("The emission paths presented here may show a small divergence in relation to the emission budget specified. This is due to technical reasons: In some cases,the optimization algorithm does not yield a solution, so that the underlying budget has to be varied. These deviations do not exceed 5% of the budget.<br /><br />"),
-               HTML("Regarding the global emission budget, we refer in particular to the IPCC Special Report 2018 (chapter 2, table 2.2, <a href = 'http://ipcc.ch/sr15'>www.ipcc.ch/sr15/</a>. Staying below 1.5°C of global warming with a probability of 66% sets the remaining carbon budget to 420 Gt CO2.).<br /><br />"),
+               HTML("Regarding the global emission budget, we refer in particular to the IPCC Special Report 2018 (chapter 2, table 2.2, <a href = 'http://ipcc.ch/sr15', target = '_blank'>www.ipcc.ch/sr15/</a>). According to table 2.2, compliance with the 1.5°C limit corresponds with a probability of 66% to a remaining CO2 budget of 420 Gt. However, as described in the Special Report, there are substantial uncertainties in estimating the remaining budget. These uncertainties, among others, require a political decision on which global budget NDCs will be guided by.<br /><br />"),
                actionLink("close_info_budget", icon = icon("window-close"), label = "Close")))
   })
   
