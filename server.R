@@ -236,19 +236,29 @@ server <- function(input, output) {
       
     } else {
       
-      total_emissions <- round(sum(x$emissions[-1]), 1)
       year_zero_emissions <- x$year[which(x$emissions <= 0)[1]]
       overshoot_amounts <- eventReactive(input$go, ignoreNULL = F, {
+        
+        total_emissions <- x %>%
+          group_by(rm) %>%
+          rename("RM" = rm) %>%
+          summarize("Budget" = round(sum(emissions[-1]), 1))
+        
         if(nrow(x[x$emissions < 0,]) == 0) {
-          out <- tibble("RM" = c(input$selected_rm),
-                        "Overshoot (Gt)" = 0)
+          overshoots <- tibble("RM" = c(input$selected_rm),
+                        "Overshoot" = 0)
           } else {
-            out <- x %>%
+            overshoots <- x %>%
               rename("RM" = rm) %>%
               filter(emissions < 0) %>%
               group_by(RM) %>%
-              summarize("Overshoot (Gt)" = round(sum(emissions, na.rm = T) * -1, 1)) 
+              summarize("Overshoot" = round(sum(emissions, na.rm = T) * -1, 1)) 
           }
+        
+        out <- left_join(total_emissions, overshoots) %>%
+          select(RM, Budget, 'Overshoot') %>%
+          mutate("Unit" = "Gt")
+        
         return(out)
       })
       
@@ -264,7 +274,7 @@ server <- function(input, output) {
         geom_point_interactive(data = eu_past_emissions, color = "grey", size = 1,
                                aes(x = year, y = emissions, data_id = year,
                                    tooltip = paste0(year, ": ", round(emissions, 2), " Gt"))) +
-        annotation_custom(tableGrob(overshoot_amounts(), rows = NULL, theme = ttheme_minimal(base_size = 7, padding = unit(c(2, 2), "mm"))), 
+        annotation_custom(tableGrob(overshoot_amounts(), rows = NULL, theme = ttheme_minimal(base_size = 6, padding = unit(c(2, 2), "mm"))), 
                           xmin = ifelse(date_display_range() == 2100, 2060, 2035), ymin = 1.5, ymax = 3) +
         theme_classic() +
         scale_x_continuous(breaks = scales::extended_breaks(n = 9)(2010:2100)) +
@@ -280,7 +290,7 @@ server <- function(input, output) {
     
     output <- data.frame(t = numeric(), year = numeric(), emissions = numeric(), rr = numeric(), rm = character())
     
-    withProgress(message = 'Aktualisierung', value = 0, {
+    withProgress(message = 'Update...', value = 0, {
       
       for(i in 1:length(rm)) {
         
@@ -322,7 +332,7 @@ server <- function(input, output) {
           output <- rbind(output, result)
         }
         
-        incProgress(1/length(rm), detail = paste("Erstelle Funktion", i))
+        incProgress(1/length(rm), detail = paste("Optimize scenario type", i))
         
       }
       
@@ -467,7 +477,8 @@ server <- function(input, output) {
   output$box_info_budget <- renderUI({
     hidden(div(class = "info-box", style = "left:470px; width:500px;", id = "info_budget", 
                tableOutput("base_data_for_display"),
-               HTML("Regarding the global emission budget, we refer in particular to the IPCC Special Report 2018 (chapter 2, table 2.2, <a href = 'www.ipcc.ch/sr15'>www.ipcc.ch/sr15/</a>).<br /><br />"),
+               HTML("The emission paths presented here may show a small divergence in relation to the emission budget specified. This is due to technical reasons: In some cases,the optimization algorithm does not yield a solution, so that the underlying budget has to be varied. These deviations do not exceed 5% of the budget.<br /><br />"),
+               HTML("Regarding the global emission budget, we refer in particular to the IPCC Special Report 2018 (chapter 2, table 2.2, <a href = 'www.ipcc.ch/sr15'>www.ipcc.ch/sr15/</a>. Staying below 1.5°C of global warming with a probability of 66% sets the remaining carbon budget to 420 Gt CO2.).<br /><br />"),
                actionLink("close_info_budget", icon = icon("window-close"), label = "Close")))
   })
   
