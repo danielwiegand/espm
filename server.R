@@ -134,28 +134,28 @@ server <- function(input, output) {
     return(x)
   }
   
-  create_fun <- function(rm, budget) {
+  create_fun <- function(rm, budget, init_rr) {
     
     fun <<- function(x){
       emis <- rep(eu_emissions_2019, 82)
       t <- 0:81
       year <- 2019:2100
-      rr <- rep(initial_reduction_rate, 82)
+      rr <- rep(init_rr, 82)
       
       for(i in 2:82){
         if(rm == "RM-1") {
           emis[i] <- emis[i-1] * (1 + x)
         } else if (rm == "RM-2") {
-          rr[i] <- ifelse(year[i] == 2020, initial_reduction_rate, rr[i-1] * (1 + x))
+          rr[i] <- ifelse(year[i] == 2020, init_rr, rr[i-1] * (1 + x))
           emis[i] <- emis[i-1] * (1 + rr[i])
         } else if (rm == "RM-3") {
-          rr[i] <- ifelse(year[i] == 2020, initial_reduction_rate, rr[i-1] + x)
+          rr[i] <- ifelse(year[i] == 2020, init_rr, rr[i-1] + x)
           emis[i] <- emis[i-1] * (1 + rr[i])
         } else if (rm == "RM-4") {
-          rr[i] <- ifelse(year[i] == 2020, initial_reduction_rate, x * (year[i] - first_year)^2 + initial_reduction_rate)
+          rr[i] <- ifelse(year[i] == 2020, init_rr, x * (year[i] - first_year)^2 + init_rr)
           emis[i] <- emis[i-1] * (1 + rr[i])
         } else if (rm == "RM-5") {
-          rr[i] <- ifelse(year[i] == 2020, initial_reduction_rate, x * sqrt(year[i] - 0.5 - first_year) + initial_reduction_rate)
+          rr[i] <- ifelse(year[i] == 2020, init_rr, x * sqrt(year[i] - 0.5 - first_year) + init_rr)
           emis[i] <- emis[i-1] * (1 + rr[i])
         } else if (rm == "RM-6") {
           emis[i] <- emis[i-1] + x
@@ -185,25 +185,25 @@ server <- function(input, output) {
     return(opt_x)
   }
   
-  calculate_result <- function(x, rm) {
+  calculate_result <- function(x, rm, init_rr) {
     emis <- rep(eu_emissions_2019, 82)
     t <- 0:81
     year <- 2019:2100
-    rr <- rep(initial_reduction_rate, 82)
+    rr <- rep(init_rr, 82)
     for(i in 2:82){
       if(rm == "RM-1") {
         emis[i] <- emis[i-1] * (1 + x)
       } else if (rm == "RM-2") {
-        rr[i] <- ifelse(year[i] == 2020, initial_reduction_rate, rr[i-1] * (1 + x))
+        rr[i] <- ifelse(year[i] == 2020, init_rr, rr[i-1] * (1 + x))
         emis[i] <- emis[i-1] * (1 + rr[i])
       } else if (rm == "RM-3") {
-        rr[i] <- ifelse(year[i] == 2020, initial_reduction_rate, rr[i-1] + x)
+        rr[i] <- ifelse(year[i] == 2020, init_rr, rr[i-1] + x)
         emis[i] <- emis[i-1] * (1 + rr[i])
       } else if (rm == "RM-4") {
-        rr[i] <- ifelse(year[i] == 2020, initial_reduction_rate, x * (year[i] - first_year)^2 + initial_reduction_rate)
+        rr[i] <- ifelse(year[i] == 2020, init_rr, x * (year[i] - first_year)^2 + init_rr)
         emis[i] <- emis[i-1] * (1 + rr[i])
       } else if (rm == "RM-5") {
-        rr[i] <- ifelse(year[i] == 2020, initial_reduction_rate, x * sqrt(year[i] - 0.5 - first_year) + initial_reduction_rate)
+        rr[i] <- ifelse(year[i] == 2020, init_rr, x * sqrt(year[i] - 0.5 - first_year) + init_rr)
         emis[i] <- emis[i-1] * (1 + rr[i])
       } else if (rm == "RM-6") {
         emis[i] <- emis[i-1] + x
@@ -298,7 +298,7 @@ server <- function(input, output) {
         
         opt_x <- NULL
         is_steady <- T
-        sequence <- seq(1, 0.90, -0.005)
+        sequence <- 1 - rep(seq(0.01, 0.05, 0.01), each = 2) * rep(c(1, -1), 5)
         set.seed(3)
         
         # Slightly vary the budget so that an optimum is found for a steady function
@@ -306,7 +306,7 @@ server <- function(input, output) {
           
           if(is.null(opt_x) | is_steady == F) {
             
-            create_fun(rm = rm[i], budget = eu_emission_budget_gt() * j)
+            create_fun(rm = rm[i], budget = eu_emission_budget_gt() * j, init_rr = initial_reduction_rate)
             
             opt_x <- optimize_function(fun, neg = neg)
             
@@ -316,7 +316,7 @@ server <- function(input, output) {
               
             } else {
               
-              result <- calculate_result(x = opt_x[[1]], rm = rm[i])
+              result <- calculate_result(x = opt_x[[1]], rm = rm[i], init_rr = initial_reduction_rate)
               
               is_steady <- abs(sum(result$rr)) == sum(abs(result$rr)) 
               # This condition checks if the function is steady
