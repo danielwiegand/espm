@@ -292,6 +292,8 @@ server <- function(input, output) {
     
     withProgress(message = 'Update...', value = 0, {
       
+      rms_with_no_result <- NULL
+      
       for(i in 1:length(rm)) {
         
         neg <- ifelse(rm[i] == "RM-2", F, T)
@@ -326,17 +328,21 @@ server <- function(input, output) {
           }
         }
         
-        if(is.null(result)) {
-          # do nothing
+        if(is.null(result) | is_steady == F) {
+          rms_with_no_result <- c(rms_with_no_result, rm[i])
         } else {
           output <- rbind(output, result)
         }
         
         incProgress(1/length(rm), detail = paste("Optimize scenario type", i))
-        
+        observe(print(rms_with_no_result))
       }
       
     }) # end withProgress
+    
+    if(length(rms_with_no_result) > 0) {
+      showNotification(paste0("No result was found for ", stringr::str_flatten(rms_with_no_result, collapse = ", ")), type = "error")
+    }
     
     return(output)
     
@@ -354,24 +360,37 @@ server <- function(input, output) {
   # Bar plot: Change compared to 1990
   
   comparison_1990 <- reactive({
-    result() %>%
-      filter(year %in% c(2020, 2030, 2035, 2040, 2050)) %>%
-      mutate(change = (1 - emissions / eu_emissions_1990) * -100,
-             year = as.character(year),
-             is_2030 = ifelse(year == 2030, "Y", "N")) %>%
-      rownames_to_column("data_id") %>%
-      ggplot(aes(x = year, y = change, fill = rm, color = is_2030)) +
-      geom_col_interactive(aes(tooltip = paste0(rm, " (", year, "): ", round(change, 1), "%"), data_id = data_id), width = .7) +
-      facet_wrap(~rm) +
-      geom_text(size = 2, aes(label = paste0(round(change, 0), "%")), vjust = -1, color = "black") +
-      theme_classic() +
-      labs(y = "Change (%)", x = "", fill = "Scenario type", subtitle = "Change compared to 1990") +
-      theme(text = element_text(size = 12),
-            axis.text.x = element_text(size = 6),
-            legend.position = "none") +
-      # scale_fill_brewer(palette = "YlOrRd") +
-      scale_fill_manual(values = c(colors_to_display(), name = "rm")) +
-      scale_color_manual(values = c(NA, "black"))
+    if(nrow(result()) == 0) {
+      ggplot() + 
+        theme_classic() + 
+        geom_label(aes(2060, 1.5, family = "sans-serif", color = "red",
+                       label = "No solution for this scenario type!"), size = 3) +
+        xlim(2010, 2100) +
+        ylim(0, 3) +
+        theme(text = element_text(size = 10, family = "sans-serif"),
+              legend.position = "none") +
+        labs(x = "Year", y = "Emissions (Gt)")
+      
+    } else {
+      result() %>%
+        filter(year %in% c(2020, 2030, 2035, 2040, 2050)) %>%
+        mutate(change = (1 - emissions / eu_emissions_1990) * -100,
+               year = as.character(year),
+               is_2030 = ifelse(year == 2030, "Y", "N")) %>%
+        rownames_to_column("data_id") %>%
+        ggplot(aes(x = year, y = change, fill = rm, color = is_2030)) +
+        geom_col_interactive(aes(tooltip = paste0(rm, " (", year, "): ", round(change, 1), "%"), data_id = data_id), width = .7) +
+        facet_wrap(~rm) +
+        geom_text(size = 2, aes(label = paste0(round(change, 0), "%")), vjust = -1, color = "black") +
+        theme_classic() +
+        labs(y = "Change (%)", x = "", fill = "Scenario type", subtitle = "Change compared to 1990") +
+        theme(text = element_text(size = 12),
+              axis.text.x = element_text(size = 6),
+              legend.position = "none") +
+        # scale_fill_brewer(palette = "YlOrRd") +
+        scale_fill_manual(values = c(colors_to_display(), name = "rm")) +
+        scale_color_manual(values = c(NA, "black"))
+    }
   })
   
   output$comparison_1990 <- renderGirafe(
@@ -383,21 +402,34 @@ server <- function(input, output) {
   # Line plot: Emission change rate
   
   emission_change_rates <- reactive({
-    result() %>%
-      mutate(rr_eff = ifelse(emissions > threshold_linear_other, (emissions / lag(emissions) -1) * 100, 0)) %>%
-      rownames_to_column("data_id") %>%
-      filter(year <= date_display_range() & year > 2019,
-             rr_eff < 0 | rr_eff > 0) %>%
-      ggplot(aes(x = year, y = rr_eff, color = rm)) +
-      geom_line_interactive(aes(data_id = rm, hover_css = "fill:none;", tooltip = rm)) +
-      geom_point_interactive(aes(tooltip = paste0(rm, " (", year, "): ", round(rr_eff, 2), " %"), data_id = data_id), 
-                             size = 0.6) +
-      theme_classic() +
-      scale_x_continuous(breaks = scales::extended_breaks(n = 8)(2020:2100)) +
-      theme(axis.text.x = element_text(size = 6),
-            legend.position = "none") +
-      labs(x = "", y = "Change (%)", subtitle = "Emission change rates") +
-      scale_color_manual(values = c(colors_to_display()))
+    if(nrow(result()) == 0) {
+      ggplot() + 
+        theme_classic() + 
+        geom_label(aes(2060, 1.5, family = "sans-serif", color = "red",
+                       label = "No solution for this scenario type!"), size = 3) +
+        xlim(2010, 2100) +
+        ylim(0, 3) +
+        theme(text = element_text(size = 10, family = "sans-serif"),
+              legend.position = "none") +
+        labs(x = "Year", y = "Emissions (Gt)")
+      
+    } else {
+      result() %>%
+        mutate(rr_eff = ifelse(emissions > threshold_linear_other, (emissions / lag(emissions) -1) * 100, 0)) %>%
+        rownames_to_column("data_id") %>%
+        filter(year <= date_display_range() & year > 2019,
+               rr_eff < 0 | rr_eff > 0) %>%
+        ggplot(aes(x = year, y = rr_eff, color = rm)) +
+        geom_line_interactive(aes(data_id = rm, hover_css = "fill:none;", tooltip = rm)) +
+        geom_point_interactive(aes(tooltip = paste0(rm, " (", year, "): ", round(rr_eff, 2), " %"), data_id = data_id), 
+                               size = 0.6) +
+        theme_classic() +
+        scale_x_continuous(breaks = scales::extended_breaks(n = 8)(2020:2100)) +
+        theme(axis.text.x = element_text(size = 6),
+              legend.position = "none") +
+        labs(x = "", y = "Change (%)", subtitle = "Emission change rates") +
+        scale_color_manual(values = c(colors_to_display()))
+    }
   })
   
   output$emission_change_rates <- renderGirafe(
