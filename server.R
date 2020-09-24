@@ -22,7 +22,7 @@ server <- function(input, output) {
   })
   
   colors_to_display <- eventReactive(input$go, ignoreNULL = F, {
-    a <- c("RM-1" = "#4b8abd", "RM-2" = "#b9594d", "RM-3" = "#a7b25d", "RM-4" = "#7970a2", "RM-5" = "#f1974b", "RM-6" = "#818181")
+    a <- c("RM-1 const" = "#4b8abd", "RM-2 exp" = "#b9594d", "RM-3 lin" = "#a7b25d", "RM-4 quadr" = "#7970a2", "RM-5 rad" = "#f1974b", "RM-6 const" = "#818181")
     b <- a[input$selected_rm]
   }) 
   
@@ -38,13 +38,13 @@ server <- function(input, output) {
     weighting is based on the EU's share of global emissions and of global population. The weighted 
     key is then applied to the global budget to determine the EU's budget 2020 - 2100. <br /><br />The scenario 
     types used to determine the emission paths differ in their assumptions about the annual emission 
-    changes (see plot 'Emission change rate'). A comprehensive mathematical description of the scenario 
+    changes (see plot 'Annual emission change rates'). A comprehensive mathematical description of the scenario 
     types can be downloaded <a href = 'https://www.klima-retten.info/Downloads/RM-Scenario-Types.pdf'>here</a>.<br /> <br />
     An important question concerns the possibility of future negative 
     emissions. The app allows you specify the potential for net negative emissions by specifying a 
     percentage that is applied to the current EU emissions. This percentage then determines the minimum 
     value of the emission paths until 2100. If net negative emissions are allowed, the EU budget may be 
-    temporarily exceeded. This overshoot will then be offset by net negative emissions by 2100. 
+    temporarily exceeded. This overshoot (displayed here in the table above the emission paths) will then be offset by net negative emissions by 2100. 
     However, it should be noted that overshoot can also lead to dangerous tipping points in the 
     climate system being exceeded.<br /><br />"),
     actionLink("close_info_general", icon = icon("window-close"), label = "Close")))
@@ -58,7 +58,7 @@ server <- function(input, output) {
     It consists of two calculation steps: Determination of a national budget and derivation of plausible national emission paths from this budget.<br /><br />
     This app focuses on the EU. A weighting model is offered to determine its emission budget. The weighting is based on the EU's share
     of global emissions and of global population. The weighted key is then applied to the global budget to determine the EU's budget 2020 - 2100.<br /><br />
-    The scenario types used to determine the emission paths differ in their assumptions about the annual emission changes (see plot 'Emission change rate').
+    The scenario types used to determine the emission paths differ in their assumptions about the annual emission changes (see plot 'Annual emission change rates').
     A comprehensive mathematical description of the scenario types can be downloaded <a href = 'https://www.klima-retten.info/Downloads/RM-Scenario-Types.pdf'>here</a>.<br /><br />
     An important question concerns the possibility of future negative emissions. The app allows you specify the potential for 
     net negative emissions by specifying a percentage that is applied to the current EU emissions. This percentage then 
@@ -81,7 +81,7 @@ server <- function(input, output) {
   output$weighted_key <- renderTable(
     data.frame(x = c("EU share of global emissions", "EU share of global population", "Weighted key", "EU emission budget"),
                y = c("7.2%", "5.8%", paste0(round(weighted_key() * 100, 1), "%"),
-                     paste0(round(eu_emission_budget_gt(), 1), " Gt"))),
+                     paste0(round(eu_emission_budget_gt(), 1), " Gt CO2"))),
     colnames = F
   )
   
@@ -112,7 +112,7 @@ server <- function(input, output) {
   
   make_linear <- function(x, rm) {
     for(i in 3:length(x)) {
-      if(rm == "RM-1") {
+      if(rm == "RM-1 const") {
         if(x[i-1] <= threshold_linear_rm1) {
           x[i] <- x[i-1] + x[i-1] - x[i-2]
         }
@@ -141,23 +141,23 @@ server <- function(input, output) {
       t <- 0:81
       year <- 2019:2100
       rr <- rep(init_rr, 82)
-      
+
       for(i in 2:82){
-        if(rm == "RM-1") {
+        if(rm == "RM-1 const") {
           emis[i] <- emis[i-1] * (1 + x)
-        } else if (rm == "RM-2") {
+        } else if (rm == "RM-2 exp") {
           rr[i] <- ifelse(year[i] == 2020, init_rr, rr[i-1] * (1 + x))
           emis[i] <- emis[i-1] * (1 + rr[i])
-        } else if (rm == "RM-3") {
+        } else if (rm == "RM-3 lin") {
           rr[i] <- ifelse(year[i] == 2020, init_rr, rr[i-1] + x)
           emis[i] <- emis[i-1] * (1 + rr[i])
-        } else if (rm == "RM-4") {
+        } else if (rm == "RM-4 quadr") {
           rr[i] <- ifelse(year[i] == 2020, init_rr, x * (year[i] - first_year)^2 + init_rr)
           emis[i] <- emis[i-1] * (1 + rr[i])
-        } else if (rm == "RM-5") {
+        } else if (rm == "RM-5 rad") {
           rr[i] <- ifelse(year[i] == 2020, init_rr, x * sqrt(year[i] - 0.5 - first_year) + init_rr)
           emis[i] <- emis[i-1] * (1 + rr[i])
-        } else if (rm == "RM-6") {
+        } else if (rm == "RM-6 const") {
           emis[i] <- emis[i-1] + x
         }
       }
@@ -175,9 +175,9 @@ server <- function(input, output) {
   optimize_function <- function(fun, neg) {
     
     if(neg == T) {
-      xstart <- matrix(runif(20, min = -1, max = 0), ncol = 1)
+      xstart <- matrix(runif(5, min = -1, max = 0), ncol = 1)
     } else {
-      xstart <- matrix(runif(20, min = 0, max = 1), ncol = 1)
+      xstart <- matrix(runif(5, min = 0, max = 1), ncol = 1)
     }
     
     opt_x <- searchZeros(xstart, fun,  method = "Broyden", global = "dbldog")
@@ -190,22 +190,23 @@ server <- function(input, output) {
     t <- 0:81
     year <- 2019:2100
     rr <- rep(init_rr, 82)
+
     for(i in 2:82){
-      if(rm == "RM-1") {
+      if(rm == "RM-1 const") {
         emis[i] <- emis[i-1] * (1 + x)
-      } else if (rm == "RM-2") {
+      } else if (rm == "RM-2 exp") {
         rr[i] <- ifelse(year[i] == 2020, init_rr, rr[i-1] * (1 + x))
         emis[i] <- emis[i-1] * (1 + rr[i])
-      } else if (rm == "RM-3") {
+      } else if (rm == "RM-3 lin") {
         rr[i] <- ifelse(year[i] == 2020, init_rr, rr[i-1] + x)
         emis[i] <- emis[i-1] * (1 + rr[i])
-      } else if (rm == "RM-4") {
+      } else if (rm == "RM-4 quadr") {
         rr[i] <- ifelse(year[i] == 2020, init_rr, x * (year[i] - first_year)^2 + init_rr)
         emis[i] <- emis[i-1] * (1 + rr[i])
-      } else if (rm == "RM-5") {
+      } else if (rm == "RM-5 rad") {
         rr[i] <- ifelse(year[i] == 2020, init_rr, x * sqrt(year[i] - 0.5 - first_year) + init_rr)
         emis[i] <- emis[i-1] * (1 + rr[i])
-      } else if (rm == "RM-6") {
+      } else if (rm == "RM-6 const") {
         emis[i] <- emis[i-1] + x
       }
     }
@@ -280,9 +281,10 @@ server <- function(input, output) {
         scale_x_continuous(breaks = scales::extended_breaks(n = 9)(2010:2100)) +
         scale_y_continuous(breaks = scales::extended_breaks(n = 9)(-0.5:3.5)) +
         labs(x = "Year", y = "Emissions (Gt)", color = "Scenario type", subtitle = "Emissions over time") +
-        theme(text = element_text(size = 10)) +
+        theme(text = element_text(size = 10),
+              legend.title = element_text(size = 7),
+              legend.text = element_text(size = 6)) +
         scale_color_manual(values = c(colors_to_display()))
-        # scale_color_brewer(palette = "YlOrRd")
     }
   }
   
@@ -296,35 +298,32 @@ server <- function(input, output) {
       
       for(i in 1:length(rm)) {
         
-        neg <- ifelse(rm[i] == "RM-2", F, T)
+        neg <- ifelse(rm[i] == "RM-2 exp", F, T)
         
         opt_x <- NULL
-        is_steady <- T
-        sequence <- 1 - rep(seq(0.01, 0.05, 0.01), each = 2) * rep(c(1, -1), 5)
+        result <- NULL
+        sequence <- 1 - rep(seq(0.01, 0.05, 0.01), each = 2) * rep(c(1, -1))
         set.seed(3)
         
         # Slightly vary the budget so that an optimum is found for a steady function
         for(j in sequence) {
           
-          if(is.null(opt_x) | is_steady == F) {
+          create_fun(rm = rm[i], budget = eu_emission_budget_gt() * j, init_rr = initial_reduction_rate)
+          
+          opt_x <- optimize_function(fun, neg = neg)
+          
+          if(!is.null(opt_x)) {
             
-            create_fun(rm = rm[i], budget = eu_emission_budget_gt() * j, init_rr = initial_reduction_rate)
+            result <- calculate_result(x = opt_x[[1]], rm = rm[i], init_rr = initial_reduction_rate)
             
-            opt_x <- optimize_function(fun, neg = neg)
+            is_steady <- abs(sum(result$rr)) == sum(abs(result$rr)) 
             
-            if(is.null(opt_x)) {
-              
-              result <- NULL
-              
-            } else {
-              
-              result <- calculate_result(x = opt_x[[1]], rm = rm[i], init_rr = initial_reduction_rate)
-              
-              is_steady <- abs(sum(result$rr)) == sum(abs(result$rr)) 
+            if(is_steady == T) {
               # This condition checks if the function is steady
               # If it is not steady, the loop continues
-              
+              break
             }
+            
           }
         }
         
@@ -335,7 +334,6 @@ server <- function(input, output) {
         }
         
         incProgress(1/length(rm), detail = paste("Optimize scenario type", i))
-        observe(print(rms_with_no_result))
       }
       
     }) # end withProgress
@@ -357,6 +355,8 @@ server <- function(input, output) {
       girafe_options(opts_hover(css = "fill:black; stroke:black;"))
   })
   
+  # Plots ####
+  
   # Bar plot: Change compared to 1990
   
   comparison_1990 <- reactive({
@@ -373,7 +373,7 @@ server <- function(input, output) {
       
     } else {
       result() %>%
-        filter(year %in% c(2020, 2030, 2035, 2040, 2050)) %>%
+        filter(year %in% c(2030, 2035, 2040, 2050)) %>%
         mutate(change = (1 - emissions / eu_emissions_1990) * -100,
                year = as.character(year),
                is_2030 = ifelse(year == 2030, "Y", "N")) %>%
@@ -381,13 +381,13 @@ server <- function(input, output) {
         ggplot(aes(x = year, y = change, fill = rm, color = is_2030)) +
         geom_col_interactive(aes(tooltip = paste0(rm, " (", year, "): ", round(change, 1), "%"), data_id = data_id), width = .7) +
         facet_wrap(~rm) +
-        geom_text(size = 2, aes(label = paste0(round(change, 0), "%")), vjust = -1, color = "black") +
+        # geom_label(size = 1.5, aes(label = paste0(round(change, 0), "%")), nudge_y = 20, color = "black") +
+        geom_text(size = 1.5, aes(label = paste0(round(change, 0), "%")), vjust = -1, color = "white") +
         theme_classic() +
         labs(y = "Change (%)", x = "", fill = "Scenario type", subtitle = "Change compared to 1990") +
         theme(text = element_text(size = 12),
-              axis.text.x = element_text(size = 6),
+              axis.text.x = element_text(size = 6, angle = 0),
               legend.position = "none") +
-        # scale_fill_brewer(palette = "YlOrRd") +
         scale_fill_manual(values = c(colors_to_display(), name = "rm")) +
         scale_color_manual(values = c(NA, "black"))
     }
@@ -415,7 +415,7 @@ server <- function(input, output) {
       
     } else {
       result() %>%
-        mutate(rr_eff = ifelse(emissions > threshold_linear_other, (emissions / lag(emissions) -1) * 100, 0)) %>%
+        mutate(rr_eff = ifelse(emissions > threshold_linear_rm1, (emissions / lag(emissions) -1) * 100, 0)) %>%
         rownames_to_column("data_id") %>%
         filter(year <= date_display_range() & year > 2019,
                rr_eff < 0 | rr_eff > 0) %>%
@@ -425,9 +425,10 @@ server <- function(input, output) {
                                size = 0.6) +
         theme_classic() +
         scale_x_continuous(breaks = scales::extended_breaks(n = 8)(2020:2100)) +
+        scale_y_continuous(limits = c(-30, 0)) +
         theme(axis.text.x = element_text(size = 6),
               legend.position = "none") +
-        labs(x = "", y = "Change (%)", subtitle = "Emission change rates") +
+        labs(x = "", y = "Change (%)", subtitle = "Annual emission change rates") +
         scale_color_manual(values = c(colors_to_display()))
     }
   })
@@ -438,30 +439,7 @@ server <- function(input, output) {
   )
   
   
-  # # Bar plot: Overshoot amounts per RM
-  # 
-  # overshoot_amounts <- reactive({
-  #   result() %>%
-  #     filter(emissions < 0) %>%
-  #     group_by(rm) %>%
-  #     summarize(overshoot = sum(emissions) * -1) %>%
-  #     rownames_to_column("data_id") %>%
-  #     ggplot(aes(x = rm, y = overshoot, fill = rm)) +
-  #     geom_col_interactive(aes(data_id = data_id, tooltip = paste0(rm, ": ", round(overshoot, 1), " Gt")), width = 0.7) +
-  #     theme_classic() +
-  #     labs(y = "Overshoot 2020-2100 (Gt)", x = "", fill = "Scenario type") +
-  #     theme(text = element_text(size = 12),
-  #           axis.text.x = element_text(size = 6),
-  #           legend.position = "none") +
-  #     scale_fill_brewer(palette = "YlOrRd")
-  # })
-  # 
-  # output$overshoot_amounts <- renderGirafe(
-  #   girafe(ggobj = overshoot_amounts(), width_svg = 4, height_svg = 3) %>%
-  #     girafe_options(opts_hover(css = "fill:black; stroke:black;"))
-  # )
-  
-  # Notifications
+  # Notifications ####
   
   # Scenario type
   
@@ -491,7 +469,7 @@ server <- function(input, output) {
     shinyjs::hide("info_general")
   })
   
-  # Budget
+  # Global emission budget
   
   observeEvent(input$link_info_budget, {
     shinyjs::toggle("info_budget")
@@ -499,23 +477,55 @@ server <- function(input, output) {
   
   output$base_data_for_display <- renderTable(
     tibble(
-      "Data" = c("Annual emissions EU27 (database: EEA)", "Annual global emissions (database: GCP)"),
+      "Data" = c("Annual emissions EU27", "Annual global emissions"),
       "1990" = c(3.75, ""),
       "2018" = c(3.04, 42.10),
       "Unit" = c("Gt", "Gt")
-    ), bordered = T, width = "600px"
+    ), bordered = T
   )
   
   output$box_info_budget <- renderUI({
-    hidden(div(class = "info-box", style = "left:470px; width:500px;", id = "info_budget", 
-               tableOutput("base_data_for_display"),
-               HTML("The emission paths presented here may show a small divergence in relation to the emission budget specified. This is due to technical reasons: In some cases,the optimization algorithm does not yield a solution, so that the underlying budget has to be varied. These deviations do not exceed 5% of the budget.<br /><br />"),
+    hidden(div(class = "info-box", style = "left:300px; width:500px;", id = "info_budget", 
                HTML("Regarding the global emission budget, we refer in particular to the IPCC Special Report 2018 (chapter 2, table 2.2, <a href = 'http://ipcc.ch/sr15', target = '_blank'>www.ipcc.ch/sr15/</a>). According to table 2.2, compliance with the 1.5°C limit corresponds with a probability of 66% to a remaining CO2 budget of 420 Gt. However, as described in the Special Report, there are substantial uncertainties in estimating the remaining budget. These uncertainties, among others, require a political decision on which global budget NDCs will be guided by.<br /><br />"),
                actionLink("close_info_budget", icon = icon("window-close"), label = "Close")))
   })
   
   observeEvent(input$close_info_budget, {
     shinyjs::hide("info_budget")
+  })
+  
+  # Emissions of 2018
+  
+  observeEvent(input$link_info_emissions_2018, {
+    shinyjs::toggle("info_emissions_2018")
+  })
+  
+  output$box_info_emissions_2018 <- renderUI({
+    hidden(div(class = "info-box", style = "left:390px; width:500px;", id = "info_emissions_2018", 
+               HTML("EU emissions 2018: 42.1 Gt CO2 (source: <a href = 'https://www.globalcarbonproject.org/', target = '_blank'>Global Carbon Project)</a><br />"),
+               actionLink("close_info_emissions_2018", icon = icon("window-close"), label = "Close")))
+  })
+  
+  observeEvent(input$close_info_emissions_2018, {
+    shinyjs::hide("info_emissions_2018")
+  })
+  
+  # EU emission budget
+  
+  observeEvent(input$link_info_eu_budget, {
+    shinyjs::toggle("info_eu_budget")
+  })
+  
+  output$box_info_eu_budget <- renderUI({
+    hidden(div(class = "info-box", style = "left:390px;; width:500px;", id = "info_eu_budget", 
+               tableOutput("base_data_for_display"),
+               HTML("<ul><li>Source for EU emissions: <a href = 'https://www.eea.europa.eu/data-and-maps/data/data-viewers/greenhouse-gases-viewer', target = '_blank'>EEA</a>. The figures used here include land use, land use change and forestry (LULUCF).</li><li>Source for global emissions: <a href = 'https://www.globalcarbonproject.org/', target = '_blank'>Global Carbon Project</a></li></ul>"),
+               HTML("The emission paths presented here may show a small divergence in relation to the emission budget specified. This is due to technical reasons: In some cases, the optimization algorithm does not yield a solution, so that the underlying budget has to be varied. These deviations do not exceed 5% of the budget. The budget which is actually used is displayed in the table above the emission paths.<br /><br />"),
+               actionLink("close_info_eu_budget", icon = icon("window-close"), label = "Close")))
+  })
+  
+  observeEvent(input$close_info_eu_budget, {
+    shinyjs::hide("info_eu_budget")
   })
   
   # Author & Contact
@@ -530,19 +540,20 @@ server <- function(input, output) {
 
   output$box_contact <- renderUI({
     hidden(div(class = "author-box", id = "info_contact", HTML("<img src = 'daniel_wiegand.gif', style = 'float:left; width:200px; margin-right:20px'>Daniel Wiegand works as a CSR consultant and data scientist. Currently he is doing his doctorate in business ethics at the university of philosophy in Munich.<br /><br />
-    For information regarding the Extended Smooth Pathway Model, refer to <a href = 'http://save-the-climate.info'>www.save-the-climate.info</a>.<br /><br />
+    For information regarding the Extended Smooth Pathway Model, refer to <a href = 'http://save-the-climate.info', target = '_blank'>www.save-the-climate.info</a>.<br /><br />
     For more information, refer to my <a href = 'https://danielwiegand.github.io/'>personal website</a>. All code to create this website is available on my <a href = 'https://github.com/danielwiegand/espm'>GitHub page</a>. For comments and suggestions contact me on daniel.a.wiegand [at] posteo.de.<br />"),
                actionLink("close_author", icon = icon("window-close"), label = "Close", style = "float:right;")))
   })
   
   # Negative emissions
   output$box_info_negative_emissions <- renderUI({
-    hidden(div(class = "info-box", style = "left:580px; width:500px;", id = "info_negative_emissions", 
+    hidden(div(class = "info-box", style = "left:390px; width:500px;", id = "info_negative_emissions", 
                HTML("An important question concerns the possibility of future negative emissions. The app allows you specify the potential 
                for net negative emissions by specifying a percentage that is applied to the current EU emissions. This percentage then 
                determines the minimum value of the emission paths by 2100.<br />If net negative emissions are allowed, the EU budget 
                may be temporarily exceeded. This overshoot will then be offset by net negative emissions by 2100. However, it should be 
-               noted that overshoot can also lead to dangerous tipping points in the climate system being exceeded.<br />"),
+               noted that overshoot can also lead to dangerous tipping points in the climate system being exceeded.<br />The actual overshoot
+               per scenario type is displayed in the table above the emission paths.<br />"),
                actionLink("close_info_negative_emissions", icon = icon("window-close"), label = "Close")))
   })
   

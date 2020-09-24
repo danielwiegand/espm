@@ -35,28 +35,39 @@ ui <- fluidPage(
       checkboxGroupButtons(
         inputId = "selected_rm",
         label = "", 
-        choiceNames = c("RM-1 const", "RM-2 exp", "RM-3 lin", "RM-4 quadr", "RM-5 rad", "RM-6 const"),
-        choiceValues = c("RM-1", "RM-2", "RM-3", "RM-4", "RM-5", "RM-6"),
-        selected = c("RM-2", "RM-3", "RM-5", "RM-6")
+        choiceNames = c("RM-1", "RM-2", "RM-3", "RM-4", "RM-5", "RM-6"),
+        choiceValues = c("RM-1 const", "RM-2 exp", "RM-3 lin", "RM-4 quadr", "RM-5 rad", "RM-6 const"),
+        # selected = c("RM-1 const", "RM-2 exp", "RM-3 lin", "RM-4 quadr", "RM-5 rad", "RM-6 const")
+        selected = c("RM-2 exp", "RM-3 lin", "RM-5 rad", "RM-6 const")
       ),
 
-      h3("2. Calculate the EU's emission budget", style = "float:left;"),
+      h3("2. Calculate the EU's emission budget"),
       
-      actionLink("link_info_budget", "", icon = icon("info-circle"), style = "float:left; margin-top:20px; margin-left:10px;"),
+      tags$div("Global emission budget (Gt CO2)", style = "font-weight:bold; float:left;"),
+      actionLink("link_info_budget", "", icon = icon("info-circle"), style = "float:left; margin-left: 10px;"),
       uiOutput("box_info_budget"),
       
-      numericInput("global_emission_budget_gt_2018", label = "Global emission budget (Gt CO2)", value = 420, width = "70%"),
-      
-      tableOutput("global_budget"),
+      numericInput("global_emission_budget_gt_2018", label = "", value = 420, width = "70%"),
+
+      tags$div(style = "float:left;",
+               tableOutput("global_budget")
+      ),
+      actionLink("link_info_emissions_2018", "", icon = icon("info-circle"), style = "float:left; margin-left:10px; margin-top:5px;"),
+      uiOutput("box_info_emissions_2018"),
       
       tags$br(),
       
       sliderInput("pop_weighting", label = "Weighting population vs. emissions (%)", 
                   min = 0, max = 100, step = 10, value = 50, pre = "Population: ", post = "%"),
       
-      tableOutput("weighted_key"),
+      tags$div(style = "float:left;",
+        tableOutput("weighted_key")
+      ),
       
-      h3("3. Select maximum possible negative emissions", style = "float:left;"),
+      actionLink("link_info_eu_budget", "", icon = icon("info-circle"), style = "float:left; margin-top:100px; margin-left: 10px;"),
+      uiOutput("box_info_eu_budget"),
+      
+      h3("3. Select negative emissions", style = "float:left;"),
       
       actionLink("link_info_negative_emissions", "", icon = icon("info-circle"), style = "float:left; margin-top:20px; margin-left:10px;"),
       uiOutput("box_info_negative_emissions"),
