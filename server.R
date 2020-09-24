@@ -22,7 +22,7 @@ server <- function(input, output) {
   })
   
   colors_to_display <- eventReactive(input$go, ignoreNULL = F, {
-    a <- c("RM-1 const" = "#4b8abd", "RM-2 exp" = "#b9594d", "RM-3 lin" = "#a7b25d", "RM-4 quadr" = "#7970a2", "RM-5 rad" = "#f1974b", "RM-6 const" = "#818181")
+    a <- c("RM-1 const" = "#4b8abd", "RM-2 exp" = "#b9594d", "RM-3 lin" = "#a7b25d", "RM-4 quadr" = "#7970a2", "RM-5 rad" = "#f1974b", "RM-6 abs" = "#818181")
     b <- a[input$selected_rm]
   }) 
   
@@ -157,7 +157,7 @@ server <- function(input, output) {
         } else if (rm == "RM-5 rad") {
           rr[i] <- ifelse(year[i] == 2020, init_rr, x * sqrt(year[i] - 0.5 - first_year) + init_rr)
           emis[i] <- emis[i-1] * (1 + rr[i])
-        } else if (rm == "RM-6 const") {
+        } else if (rm == "RM-6 abs") {
           emis[i] <- emis[i-1] + x
         }
       }
@@ -206,7 +206,7 @@ server <- function(input, output) {
       } else if (rm == "RM-5 rad") {
         rr[i] <- ifelse(year[i] == 2020, init_rr, x * sqrt(year[i] - 0.5 - first_year) + init_rr)
         emis[i] <- emis[i-1] * (1 + rr[i])
-      } else if (rm == "RM-6 const") {
+      } else if (rm == "RM-6 abs") {
         emis[i] <- emis[i-1] + x
       }
     }

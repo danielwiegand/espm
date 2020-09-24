@@ -36,9 +36,9 @@ ui <- fluidPage(
         inputId = "selected_rm",
         label = "", 
         choiceNames = c("RM-1", "RM-2", "RM-3", "RM-4", "RM-5", "RM-6"),
-        choiceValues = c("RM-1 const", "RM-2 exp", "RM-3 lin", "RM-4 quadr", "RM-5 rad", "RM-6 const"),
-        # selected = c("RM-1 const", "RM-2 exp", "RM-3 lin", "RM-4 quadr", "RM-5 rad", "RM-6 const")
-        selected = c("RM-2 exp", "RM-3 lin", "RM-5 rad", "RM-6 const")
+        choiceValues = c("RM-1 const", "RM-2 exp", "RM-3 lin", "RM-4 quadr", "RM-5 rad", "RM-6 abs"),
+        # selected = c("RM-1 const", "RM-2 exp", "RM-3 lin", "RM-4 quadr", "RM-5 rad", "RM-6 abs")
+        selected = c("RM-2 exp", "RM-3 lin", "RM-5 rad", "RM-6 abs")
       ),
 
       h3("2. Calculate the EU's emission budget"),
