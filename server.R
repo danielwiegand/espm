@@ -382,7 +382,7 @@ server <- function(input, output) {
         geom_col_interactive(aes(tooltip = paste0(rm, " (", year, "): ", round(change, 1), "%"), data_id = data_id), width = .7) +
         facet_wrap(~rm) +
         # geom_label(size = 1.5, aes(label = paste0(round(change, 0), "%")), nudge_y = 20, color = "black") +
-        geom_text(size = 1.5, aes(label = paste0(round(change, 0), "%")), vjust = -1, color = "white") +
+        geom_text(size = 2, aes(label = paste0(round(change, 0), "%")), vjust = -1, color = "black") +
         theme_classic() +
         labs(y = "Change (%)", x = "", fill = "Scenario type", subtitle = "Change compared to 1990") +
         theme(text = element_text(size = 12),
@@ -425,7 +425,7 @@ server <- function(input, output) {
                                size = 0.6) +
         theme_classic() +
         scale_x_continuous(breaks = scales::extended_breaks(n = 8)(2020:2100)) +
-        scale_y_continuous(limits = c(-30, 0)) +
+        # scale_y_continuous(limits = c(-30, 0)) +
         theme(axis.text.x = element_text(size = 6),
               legend.position = "none") +
         labs(x = "", y = "Change (%)", subtitle = "Annual emission change rates") +
@@ -449,7 +449,7 @@ server <- function(input, output) {
 
   output$box_info_scenario_type <- renderUI({
     hidden(div(class = "info-box", style = "left:330px;", id = "info_scenario_type", "Scenario types differ regarding the annual 
-               emission changes associated with them (see plot 'Emission change rate'). Get more information on scenario types ", 
+               emission changes associated with them (see plot 'Annual emission change rates'). Get more information on scenario types ", 
                tags$a(href = "https://www.klima-retten.info/Downloads/RM-Scenario-Types.pdf", "here"), HTML(".<br />"),
                actionLink("close_info_scenario_type", icon = icon("window-close"), label = "Close")
                ))
@@ -502,7 +502,7 @@ server <- function(input, output) {
   
   output$box_info_emissions_2018 <- renderUI({
     hidden(div(class = "info-box", style = "left:390px; width:500px;", id = "info_emissions_2018", 
-               HTML("EU emissions 2018: 42.1 Gt CO2 (source: <a href = 'https://www.globalcarbonproject.org/', target = '_blank'>Global Carbon Project)</a><br />"),
+               HTML("Global emissions 2018: 42.1 Gt CO2 (source: <a href = 'https://www.globalcarbonproject.org/', target = '_blank'>Global Carbon Project)</a><br />"),
                actionLink("close_info_emissions_2018", icon = icon("window-close"), label = "Close")))
   })
   
@@ -519,7 +519,7 @@ server <- function(input, output) {
   output$box_info_eu_budget <- renderUI({
     hidden(div(class = "info-box", style = "left:390px;; width:500px;", id = "info_eu_budget", 
                tableOutput("base_data_for_display"),
-               HTML("<ul><li>Source for EU emissions: <a href = 'https://www.eea.europa.eu/data-and-maps/data/data-viewers/greenhouse-gases-viewer', target = '_blank'>EEA</a>. The figures used here include land use, land use change and forestry (LULUCF).</li><li>Source for global emissions: <a href = 'https://www.globalcarbonproject.org/', target = '_blank'>Global Carbon Project</a></li></ul>"),
+               HTML("<ul><li>Source for EU emissions: <a href = 'https://www.eea.europa.eu/data-and-maps/data/data-viewers/greenhouse-gases-viewer', target = '_blank'>EEA</a>. The figures used here include land use, land use change and forestry (LULUCF) and 'international transport'.</li><li>Source for emission data: <a href = 'https://www.globalcarbonproject.org/', target = '_blank'>Global Carbon Project</a></li></ul>"),
                HTML("The emission paths presented here may show a small divergence in relation to the emission budget specified. This is due to technical reasons: In some cases, the optimization algorithm does not yield a solution, so that the underlying budget has to be varied. These deviations do not exceed 5% of the budget. The budget which is actually used is displayed in the table above the emission paths.<br /><br />"),
                actionLink("close_info_eu_budget", icon = icon("window-close"), label = "Close")))
   })

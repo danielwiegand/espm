@@ -72,7 +72,7 @@ ui <- fluidPage(
       actionLink("link_info_negative_emissions", "", icon = icon("info-circle"), style = "float:left; margin-top:20px; margin-left:10px;"),
       uiOutput("box_info_negative_emissions"),
       
-      sliderInput("max_negative_emissions_perc", label = "Maximum possible negative emissions (%)", 
+      sliderInput("max_negative_emissions_perc", label = "Maximum possible net negative emissions (%)", 
                   min = 0, max = 10, step = 1, value = 8),
       
       tableOutput("negative_emissions"),
