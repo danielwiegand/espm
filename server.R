@@ -449,7 +449,7 @@ server <- function(input, output) {
     hidden(div(class = "info-box", style = "left:330px;", id = "info_scenario_type", HTML("Scenario types differ regarding the annual 
                emission changes associated with them (see plot 'Annual emission change rates'). Get more information on scenario types here:
                <ul><li><a href = 'https://google.de'>Short description</a></li>
-               <li><a href = 'https://www.klima-retten.info/Downloads/RM-Scenario-Types.pdf'>Comprehensive mathematical description</a></li></ul>"),
+               <li><a href = 'https://www.klima-retten.info/Downloads/RM-Scenario-Types.pdf', target = '_blank'>Comprehensive mathematical description</a></li></ul>"),
                actionLink("close_info_scenario_type", icon = icon("window-close"), label = "Close")
                ))
   })
