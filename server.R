@@ -38,8 +38,7 @@ server <- function(input, output) {
     weighting is based on the EU's share of global emissions and of global population. The weighted 
     key is then applied to the global budget to determine the EU's budget 2020 - 2100. <br /><br />The scenario 
     types used to determine the emission paths differ in their assumptions about the annual emission 
-    changes (see plot 'Annual emission change rates'). A comprehensive mathematical description of the scenario 
-    types can be downloaded <a href = 'https://www.klima-retten.info/Downloads/RM-Scenario-Types.pdf'>here</a>.<br /> <br />
+    changes (see plot 'Annual emission change rates').<br /> <br />
     An important question concerns the possibility of future negative 
     emissions. The app allows you specify the potential for net negative emissions by specifying a 
     percentage that is applied to the current EU emissions. This percentage then determines the minimum 
@@ -58,8 +57,7 @@ server <- function(input, output) {
     It consists of two calculation steps: Determination of a national budget and derivation of plausible national emission paths from this budget.<br /><br />
     This app focuses on the EU. A weighting model is offered to determine its emission budget. The weighting is based on the EU's share
     of global emissions and of global population. The weighted key is then applied to the global budget to determine the EU's budget 2020 - 2100.<br /><br />
-    The scenario types used to determine the emission paths differ in their assumptions about the annual emission changes (see plot 'Annual emission change rates').
-    A comprehensive mathematical description of the scenario types can be downloaded <a href = 'https://www.klima-retten.info/Downloads/RM-Scenario-Types.pdf'>here</a>.<br /><br />
+    The scenario types used to determine the emission paths differ in their assumptions about the annual emission changes (see plot 'Annual emission change rates').<br /><br />
     An important question concerns the possibility of future negative emissions. The app allows you specify the potential for 
     net negative emissions by specifying a percentage that is applied to the current EU emissions. This percentage then 
     determines the minimum value of the emission paths until 2100.<br /><br />
@@ -448,9 +446,10 @@ server <- function(input, output) {
   })
 
   output$box_info_scenario_type <- renderUI({
-    hidden(div(class = "info-box", style = "left:330px;", id = "info_scenario_type", "Scenario types differ regarding the annual 
-               emission changes associated with them (see plot 'Annual emission change rates'). Get more information on scenario types ", 
-               tags$a(href = "https://www.klima-retten.info/Downloads/RM-Scenario-Types.pdf", "here"), HTML(".<br />"),
+    hidden(div(class = "info-box", style = "left:330px;", id = "info_scenario_type", HTML("Scenario types differ regarding the annual 
+               emission changes associated with them (see plot 'Annual emission change rates'). Get more information on scenario types here:
+               <ul><li><a href = 'https://google.de'>Short description</a></li>
+               <li><a href = 'https://www.klima-retten.info/Downloads/RM-Scenario-Types.pdf'>Comprehensive mathematical description</a></li></ul>"),
                actionLink("close_info_scenario_type", icon = icon("window-close"), label = "Close")
                ))
   })
@@ -485,8 +484,9 @@ server <- function(input, output) {
   )
   
   output$box_info_budget <- renderUI({
-    hidden(div(class = "info-box", style = "left:300px; width:500px;", id = "info_budget", 
+    hidden(div(class = "info-box", style = "left:300px; width:650px;", id = "info_budget", 
                HTML("Regarding the global emission budget, we refer in particular to the IPCC Special Report 2018 (chapter 2, table 2.2, <a href = 'http://ipcc.ch/sr15', target = '_blank'>www.ipcc.ch/sr15/</a>). According to table 2.2, compliance with the 1.5°C limit corresponds with a probability of 66% to a remaining CO2 budget of 420 Gt. However, as described in the Special Report, there are substantial uncertainties in estimating the remaining budget. These uncertainties, among others, require a political decision on which global budget NDCs will be guided by.<br /><br />"),
+               tags$img(src = "table_ipcc_emission_budgets.png", width = "600px"), tags$br(),
                actionLink("close_info_budget", icon = icon("window-close"), label = "Close")))
   })
   
@@ -519,7 +519,7 @@ server <- function(input, output) {
   output$box_info_eu_budget <- renderUI({
     hidden(div(class = "info-box", style = "left:390px;; width:500px;", id = "info_eu_budget", 
                tableOutput("base_data_for_display"),
-               HTML("<ul><li>Source for EU emissions: <a href = 'https://www.eea.europa.eu/data-and-maps/data/data-viewers/greenhouse-gases-viewer', target = '_blank'>EEA</a>. The figures used here include land use, land use change and forestry (LULUCF) and 'international transport'.</li><li>Source for emission data: <a href = 'https://www.globalcarbonproject.org/', target = '_blank'>Global Carbon Project</a></li></ul>"),
+               HTML("<ul><li>Source for EU emissions: <a href = 'https://www.eea.europa.eu/data-and-maps/data/data-viewers/greenhouse-gases-viewer', target = '_blank'>EEA</a>. The figures used here include land use, land use change and forestry (LULUCF) and 'international transport'.</li><li>Source for global emissions: <a href = 'https://www.globalcarbonproject.org/', target = '_blank'>Global Carbon Project</a></li></ul>"),
                HTML("The emission paths presented here may show a small divergence in relation to the emission budget specified. This is due to technical reasons: In some cases, the optimization algorithm does not yield a solution, so that the underlying budget has to be varied. These deviations do not exceed 5% of the budget. The budget which is actually used is displayed in the table above the emission paths.<br /><br />"),
                actionLink("close_info_eu_budget", icon = icon("window-close"), label = "Close")))
   })
