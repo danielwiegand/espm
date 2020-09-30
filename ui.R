@@ -7,7 +7,6 @@ library(shinyWidgets)
 library(RColorBrewer)
 library(shinyjs)
 library(gridExtra)
-library(shinyBS)
 
 ui <- fluidPage(
   
