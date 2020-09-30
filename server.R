@@ -10,7 +10,7 @@ server <- function(input, output) {
   eu_emissions_1990 <- 3.751043368376680 # Annual EU emissions in 1990 (Gt)
   threshold_linear_rm1 <- 0.136741914720844000 # Threshold from when on the path becomes linear (rm1)
   threshold_linear_other <- 0.106354822560656 # Threshold from when on the path becomes linear (all other rms)
-  initial_reduction_rate <- -0.0217324116377584 # Emission reduction rate to start with (in RM 2-5); is EU emission change between 2019 and 2020 (percent)
+  initial_reduction_rate <- -0.03 # Emission reduction rate to start with (in RM 2-5); is assumed EU emission change between 2019 and 2020 (percent)
   eu_past_emissions <- data.frame(
     year = seq(2010, 2019, 1),
     emissions = c(3.347, 3.249, 3.158, 3.070, 2.954, 3.021, 3.043, 3.112, 3.039, eu_emissions_2019),
@@ -32,8 +32,8 @@ server <- function(input, output) {
     output[[2]] <- actionLink("link_info_general", "", icon = icon("info-circle"), style = "font-size:20px; margin-top:20px; margin-left:10px;")
     output[[3]] <- hidden(div(class = "info-box", style = "left:330px; width:500px;", id = "info_general", 
     HTML("The Extended Smooth Pathway Model (ESPM) is a model to determine 
-    emission paths which are in line with the Paris agreement. It consists of two calculation steps: Determination 
-    of a national budget and derivation of plausible national emission paths from this budget.<br /><br />
+    emission paths which are in line with the Paris Agreement. It consists of two calculation steps: Determination 
+    of a <b>national budget</b> and derivation of plausible <b>national emission paths</b> from this budget.<br /><br />
     This app focuses on the EU. A weighting model is offered to determine its emission budget. The 
     weighting is based on the EU's share of global emissions and of global population. The weighted 
     key is then applied to the global budget to determine the EU's budget 2020 - 2100. <br /><br />The scenario 
@@ -45,7 +45,8 @@ server <- function(input, output) {
     value of the emission paths until 2100. If net negative emissions are allowed, the EU budget may be 
     temporarily exceeded. This overshoot (displayed here in the table above the emission paths) will then be offset by net negative emissions by 2100. 
     However, it should be noted that overshoot can also lead to dangerous tipping points in the 
-    climate system being exceeded.<br /><br />"),
+    climate system being exceeded.<br /><br />
+    More information about the ESPM at: <a href = 'http://www.save-the-climate.info', target = '_blank'>www.save-the-climate.info</a>.<br /><br />"),
     actionLink("close_info_general", icon = icon("window-close"), label = "Close")))
     
     return(output)
@@ -53,18 +54,28 @@ server <- function(input, output) {
   
   showModal(modalDialog(
     title = "The Extended Smooth Pathway Model (ESPM)",
-    HTML("The Extended Smooth Pathway Model (ESPM) is a model to determine emission paths which are in line with the Paris agreement.
-    It consists of two calculation steps: Determination of a national budget and derivation of plausible national emission paths from this budget.<br /><br />
+    HTML("The Extended Smooth Pathway Model (ESPM) is a model to determine emission paths which are in line with the Paris Agreement.
+    It consists of two calculation steps: Determination of a <b>national budget</b> and derivation of plausible <b>national emission paths</b> from this budget.<br /><br />
     This app focuses on the EU. A weighting model is offered to determine its emission budget. The weighting is based on the EU's share
     of global emissions and of global population. The weighted key is then applied to the global budget to determine the EU's budget 2020 - 2100.<br /><br />
     The scenario types used to determine the emission paths differ in their assumptions about the annual emission changes (see plot 'Annual emission change rates').<br /><br />
     An important question concerns the possibility of future negative emissions. The app allows you specify the potential for 
     net negative emissions by specifying a percentage that is applied to the current EU emissions. This percentage then 
     determines the minimum value of the emission paths until 2100.<br /><br />
-    If net negative emissions are allowed, the EU budget may be temporarily exceeded. This overshoot will then be offset by net negative emissions by 2100. However, it should be noted that overshoot can also lead to dangerous tipping points in the climate system being exceeded."),
+    If net negative emissions are allowed, the EU budget may be temporarily exceeded. This overshoot will then be offset by net negative emissions by 2100. However, it should be noted that overshoot can also lead to dangerous tipping points in the climate system being exceeded.<br /><br />
+    More information about the ESPM at: <a href = 'http://www.save-the-climate.info', target = '_blank'>www.save-the-climate.info</a>."),
     easyClose = FALSE,
     footer = modalButton("Close")
   ))
+  
+  # temperature_budget_relation <- tibble(
+  #   temperature = c(1.5, 1.57, 1.6, 1.67, 1.75),
+  #   budget = c(420, 530, 570, 680, 800)
+  # )
+  # 
+  # global_emission_budget_gt <- reactive({
+  #   temperature_budget_relation$budget[temperature_budget_relation$temperature == input$temperature_increase]  - 2 * annual_global_emissions_gt
+  # })
   
   global_emission_budget_gt <- reactive({
     input$global_emission_budget_gt_2018 - 2 * annual_global_emissions_gt
@@ -77,14 +88,14 @@ server <- function(input, output) {
   )
   
   output$weighted_key <- renderTable(
-    data.frame(x = c("EU share of global emissions", "EU share of global population", "Weighted key", "EU emission budget"),
+    data.frame(x = c("EU share of global emissions", "EU share of global population", "Weighted key", "EU emission budget from 2020 on"),
                y = c("7.2%", "5.8%", paste0(round(weighted_key() * 100, 1), "%"),
                      paste0(round(eu_emission_budget_gt(), 1), " Gt CO2"))),
     colnames = F
   )
   
   output$negative_emissions <- renderTable(
-    data.frame(x = "Maximum possible negative emissions (p.a.): ",
+    data.frame(x = "Maximum possible net negative emissions (p.a.): ",
                y = paste0(round(max_negative_emissions_gt()*-1, 2), " Gt")),
     colnames = F
   )
@@ -281,7 +292,8 @@ server <- function(input, output) {
         labs(x = "Year", y = "Emissions (Gt)", color = "Scenario type", subtitle = "Emissions over time") +
         theme(text = element_text(size = 10),
               legend.title = element_text(size = 7),
-              legend.text = element_text(size = 6)) +
+              legend.text = element_text(size = 6),
+              legend.key.size = unit(.4, "cm")) +
         scale_color_manual(values = c(colors_to_display()))
     }
   }
@@ -350,7 +362,8 @@ server <- function(input, output) {
   
   output$emis_pathway <- renderGirafe({
     girafe(ggobj = plot_result(result()), width_svg = 7, height_svg = 2.5) %>%
-      girafe_options(opts_hover(css = "fill:black; stroke:black;"))
+      girafe_options(opts_hover(css = "fill:black; stroke:black;"),
+                     opts_selection(type = "none"))
   })
   
   # Plots ####
@@ -393,7 +406,8 @@ server <- function(input, output) {
   
   output$comparison_1990 <- renderGirafe(
     girafe(ggobj = comparison_1990(), width_svg = 4, height_svg = 3) %>%
-      girafe_options(opts_hover(css = "fill:black; stroke:black;"))
+      girafe_options(opts_hover(css = "fill:black; stroke:black;"),
+                     opts_selection(type = "none"))
   )
   
   
@@ -433,7 +447,8 @@ server <- function(input, output) {
   
   output$emission_change_rates <- renderGirafe(
     girafe(ggobj = emission_change_rates(), width_svg = 3.8, height_svg = 2.8) %>%
-      girafe_options(opts_hover(css = "fill:black; stroke:black;"))
+      girafe_options(opts_hover(css = "fill:black; stroke:black;"),
+                     opts_selection(type = "none"))
   )
   
   
@@ -485,8 +500,8 @@ server <- function(input, output) {
   
   output$box_info_budget <- renderUI({
     hidden(div(class = "info-box", style = "left:300px; width:650px;", id = "info_budget", 
-               HTML("Regarding the global emission budget, we refer in particular to the IPCC Special Report 2018 (chapter 2, table 2.2, <a href = 'http://ipcc.ch/sr15', target = '_blank'>www.ipcc.ch/sr15/</a>). According to table 2.2, compliance with the 1.5°C limit corresponds with a probability of 66% to a remaining CO2 budget of 420 Gt. However, as described in the Special Report, there are substantial uncertainties in estimating the remaining budget. These uncertainties, among others, require a political decision on which global budget NDCs will be guided by.<br /><br />"),
-               tags$img(src = "table_ipcc_emission_budgets.png", width = "600px"), tags$br(),
+               HTML("Regarding the global emission budget, we refer in particular to the IPCC Special Report 2018 (<a href = 'http://ipcc.ch/sr15', target = '_blank'>www.ipcc.ch/sr15/</a>). According to this report, compliance with the 1.5°C limit corresponds with a probability of 67% to a remaining CO2 budget of 420 Gt. <a href ='https://www.klima-retten.info/PDF/IPCC_SR15_Remaining_Carbon_Budgets.pdf', target = '_blank'>Here</a> we have summarized the statements of the IPCC. The following table summarizes the main results:<br /><br />"),
+               tags$img(src = "table_ipcc_emission_budgets.png", width = "400px"), tags$br(), tags$br(),
                actionLink("close_info_budget", icon = icon("window-close"), label = "Close")))
   })
   
@@ -520,6 +535,7 @@ server <- function(input, output) {
     hidden(div(class = "info-box", style = "left:390px;; width:500px;", id = "info_eu_budget", 
                tableOutput("base_data_for_display"),
                HTML("<ul><li>Source for EU emissions: <a href = 'https://www.eea.europa.eu/data-and-maps/data/data-viewers/greenhouse-gases-viewer', target = '_blank'>EEA</a>. The figures used here include land use, land use change and forestry (LULUCF) and 'international transport'.</li><li>Source for global emissions: <a href = 'https://www.globalcarbonproject.org/', target = '_blank'>Global Carbon Project</a></li></ul>"),
+               HTML("A weighting model is offered to determine the EU's emission budget. The weighting is based on the EU's share of global emissions and of global population. The weighted key is then applied to the global budget to determine the EU's budget 2020 - 2100.<br /><br />"),
                HTML("The emission paths presented here may show a small divergence in relation to the emission budget specified. This is due to technical reasons: In some cases, the optimization algorithm does not yield a solution, so that the underlying budget has to be varied. These deviations do not exceed 5% of the budget. The budget which is actually used is displayed in the table above the emission paths.<br /><br />"),
                actionLink("close_info_eu_budget", icon = icon("window-close"), label = "Close")))
   })
@@ -552,8 +568,10 @@ server <- function(input, output) {
                for net negative emissions by specifying a percentage that is applied to the current EU emissions. This percentage then 
                determines the minimum value of the emission paths by 2100.<br />If net negative emissions are allowed, the EU budget 
                may be temporarily exceeded. This overshoot will then be offset by net negative emissions by 2100. However, it should be 
-               noted that overshoot can also lead to dangerous tipping points in the climate system being exceeded.<br />The actual overshoot
-               per scenario type is displayed in the table above the emission paths.<br />"),
+               noted that overshoot can also lead to dangerous tipping points in the climate system being exceeded. Also, it should be 
+               pointed out that the costs of actively capturing CO2 are still unclear and that there are major methodological and substantive 
+               problems in quantifying sinks.<br />The actual overshoot
+               per scenario type is displayed in the table above the emission paths.<br /><br />"),
                actionLink("close_info_negative_emissions", icon = icon("window-close"), label = "Close")))
   })
   

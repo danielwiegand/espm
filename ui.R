@@ -7,6 +7,7 @@ library(shinyWidgets)
 library(RColorBrewer)
 library(shinyjs)
 library(gridExtra)
+library(shinyBS)
 
 ui <- fluidPage(
   
@@ -40,12 +41,20 @@ ui <- fluidPage(
         # selected = c("RM-1 const", "RM-2 exp", "RM-3 lin", "RM-4 quadr", "RM-5 rad", "RM-6 abs")
         selected = c("RM-2 exp", "RM-3 lin", "RM-5 rad", "RM-6 abs")
       ),
-
-      h3("2. Calculate the EU's emission budget"),
       
-      tags$div("Global emission budget (Gt CO2)", style = "font-weight:bold; float:left;"),
+      h3("2. Calculate the EU's emission budget", style = "margin-top:35px;"),
+      
+      tags$div("Global emission budget from 2018 on (Gt CO2)", style = "font-weight:bold; float:left;"),
       actionLink("link_info_budget", "", icon = icon("info-circle"), style = "float:left; margin-left: 10px;"),
       uiOutput("box_info_budget"),
+      
+      # shinyWidgets::sliderTextInput(inputId = "temperature_increase",
+      #                               label = "",
+      #                               choices = c(1.5, 1.57, 1.6, 1.67, 1.75),
+      #                               grid = T,
+      #                               post = "°C",
+      #                               width = "90%"
+      #                               ),
       
       numericInput("global_emission_budget_gt_2018", label = "", value = 420, width = "70%"),
 
@@ -58,7 +67,7 @@ ui <- fluidPage(
       tags$br(),
       
       sliderInput("pop_weighting", label = "Weighting population vs. emissions (%)", 
-                  min = 0, max = 100, step = 10, value = 50, pre = "Population: ", post = "%"),
+                  min = 0, max = 100, step = 10, value = 50, pre = "Population: ", post = "%", width = "90%"),
       
       tags$div(style = "float:left;",
         tableOutput("weighted_key")
@@ -73,7 +82,7 @@ ui <- fluidPage(
       uiOutput("box_info_negative_emissions"),
       
       sliderInput("max_negative_emissions_perc", label = "Maximum possible net negative emissions (%)", 
-                  min = 0, max = 10, step = 1, value = 8),
+                  min = 0, max = 10, step = 1, value = 8, width = "90%"),
       
       tableOutput("negative_emissions"),
       

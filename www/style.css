@@ -29,7 +29,7 @@ table > tbody > tr > td {
 
 .info-box {
 	z-index: 101; 
-	opacity:.9; 
+	opacity:1; 
 	background-color: white;
 	border: 1px solid gray;
 	font-size: 14px;
@@ -57,4 +57,8 @@ table > tbody > tr > td {
 
 .modal-body {
 	text-align:justify;
+}
+
+#selected_rm {
+	margin-bottom:30px!important;
 }
