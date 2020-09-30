@@ -502,6 +502,7 @@ server <- function(input, output) {
     hidden(div(class = "info-box", style = "left:300px; width:650px;", id = "info_budget", 
                HTML("Regarding the global emission budget, we refer in particular to the IPCC Special Report 2018 (<a href = 'http://ipcc.ch/sr15', target = '_blank'>www.ipcc.ch/sr15/</a>). According to this report, compliance with the 1.5°C limit corresponds with a probability of 67% to a remaining CO2 budget of 420 Gt. <a href ='https://www.klima-retten.info/PDF/IPCC_SR15_Remaining_Carbon_Budgets.pdf', target = '_blank'>Here</a> we have summarized the statements of the IPCC. The following table summarizes the main results:<br /><br />"),
                tags$img(src = "table_ipcc_emission_budgets.png", width = "400px"), tags$br(), tags$br(),
+               HTML("The higher the selected budget, the greater the risk that dangerous tipping points in the climate system will be exceeded."), tags$br(), tags$br(),
                actionLink("close_info_budget", icon = icon("window-close"), label = "Close")))
   })
   
