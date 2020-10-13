@@ -583,6 +583,21 @@ server <- function(input, output) {
   observeEvent(input$close_info_negative_emissions, {
     shinyjs::hide("info_negative_emissions")
   })
+  
+  
+  # Warning: Too high budget
+  
+  observe({
+    if(input$global_emission_budget_gt_2018 > 680 & input$max_negative_emissions_perc > 0) {
+      showNotification("You have combined a relatively large global budget with net negative emissions. Please note that this increases the risk of exceeding tipping points in the climate system.", 
+                       type = "warning",
+                       duration = 10)
+    } else if(input$global_emission_budget_gt_2018 > 800 & input$max_negative_emissions_perc == 0) {
+      showNotification("You have chosen a relatively high global budget. Please note the higher risk that tipping points in the climate system can be exceeded.", 
+                       type = "warning",
+                       duration = 10)
+    }
+  })
 
   
 }
