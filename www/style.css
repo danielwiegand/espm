@@ -62,3 +62,7 @@ table > tbody > tr > td {
 #selected_rm {
 	margin-bottom:30px!important;
 }
+
+#emis_pathway {
+	width:inherit;
+}
