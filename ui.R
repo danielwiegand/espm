@@ -27,7 +27,7 @@ ui <- fluidPage(
     
     sidebarPanel(
       
-      h3("1. Select a scenario type", style = "float:left;"),
+      h3("1. Select scenario types", style = "float:left;"),
       
       actionLink("link_info_scenario_type", "", icon = icon("info-circle"), style = "float:left; margin-top:20px; margin-left:10px;"),
       uiOutput("box_info_scenario_type"),
@@ -98,7 +98,9 @@ ui <- fluidPage(
         offStatus = "info",
         label = "Date range",
         labelWidth = "80px"
-      )
+      ),
+      
+      downloadButton("report", "Generate report")
       
     ),
     

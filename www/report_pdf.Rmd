@@ -1,0 +1,138 @@
+---
+output:
+  pdf_document:
+    latex_engine: pdflatex
+    fig_caption: yes
+    number_sections: true
+classoption: 
+  - landscape
+params:
+  first_year: NA
+  result: NA
+  date_display_range: NA
+  eu_past_emissions: NA
+  colors_to_display: NA
+  bar_plot: NA
+  eu_emissions_1990: NA
+  threshold_linear_rm1: NA,
+  global_emission_budget_gt: NA,
+  pop_weighting: NA,
+  global_emission_budget_gt_2018: NA,
+  eu_emission_budget_gt: NA
+  max_negative_emissions_gt: NA
+mainfont: Carlito # Not working: Calibri
+fontsize: 12pt
+tables: true # For kable: booktabs = T
+header-includes:
+ - \usepackage{fancyhdr}
+ - \usepackage[table]{xcolor} # For kable: latex_options="striped"
+ - \pagestyle{fancy}
+ - \fancyhead[]{}
+ - \fancyfoot[LO,LE]{\footnotesize Extended Smooth Pathway Model report - `r format(Sys.time(), "%d %b %Y")`}
+ - \fancyfoot[C]{}
+ - \renewcommand{\footrulewidth}{0.4pt}
+ - \renewcommand{\headrulewidth}{0pt}
+ - \usepackage{sectsty}
+ - \sectionfont{\sffamily\Huge}
+ - \subsectionfont{\sffamily\LARGE}
+ - \subsubsectionfont{\sffamily\Large}
+---
+
+```{r, include=FALSE}
+library(RColorBrewer)
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+library(grid)
+```
+
+\Huge ESPM: Summary of result
+\normalsize
+
+```{r, eval=TRUE, echo=FALSE, warning=FALSE, fig.width=9, fig.height=3, message=FALSE, error=FALSE}
+mytheme <- gridExtra::ttheme_default(
+    core = list(fg_params=list(hjust = 0, x = 0.1, fontsize = 8)),
+    colhead = list(fg_params=list(hjust = 0)),
+    rowhead = list(fg_params=list(hjust = 0)))
+
+input_data <- tibble(
+  "Parameters" = c("Global emission budget", "Global budget from 2020 on", "Weighting \"population\"", "EU emission budget from 2020 on", "Max. possible net neg. emissions"),
+  "Value" = c(paste0(params$global_emission_budget_gt_2018, " Gt CO2"), 
+              paste0(params$global_emission_budget_gt, " Gt CO2"),
+              paste0(params$pop_weighting, "%"),
+              paste0(round(params$eu_emission_budget_gt, 1), " Gt CO2"),
+              paste0(round(params$max_negative_emissions_gt, 1), " Gt CO2")
+              )
+)
+
+title <- textGrob("Input parameters", y = unit(0.75,"npc"), x = unit(0.25, "npc"), 
+                  vjust=0, gp=gpar(fontsize=12))
+
+table <- tableGrob(input_data, theme = mytheme, rows = NULL, cols = NULL)
+
+gt <- gTree(children = gList(table, title))
+
+plot <- params$result %>%
+  rownames_to_column("data_id") %>%
+  filter(year <= params$date_display_range) %>%
+  ggplot(aes(x = year, y = emissions, color = rm)) +
+  geom_hline(yintercept = 0, color = "grey", linetype = "dashed") +
+  geom_vline(xintercept = 2019.5, color = "grey", linetype = "dashed") +
+  geom_line() +
+  geom_point(size = 0.6) +
+  geom_point(data = params$eu_past_emissions, color = "grey", size = 1,
+                         aes(x = year, y = emissions)) +
+  # annotation_custom(tableGrob(params$overshoot_amounts, rows = NULL, theme = ttheme_minimal(base_size = 6, padding = unit(c(2, 2), "mm"))), xmin = ifelse(date_display_range() == 2100, 2060, 2035), ymin = 1.5, ymax = 3) +
+  theme_classic() +
+  scale_x_continuous(breaks = scales::extended_breaks(n = 9)(2010:2100)) +
+  scale_y_continuous(breaks = scales::extended_breaks(n = 9)(-0.5:3.5)) +
+  labs(x = "Year", y = "Emissions (Gt)", color = "Scenario type", subtitle = "Emissions over time") +
+  theme(text = element_text(size = 12),
+        legend.title = element_text(size = 7),
+        legend.text = element_text(size = 6),
+        legend.key.size = unit(.4, "cm")) +
+        scale_color_manual(values = c(params$colors_to_display))
+
+grid.arrange(gt, plot, ncol = 2, widths = c(1.4, 2.3))
+```
+
+```{r, eval=TRUE, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE, fig.width=9, fig.height=2.8}
+plot1 <- params$result %>%
+  filter(year %in% c(2030, 2035, 2040, 2050)) %>%
+  mutate(change = (1 - emissions / params$eu_emissions_1990) * -100,
+         year = as.character(year),
+         is_2030 = ifelse(year == 2030, "Y", "N")) %>%
+  rownames_to_column("data_id") %>%
+  ggplot(aes(x = year, y = change, fill = rm, color = is_2030)) +
+    geom_col(width = .7) +
+    facet_wrap(~rm) +
+    geom_text(size = 2, aes(label = paste0(round(change, 0), "%")), vjust = -1, color = "black") +
+    theme_classic() +
+    labs(y = "Change (%)", x = "", fill = "Scenario type", subtitle = "Change compared to 1990") +
+    theme(text = element_text(size = 12),
+          axis.text.x = element_text(size = 6, angle = 0),
+          legend.position = "none") +
+    scale_fill_manual(values = c(params$colors_to_display, name = "rm")) +
+    scale_color_manual(values = c(NA, "black"))
+
+plot2 <- params$result %>%
+  mutate(rr_eff = ifelse(emissions > params$threshold_linear_rm1, (emissions / lag(emissions) -1) * 100, 0)) %>%
+  rownames_to_column("data_id") %>%
+  filter(year <= params$date_display_range & year > 2019,
+    rr_eff < 0 | rr_eff > 0) %>%
+  ggplot(aes(x = year, y = rr_eff, color = rm)) +
+  geom_line() +
+  geom_point(size = 0.6) +
+  theme_classic() +
+  scale_x_continuous(breaks = scales::extended_breaks(n = 8)(2020:2100)) +
+  theme(axis.text.x = element_text(size = 6),
+    legend.position = "none") +
+  labs(x = "", y = "Change (%)", subtitle = "Annual emission change rates") +
+  scale_color_manual(values = c(params$colors_to_display))
+
+grid.arrange(plot1, plot2, ncol = 2)
+
+```
+
+
+\vspace{55mm}

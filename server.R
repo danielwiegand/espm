@@ -28,7 +28,7 @@ server <- function(input, output) {
   
   output$title <- renderUI({
     output = tagList()
-    output[[1]] <- HTML("Extended Smooth Pathway Model (ESPM)<br><span style = 'font-size:20px;'>Calculating Paris compatible emission goals using the example of the EU</span>")
+    output[[1]] <- HTML("Extended Smooth Pathway Model (ESPM)<br><span style = 'font-size:20px;'>Calculating Paris compatible emission paths and targets using the example of the EU</span>")
     output[[2]] <- actionLink("link_info_general", "", icon = icon("info-circle"), style = "font-size:20px; margin-top:20px; margin-left:10px;")
     output[[3]] <- hidden(div(class = "info-box", style = "left:330px; width:500px;", id = "info_general", 
     HTML("The Extended Smooth Pathway Model (ESPM) is a model to determine 
@@ -46,7 +46,7 @@ server <- function(input, output) {
     temporarily exceeded. This overshoot (displayed here in the table above the emission paths) will then be offset by net negative emissions by 2100. 
     However, it should be noted that overshoot can also lead to dangerous tipping points in the 
     climate system being exceeded.<br /><br />
-    More information about the ESPM at: <a href = 'http://www.save-the-climate.info', target = '_blank'>www.save-the-climate.info</a>.<br /><br />"),
+    More information about the ESPM and other tools at: <a href = 'http://www.save-the-climate.info', target = '_blank'>www.save-the-climate.info</a>.<br /><br />"),
     actionLink("close_info_general", icon = icon("window-close"), label = "Close")))
     
     return(output)
@@ -63,7 +63,7 @@ server <- function(input, output) {
     net negative emissions by specifying a percentage that is applied to the current EU emissions. This percentage then 
     determines the minimum value of the emission paths until 2100.<br /><br />
     If net negative emissions are allowed, the EU budget may be temporarily exceeded. This overshoot will then be offset by net negative emissions by 2100. However, it should be noted that overshoot can also lead to dangerous tipping points in the climate system being exceeded.<br /><br />
-    More information about the ESPM at: <a href = 'http://www.save-the-climate.info', target = '_blank'>www.save-the-climate.info</a>."),
+    More information about the ESPM and other tools at: <a href = 'http://www.save-the-climate.info', target = '_blank'>www.save-the-climate.info</a>."),
     easyClose = FALSE,
     footer = modalButton("Close")
   ))
@@ -254,9 +254,12 @@ server <- function(input, output) {
           rename("RM" = rm) %>%
           summarize("Budget" = round(sum(emissions[-1]), 1))
         
+        # if there is no overshoot in any path
         if(nrow(x[x$emissions < 0,]) == 0) {
           overshoots <- tibble("RM" = c(input$selected_rm),
                         "Overshoot" = 0)
+          
+          # if there is overshoot in some paths
           } else {
             overshoots <- x %>%
               rename("RM" = rm) %>%
@@ -267,7 +270,10 @@ server <- function(input, output) {
         
         out <- left_join(total_emissions, overshoots) %>%
           select(RM, Budget, 'Overshoot') %>%
-          mutate("Unit" = "Gt")
+          mutate("Unit" = "Gt") %>%
+          # in case some paths do not have overshoots, replace NA by 0
+          mutate(Overshoot = case_when(is.na(Overshoot) ~ 0, 
+                                        TRUE ~ Overshoot))
         
         return(out)
       })
@@ -279,12 +285,12 @@ server <- function(input, output) {
         geom_hline(yintercept = 0, color = "grey", linetype = "dashed") +
         geom_vline(xintercept = 2019.5, color = "grey", linetype = "dashed") +
         geom_line_interactive(aes(data_id = rm, hover_css = "fill:none;", tooltip = rm)) +
-        geom_point_interactive(aes(tooltip = paste0(rm, " (", year, "): ", round(emissions, 2), " Gt"), data_id = data_id), 
+        geom_point_interactive(aes(tooltip = paste0(rm, " (", year, "): ", round(emissions, 2), " Gt"), data_id = data_id),
                                size = 0.6) +
         geom_point_interactive(data = eu_past_emissions, color = "grey", size = 1,
                                aes(x = year, y = emissions, data_id = year,
                                    tooltip = paste0(year, ": ", round(emissions, 2), " Gt"))) +
-        annotation_custom(tableGrob(overshoot_amounts(), rows = NULL, theme = ttheme_minimal(base_size = 6, padding = unit(c(2, 2), "mm"))), 
+        annotation_custom(tableGrob(overshoot_amounts(), rows = NULL, theme = ttheme_minimal(base_size = 6, padding = unit(c(2, 2), "mm"))),
                           xmin = ifelse(date_display_range() == 2100, 2060, 2035), ymin = 1.5, ymax = 3) +
         theme_classic() +
         scale_x_continuous(breaks = scales::extended_breaks(n = 9)(2010:2100)) +
@@ -452,6 +458,52 @@ server <- function(input, output) {
   )
   
   
+  # Report ####
+  
+  output$report <- downloadHandler(
+    
+    filename = "espm_report.pdf",
+    
+    content = function(file) {
+      
+      # Select template for report depending on selected file type
+      template_file <- "report_pdf.Rmd"
+      
+      # Copy the report file to a temporary directory before processing it, in
+      # case we don't have write permissions to the current working dir (which
+      # can happen when deployed).
+      tempReport <- file.path(tempdir(), "report.Rmd")
+      tempReport2 <- file.path(tempdir(), "style.css")
+      file.copy(paste0("www/", template_file), tempReport, overwrite = TRUE)
+      file.copy("www/style.css", tempReport2, overwrite = TRUE)
+
+      # Set up parameters to pass to Rmd document
+      params <- list(first_year = first_year,
+                     result = result(),
+                     date_display_range = date_display_range(),
+                     eu_past_emissions = eu_past_emissions,
+                     # overshoot_amounts = overshoot_amounts(),
+                     colors_to_display = colors_to_display(),
+                     eu_emissions_1990 = eu_emissions_1990,
+                     threshold_linear_rm1 = threshold_linear_rm1,
+                     global_emission_budget_gt = global_emission_budget_gt(),
+                     pop_weighting = input$pop_weighting,
+                     global_emission_budget_gt_2018 = input$global_emission_budget_gt_2018,
+                     eu_emission_budget_gt = eu_emission_budget_gt(),
+                     max_negative_emissions_gt = max_negative_emissions_gt()*-1
+                     )
+      
+      # Knit the document, passing in the `params` list, and eval it in a
+      # child of the global environment (this isolates the code in the document
+      # from the code in this app).
+      rmarkdown::render(tempReport, output_file = file,
+                        params = params,
+                        envir = new.env(parent = globalenv())
+      )
+    }
+  )
+  
+  
   # Notifications ####
   
   # Scenario type
@@ -587,12 +639,12 @@ server <- function(input, output) {
   
   # Warning: Too high budget
   
-  observe({
+  observeEvent(input$go, {
     if(input$global_emission_budget_gt_2018 > 680 & input$max_negative_emissions_perc > 0) {
-      showNotification("You have combined a relatively large global budget with net negative emissions. Please note that this increases the risk of exceeding tipping points in the climate system.", 
+      showNotification("You have combined a relatively large global budget with possible net negative emissions. Please note that the resulting emission overshoot increases the risk of exceeding tipping points in the climate system.", 
                        type = "warning",
                        duration = 10)
-    } else if(input$global_emission_budget_gt_2018 > 800 & input$max_negative_emissions_perc == 0) {
+    } else if(input$global_emission_budget_gt_2018 >= 800 & input$max_negative_emissions_perc == 0) {
       showNotification("You have chosen a relatively high global budget. Please note the higher risk that tipping points in the climate system can be exceeded.", 
                        type = "warning",
                        duration = 10)
