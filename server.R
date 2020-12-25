@@ -10,7 +10,7 @@ server <- function(input, output) {
   eu_emissions_1990 <- 3.751043368376680 # Annual EU emissions in 1990 (Gt)
   threshold_linear_rm1 <- 0.136741914720844000 # Threshold from when on the path becomes linear (rm1)
   threshold_linear_other <- 0.106354822560656 # Threshold from when on the path becomes linear (all other rms)
-  initial_reduction_rate <- -0.03 # Emission reduction rate to start with (in RM 2-5); is assumed EU emission change between 2019 and 2020 (percent)
+  initial_reduction_rate <- -0.02 # Emission reduction rate to start with (in RM 2-5); is assumed EU emission change between 2019 and 2020 (percent)
   eu_past_emissions <- data.frame(
     year = seq(2010, 2019, 1),
     emissions = c(3.347, 3.249, 3.158, 3.070, 2.954, 3.021, 3.043, 3.112, 3.039, eu_emissions_2019),
