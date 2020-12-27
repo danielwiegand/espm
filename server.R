@@ -96,7 +96,8 @@ server <- function(input, output) {
   
   output$negative_emissions <- renderTable(
     data.frame(x = "Maximum possible net negative emissions (p.a.): ",
-               y = paste0(round(max_negative_emissions_gt()*-1, 2), " Gt")),
+               # THIS IS ROUNDED TO ONLY ONE DECIMAL PLACE WHICH DECREASES ACCURACY TO MAKE IT COMPATIBLE TO RESULTS IN THE ESPM PAPER. CAN BE CHANGED BACK IN FUTURE.
+               y = paste0(round(max_negative_emissions_gt()*-1, 1), " Gt")), 
     colnames = F
   )
   
@@ -113,7 +114,8 @@ server <- function(input, output) {
   # Maximum net negative emissions
   
   max_negative_emissions_gt <- reactive({
-    input$max_negative_emissions_perc / 100 * eu_emissions_2019 * -1
+    # THIS IS ROUNDED TO ONLY ONE DECIMAL PLACE WHICH DECREASES ACCURACY TO MAKE IT COMPATIBLE TO RESULTS IN THE ESPM PAPER. CAN BE CHANGED BACK IN FUTURE.
+    round(input$max_negative_emissions_perc / 100 * eu_emissions_2019 * -1, 1)
   })
   
   
