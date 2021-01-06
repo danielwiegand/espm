@@ -13,7 +13,8 @@ ui <- fluidPage(
   useShinyjs(),
   
   tags$head(
-    tags$link(rel="stylesheet", type="text/css", href = "style.css")
+    tags$link(rel="stylesheet", type="text/css", href = "style.css"),
+    tags$meta(name = "google-site-verification", content = "IMtJUM_0P7u_LMFZ8l8UTawCLTTdRuortgbGfBFUB1Y") # For Google Search Console
   ),
   
   titlePanel(title = uiOutput("title"),
