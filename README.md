@@ -1,6 +1,6 @@
 # Extended Smooth Pathway Model
 
-This app shows how the EU's CO2 emissions would develop under the Paris treaty. It can be found under http://35.156.225.234:3838/espm/.
+This app shows how the EU's CO2 emissions would develop under the Paris treaty. It can be found under http://eu.climate-calculator.info/.
 
 The global emission budget before reaching a temperature threshold is a scientific question. How this amount is distributed to countries, however, is a political question. The tool addresses this topic by letting the user choose between two allocation mechanisms: allocation by population share and allocation by emission share of the EU.
 
