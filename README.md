@@ -10,4 +10,4 @@ The full mathematical methodology of the so called "Extended Smooth Pathway Mode
 
 Screenshot of the app:
 
-![alt text](https://github.com/danielwiegand/espm/blob/master/www/espm-screenshot.png?raw=true)
+![alt text](https://github.com/danielwiegand/espm/blob/master/www/espm_screencast.gif?raw=true)
