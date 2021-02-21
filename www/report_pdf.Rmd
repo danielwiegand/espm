@@ -20,6 +20,8 @@ params:
   global_emission_budget_gt_2018: NA,
   eu_emission_budget_gt: NA
   max_negative_emissions_gt: NA
+  warning_text: NA
+  overshoot_amounts: NA
 mainfont: Carlito # Not working: Calibri
 fontsize: 12pt
 tables: true # For kable: booktabs = T
@@ -65,12 +67,18 @@ input_data <- tibble(
               )
 )
 
-title <- textGrob("Input parameters", y = unit(0.75,"npc"), x = unit(0.25, "npc"), 
+title <- textGrob("Input parameters", y = unit(0.82, "npc"), x = unit(0.25, "npc"), 
                   vjust=0, gp=gpar(fontsize=12))
 
 table <- tableGrob(input_data, theme = mytheme, rows = NULL, cols = NULL)
 
 gt <- gTree(children = gList(table, title))
+
+warning = richtext_grob(params$warning_text, gp=gpar(fontsize=8), halign = 0, y = unit(1, "npc"))
+
+# Specify which cells should have red font color in overshoot_amounts
+column_colors <- matrix(rep("black", 4), ncol = 4, nrow = nrow(params$overshoot_amounts), byrow = TRUE)
+column_colors[which(params$overshoot_amounts$Overshoot > 0), 3] <- "red"
 
 plot <- params$result %>%
   rownames_to_column("data_id") %>%
@@ -82,7 +90,8 @@ plot <- params$result %>%
   geom_point(size = 0.6) +
   geom_point(data = params$eu_past_emissions, color = "grey", size = 1,
                          aes(x = year, y = emissions)) +
-  # annotation_custom(tableGrob(params$overshoot_amounts, rows = NULL, theme = ttheme_minimal(base_size = 6, padding = unit(c(2, 2), "mm"))), xmin = ifelse(date_display_range() == 2100, 2060, 2035), ymin = 1.5, ymax = 3) +
+  annotation_custom(tableGrob(params$overshoot_amounts, rows = NULL, theme = ttheme_minimal(base_size = 6, core = list(fg_params = list(col = as.vector(column_colors))), padding = unit(c(2, 2), "mm"))),
+                    xmin = ifelse(params$date_display_range == 2100, 2060, 2035), ymin = 1.5, ymax = 3) +
   theme_classic() +
   scale_x_continuous(breaks = scales::extended_breaks(n = 9)(2010:2100)) +
   scale_y_continuous(breaks = scales::extended_breaks(n = 9)(-0.5:3.5)) +
@@ -93,7 +102,13 @@ plot <- params$result %>%
         legend.key.size = unit(.4, "cm")) +
         scale_color_manual(values = c(params$colors_to_display))
 
-grid.arrange(gt, plot, ncol = 2, widths = c(1.4, 2.3))
+lay = rbind(c(1, 2),
+            c(1, 2),
+            c(1, 2),
+            c(1, 2),
+            c(3, 2))
+
+grid.arrange(gt, plot, warning, ncol = 2, widths = c(1.4, 2.3), layout_matrix = lay)
 ```
 
 ```{r, eval=TRUE, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE, fig.width=9, fig.height=2.8}

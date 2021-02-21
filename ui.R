@@ -7,6 +7,7 @@ library(shinyWidgets)
 library(RColorBrewer)
 library(shinyjs)
 library(gridExtra)
+library(gridtext)
 
 ui <- fluidPage(
   
@@ -39,7 +40,7 @@ ui <- fluidPage(
         choiceNames = c("RM-1", "RM-2", "RM-3", "RM-4", "RM-5", "RM-6"),
         choiceValues = c("RM-1 const", "RM-2 exp", "RM-3 lin", "RM-4 quadr", "RM-5 rad", "RM-6 abs"),
         # selected = c("RM-1 const", "RM-2 exp", "RM-3 lin", "RM-4 quadr", "RM-5 rad", "RM-6 abs")
-        selected = c("RM-2 exp", "RM-3 lin", "RM-5 rad", "RM-6 abs")
+        selected = c("RM-4 quadr", "RM-3 lin", "RM-5 rad", "RM-6 abs")
       ),
       
       h3("2. Calculate the EU's emission budget", style = "margin-top:35px;"),
@@ -56,7 +57,7 @@ ui <- fluidPage(
       #                               width = "90%"
       #                               ),
       
-      numericInput("global_emission_budget_gt_2018", label = "", value = 420, width = "70%"),
+      numericInput("global_emission_budget_gt_2018", label = "", value = 580, width = "70%"),
 
       tags$div(style = "float:left;",
                tableOutput("global_budget")
@@ -82,7 +83,7 @@ ui <- fluidPage(
       uiOutput("box_info_negative_emissions"),
       
       sliderInput("max_negative_emissions_perc", label = "Maximum possible net negative emissions (%)", 
-                  min = 0, max = 10, step = 1, value = 8, width = "90%"),
+                  min = 0, max = 10, step = 1, value = 0, width = "90%"),
       
       tableOutput("negative_emissions"),
       

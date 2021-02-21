@@ -39,13 +39,8 @@ server <- function(input, output) {
     key is then applied to the global budget to determine the EU's budget 2020 - 2100. <br /><br />The scenario 
     types used to determine the emission paths differ in their assumptions about the annual emission 
     changes (see plot 'Annual emission change rates').<br /> <br />
-    An important question concerns the possibility of future negative 
-    emissions. The app allows you specify the potential for net negative emissions by specifying a 
-    percentage that is applied to the current EU emissions. This percentage then determines the minimum 
-    value of the emission paths until 2100. If net negative emissions are allowed, the EU budget may be 
-    temporarily exceeded. This overshoot (displayed here in the table above the emission paths) will then be offset by net negative emissions by 2100. 
-    However, it should be noted that overshoot can also lead to dangerous tipping points in the 
-    climate system being exceeded.<br /><br />
+    An important question concerns the possibility of future <b>negative emissions</b>. The app allows you specify the 
+    potential for net negative emissions. Please refer to the notes in the corresponding help text.<br /><br />
     More information about the ESPM and other tools at: <a href = 'http://www.save-the-climate.info', target = '_blank'>www.save-the-climate.info</a>.<br /><br />"),
     actionLink("close_info_general", icon = icon("window-close"), label = "Close")))
     
@@ -59,9 +54,7 @@ server <- function(input, output) {
     This app focuses on the EU. A weighting model is offered to determine its emission budget. The weighting is based on the EU's share
     of global emissions and of global population. The weighted key is then applied to the global budget to determine the EU's budget 2020 - 2100.<br /><br />
     The scenario types used to determine the emission paths differ in their assumptions about the annual emission changes (see plot 'Annual emission change rates').<br /><br />
-    An important question concerns the possibility of future negative emissions. The app allows you specify the potential for 
-    net negative emissions by specifying a percentage that is applied to the current EU emissions. This percentage then 
-    determines the minimum value of the emission paths until 2100.<br /><br />
+    An important question concerns the possibility of future <b>negative emissions</b>. The app allows you specify the potential for net negative emissions. Please refer to the notes in the corresponding help text.<br /><br />
     If net negative emissions are allowed, the EU budget may be temporarily exceeded. This overshoot will then be offset by net negative emissions by 2100. However, it should be noted that overshoot can also lead to dangerous tipping points in the climate system being exceeded.<br /><br />
     More information about the ESPM and other tools at: <a href = 'http://www.save-the-climate.info', target = '_blank'>www.save-the-climate.info</a>."),
     easyClose = FALSE,
@@ -116,6 +109,42 @@ server <- function(input, output) {
   max_negative_emissions_gt <- reactive({
     # THIS IS ROUNDED TO ONLY ONE DECIMAL PLACE WHICH DECREASES ACCURACY TO MAKE IT COMPATIBLE TO RESULTS IN THE ESPM PAPER. CAN BE CHANGED BACK IN FUTURE.
     round(input$max_negative_emissions_perc / 100 * eu_emissions_2019 * -1, 1)
+  })
+  
+  
+  # Overshoot amounts
+  # Was originally inside the else statement of plot_result(), but I put it outside to make it 
+  # accessible for the report. In case of problems, it might be a solution to put it back (DW, 21.02.2021)
+  
+  overshoot_amounts <- eventReactive(input$go, ignoreNULL = F, {
+    
+    total_emissions <- result() %>%
+      group_by(rm) %>%
+      rename("RM" = rm) %>%
+      summarize("Budget" = round(sum(emissions[-1]), 1))
+    
+    # if there is no overshoot in any path
+    if(nrow(result()[result()$emissions < 0,]) == 0) {
+      overshoots <- tibble("RM" = c(input$selected_rm),
+                           "Overshoot" = 0)
+      
+      # if there is overshoot in some paths
+    } else {
+      overshoots <- result() %>%
+        rename("RM" = rm) %>%
+        filter(emissions < 0) %>%
+        group_by(RM) %>%
+        summarize("Overshoot" = round(sum(emissions, na.rm = T) * -1, 1)) 
+    }
+    
+    out <- left_join(total_emissions, overshoots) %>%
+      select(RM, Budget, 'Overshoot') %>%
+      mutate("Unit" = "Gt") %>%
+      # in case some paths do not have overshoots, replace NA by 0
+      mutate(Overshoot = case_when(is.na(Overshoot) ~ 0, 
+                                   TRUE ~ Overshoot))
+    
+    return(out)
   })
   
   
@@ -249,34 +278,11 @@ server <- function(input, output) {
     } else {
       
       year_zero_emissions <- x$year[which(x$emissions <= 0)[1]]
-      overshoot_amounts <- eventReactive(input$go, ignoreNULL = F, {
-        
-        total_emissions <- x %>%
-          group_by(rm) %>%
-          rename("RM" = rm) %>%
-          summarize("Budget" = round(sum(emissions[-1]), 1))
-        
-        # if there is no overshoot in any path
-        if(nrow(x[x$emissions < 0,]) == 0) {
-          overshoots <- tibble("RM" = c(input$selected_rm),
-                        "Overshoot" = 0)
-          
-          # if there is overshoot in some paths
-          } else {
-            overshoots <- x %>%
-              rename("RM" = rm) %>%
-              filter(emissions < 0) %>%
-              group_by(RM) %>%
-              summarize("Overshoot" = round(sum(emissions, na.rm = T) * -1, 1)) 
-          }
-        
-        out <- left_join(total_emissions, overshoots) %>%
-          select(RM, Budget, 'Overshoot') %>%
-          mutate("Unit" = "Gt") %>%
-          # in case some paths do not have overshoots, replace NA by 0
-          mutate(Overshoot = case_when(is.na(Overshoot) ~ 0, 
-                                        TRUE ~ Overshoot))
-        
+      
+      column_colors <- reactive({
+        # Specify which cells should have red font color in overshoot_amounts()
+        out = matrix(rep("black", 4), ncol = 4, nrow = nrow(overshoot_amounts()), byrow = TRUE)
+        out[which(overshoot_amounts()$Overshoot > 0), 3] <- "red"
         return(out)
       })
       
@@ -292,7 +298,10 @@ server <- function(input, output) {
         geom_point_interactive(data = eu_past_emissions, color = "grey", size = 1,
                                aes(x = year, y = emissions, data_id = year,
                                    tooltip = paste0(year, ": ", round(emissions, 2), " Gt"))) +
-        annotation_custom(tableGrob(overshoot_amounts(), rows = NULL, theme = ttheme_minimal(base_size = 6, padding = unit(c(2, 2), "mm"))),
+        annotation_custom(tableGrob(overshoot_amounts(), rows = NULL, theme = ttheme_minimal(base_size = 6, 
+                                                                                             # Font colors per column
+                                                                                             core = list(fg_params = list(col = as.vector(column_colors()))),
+                                                                                             padding = unit(c(2, 2), "mm"))),
                           xmin = ifelse(date_display_range() == 2100, 2060, 2035), ymin = 1.5, ymax = 3) +
         theme_classic() +
         scale_x_continuous(breaks = scales::extended_breaks(n = 9)(2010:2100)) +
@@ -462,6 +471,19 @@ server <- function(input, output) {
   
   # Report ####
   
+  warning_text = reactive({
+    if(input$global_emission_budget_gt_2018 > 680 & input$max_negative_emissions_perc > 0) {
+      "<b>Warning</b>:<br />You have combined a relatively large global budget with possible<br />
+      net negative emissions. Please note that the resulting emission<br />
+      overshoot increases the risk of exceeding climate tipping points."
+    } else if(input$global_emission_budget_gt_2018 >= 800 & input$max_negative_emissions_perc == 0) {
+      "<b>Warning</b>:<br />You have chosen a relatively high global budget. Please note the<br />
+      higher risk that tipping points in the climate system can be exceeded."
+    } else {
+      ""
+    }
+  })
+  
   output$report <- downloadHandler(
     
     filename = "espm_report.pdf",
@@ -484,7 +506,7 @@ server <- function(input, output) {
                      result = result(),
                      date_display_range = date_display_range(),
                      eu_past_emissions = eu_past_emissions,
-                     # overshoot_amounts = overshoot_amounts(),
+                     overshoot_amounts = overshoot_amounts(),
                      colors_to_display = colors_to_display(),
                      eu_emissions_1990 = eu_emissions_1990,
                      threshold_linear_rm1 = threshold_linear_rm1,
@@ -492,7 +514,8 @@ server <- function(input, output) {
                      pop_weighting = input$pop_weighting,
                      global_emission_budget_gt_2018 = input$global_emission_budget_gt_2018,
                      eu_emission_budget_gt = eu_emission_budget_gt(),
-                     max_negative_emissions_gt = max_negative_emissions_gt()*-1
+                     max_negative_emissions_gt = max_negative_emissions_gt()*-1,
+                     warning_text = warning_text()
                      )
       
       # Knit the document, passing in the `params` list, and eval it in a
@@ -645,11 +668,11 @@ server <- function(input, output) {
     if(input$global_emission_budget_gt_2018 > 680 & input$max_negative_emissions_perc > 0) {
       showNotification("You have combined a relatively large global budget with possible net negative emissions. Please note that the resulting emission overshoot increases the risk of exceeding tipping points in the climate system.", 
                        type = "warning",
-                       duration = 10)
+                       duration = 15)
     } else if(input$global_emission_budget_gt_2018 >= 800 & input$max_negative_emissions_perc == 0) {
       showNotification("You have chosen a relatively high global budget. Please note the higher risk that tipping points in the climate system can be exceeded.", 
                        type = "warning",
-                       duration = 10)
+                       duration = 15)
     }
   })
 
