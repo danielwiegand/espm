@@ -41,7 +41,7 @@ server <- function(input, output) {
     changes (see plot 'Annual emission change rates').<br /> <br />
     An important question concerns the possibility of future <b>negative emissions</b>. The app allows you specify the 
     potential for net negative emissions. Please refer to the notes in the corresponding help text.<br /><br />
-    More information about the ESPM and other tools at: <a href = 'http://www.save-the-climate.info', target = '_blank'>www.save-the-climate.info</a>.<br /><br />"),
+    A brief background paper on the ESPM can be found <a href = 'https://www.klima-retten.info/PDF/ESPM_Background.pdf', target = '_blank'>here</a>. More information about the ESPM and other tools at: <a href = 'http://www.save-the-climate.info', target = '_blank'>www.save-the-climate.info</a>.<br /><br />"),
     actionLink("close_info_general", icon = icon("window-close"), label = "Close")))
     
     return(output)
@@ -55,8 +55,7 @@ server <- function(input, output) {
     of global emissions and of global population. The weighted key is then applied to the global budget to determine the EU's budget 2020 - 2100.<br /><br />
     The scenario types used to determine the emission paths differ in their assumptions about the annual emission changes (see plot 'Annual emission change rates').<br /><br />
     An important question concerns the possibility of future <b>negative emissions</b>. The app allows you specify the potential for net negative emissions. Please refer to the notes in the corresponding help text.<br /><br />
-    If net negative emissions are allowed, the EU budget may be temporarily exceeded. This overshoot will then be offset by net negative emissions by 2100. However, it should be noted that overshoot can also lead to dangerous tipping points in the climate system being exceeded.<br /><br />
-    More information about the ESPM and other tools at: <a href = 'http://www.save-the-climate.info', target = '_blank'>www.save-the-climate.info</a>."),
+    A brief background paper on the ESPM can be found <a href = 'https://www.klima-retten.info/PDF/ESPM_Background.pdf', target = '_blank'>here</a>. More information about the ESPM and other tools at: <a href = 'http://www.save-the-climate.info', target = '_blank'>www.save-the-climate.info</a>."),
     easyClose = FALSE,
     footer = modalButton("Close")
   ))
