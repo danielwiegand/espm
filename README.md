@@ -11,3 +11,7 @@ The full mathematical methodology of the so called "Extended Smooth Pathway Mode
 Screenshot of the app:
 
 ![alt text](https://github.com/danielwiegand/espm/blob/master/www/espm_screencast.gif?raw=true)
+
+## Technical implementation
+
+The app is written in R and is largely based on the `shiny` package.

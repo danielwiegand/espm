@@ -30,8 +30,9 @@ header-includes:
  - \usepackage[table]{xcolor} # For kable: latex_options="striped"
  - \pagestyle{fancy}
  - \fancyhead[]{}
- - \fancyfoot[LO,LE]{\footnotesize Extended Smooth Pathway Model report - `r format(Sys.time(), "%d %b %Y")`}
+ - \fancyfoot[L]{\footnotesize Extended Smooth Pathway Model report - `r format(Sys.time(), "%d %b %Y")`}
  - \fancyfoot[C]{}
+ - \fancyfoot[R]{\footnotesize Web app under \href{http://eu.climate-calculator.info/}{http://eu.climate-calculator.info/}}
  - \renewcommand{\footrulewidth}{0.4pt}
  - \renewcommand{\headrulewidth}{0pt}
  - \usepackage{sectsty}
@@ -58,12 +59,16 @@ mytheme <- gridExtra::ttheme_default(
     rowhead = list(fg_params=list(hjust = 0)))
 
 input_data <- tibble(
-  "Parameters" = c("Global emission budget", "Global budget from 2020 on", "Weighting \"population\"", "EU emission budget from 2020 on", "Max. possible net neg. emissions"),
+  "Parameters" = c("Global emission budget from 2018 on    ", # spaces make the table displayed better 
+                   # "Global budget from 2020 on", 
+                   "Weighting \"population\"", 
+                   "EU emission budget from 2020 on", 
+                   "Min. value annual emissions"),
   "Value" = c(paste0(params$global_emission_budget_gt_2018, " Gt CO2"), 
-              paste0(params$global_emission_budget_gt, " Gt CO2"),
+              # paste0(params$global_emission_budget_gt, " Gt CO2"),
               paste0(params$pop_weighting, "%"),
-              paste0(round(params$eu_emission_budget_gt, 1), " Gt CO2"),
-              paste0(round(params$max_negative_emissions_gt, 1), " Gt CO2")
+              paste0(round(params$eu_emission_budget_gt, 0), " Gt CO2"),
+              paste0(round(params$max_negative_emissions_gt, 0), " Gt CO2")
               )
 )
 

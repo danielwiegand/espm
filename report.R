@@ -13,15 +13,6 @@ warning_text = reactive({
   }
 })
 
-observe(print(
-  result() %>%
-    filter(year %in% c(2020, 2025, 2030, 2035, 2040, 2050)) %>%
-    mutate(change = (1 - emissions / EU_EMISSIONS_1990) * -100,
-           year = as.character(year)) %>%
-    select(year, rm, change) %>%
-    pivot_wider(names_from = rm, values_from = change)
-))
-
 output$report <- downloadHandler(
   
   filename = "espm_report.pdf",
