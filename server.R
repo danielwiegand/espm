@@ -1,19 +1,10 @@
 "Main file of the ESPM web app containing the server"
 
 FIRST_YEAR <- 2020 # First year for which emissions are calculated
-EU_POPULATION_SHARE <- .058
-EU_EMISSIONS_SHARE <- .072
 ANNUAL_GLOBAL_EMISSIONS_GT <- 42.1 # in Gt
-EU_EMISSIONS_2019 <- 3.03870921601875 # Annual EU emissions in 2019 (Gt)
-EU_EMISSIONS_1990 <- 3.751043368376680 # Annual EU emissions in 1990 (Gt)
 THRESHOLD_LINEAR_RM1 <- 0.136741914720844000 # Threshold from when on the path becomes linear (rm1)
 THRESHOLD_LINEAR_OTHER <- 0.106354822560656 # Threshold from when on the path becomes linear (all other rms)
 INITIAL_REDUCTION_RATE <- -0.02 # Emission reduction rate to start with (in RM 2-5); is assumed EU emission change between 2019 and 2020 (percent)
-EU_PAST_EMISSIONS <- data.frame(
-  year = seq(2010, 2019, 1),
-  emissions = c(3.347, 3.249, 3.158, 3.070, 2.954, 3.021, 3.043, 3.112, 3.039, EU_EMISSIONS_2019),
-  historical = "y"
-)
 
 server <- function(input, output) {
   
@@ -29,64 +20,24 @@ server <- function(input, output) {
   })
   
   colors_to_display <- eventReactive(input$go, ignoreNULL = F, {
-    a <- c("RM-1 const" = "#4b8abd", "RM-2 exp" = "#b9594d", "RM-3 lin" = "#a7b25d", 
+    a <- c("RM-1 const" = "#4b8abd", "RM-3 lin" = "#a7b25d", 
            "RM-4 quadr" = "#7970a2", "RM-5 rad" = "#f1974b", "RM-6 abs" = "#818181")
     b <- a[input$selected_rm]
   }) 
   
-  global_emission_budget_gt <- reactive({
-    input$global_emission_budget_gt_2018 - 2 * ANNUAL_GLOBAL_EMISSIONS_GT
-  })
-  
-  # Relation between temperature and emissions budget ####
-  
-  # temperature_budget_relation <- tibble(
-  #   temperature = c(1.5, 1.57, 1.6, 1.67, 1.75),
-  #   budget = c(420, 530, 570, 680, 800)
-  # )
-  # 
-  # global_emission_budget_gt <- reactive({
-  #   temperature_budget_relation$budget[temperature_budget_relation$temperature == input$temperature_increase]  - 2 * ANNUAL_GLOBAL_EMISSIONS_GT
-  # })
-  
-  
   # Render information for the left column ####
-  
-  output$global_budget <- renderTable(
-    data.frame(x = c("Emissions of 2018 and 2019: ", "Global budget from 2020 on: "), 
-               y = c(paste0(2 * ANNUAL_GLOBAL_EMISSIONS_GT, " Gt CO2"), paste0(global_emission_budget_gt(), " Gt CO2"))),
-    colnames = F, align = c("lr")
-  )
-  
-  output$weighted_key <- renderTable(
-    data.frame(x = c("EU share of global emissions", "EU share of global population", "Weighted key", "EU emission budget from 2020 on"),
-               y = c("7.2%", "5.8%", paste0(round(weighted_key() * 100, 1), "%"),
-                     paste0(round(eu_emission_budget_gt(), 1), " Gt CO2"))),
-    colnames = F
-  )
-  
+
   output$negative_emissions <- renderTable(
-    data.frame(x = "Maximum possible net negative emissions (p.a.): ",
+    data.frame(x = "Max. possible net negative emissions p.a.: ",
                # THIS IS ROUNDED TO ONLY ONE DECIMAL PLACE WHICH DECREASES ACCURACY TO MAKE IT COMPATIBLE TO RESULTS IN THE ESPM PAPER. CAN BE CHANGED BACK IN FUTURE.
                y = paste0(round(max_negative_emissions_gt()*-1, 1), " Gt")), 
     colnames = F
   )
   
-  # Weighted key and emission budget ####
-  
-  weighted_key <- reactive({
-    EU_POPULATION_SHARE * input$pop_weighting / 100 + EU_EMISSIONS_SHARE * (1 - input$pop_weighting / 100)
-  })
-  
-  eu_emission_budget_gt <- reactive({
-    global_emission_budget_gt() * weighted_key()
-  })
-  
   # Maximum net negative emissions ####
   
   max_negative_emissions_gt <- reactive({
-    # THIS IS ROUNDED TO ONLY ONE DECIMAL PLACE WHICH DECREASES ACCURACY TO MAKE IT COMPATIBLE TO RESULTS IN THE ESPM PAPER. CAN BE CHANGED BACK IN FUTURE.
-    round(input$max_negative_emissions_perc / 100 * EU_EMISSIONS_2019 * -1, 1)
+    input$max_negative_emissions_perc / 100 * input$base_year_emissions * -1
   })
   
   # Overshoot amounts ####

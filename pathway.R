@@ -27,7 +27,7 @@ make_horizontal <- function(x) {
 create_fun <- function(rm, budget, init_rr) {
   
   fun <<- function(x){
-    emis <- rep(EU_EMISSIONS_2019, 82)
+    emis <- rep(input$base_year_emissions, 82)
     t <- 0:81
     year <- 2019:2100
     rr <- rep(init_rr, 82)
@@ -35,9 +35,6 @@ create_fun <- function(rm, budget, init_rr) {
     for(i in 2:82){
       if(rm == "RM-1 const") {
         emis[i] <- emis[i-1] * (1 + x)
-      } else if (rm == "RM-2 exp") {
-        rr[i] <- ifelse(year[i] == 2020, init_rr, rr[i-1] * (1 + x))
-        emis[i] <- emis[i-1] * (1 + rr[i])
       } else if (rm == "RM-3 lin") {
         rr[i] <- ifelse(year[i] == 2020, init_rr, rr[i-1] + x)
         emis[i] <- emis[i-1] * (1 + rr[i])
@@ -76,7 +73,7 @@ optimize_function <- function(fun, neg) {
 }
 
 calculate_result <- function(x, rm, init_rr) {
-  emis <- rep(EU_EMISSIONS_2019, 82)
+  emis <- rep(input$base_year_emissions, 82)
   t <- 0:81
   year <- 2019:2100
   rr <- rep(init_rr, 82)
@@ -84,9 +81,6 @@ calculate_result <- function(x, rm, init_rr) {
   for(i in 2:82){
     if(rm == "RM-1 const") {
       emis[i] <- emis[i-1] * (1 + x)
-    } else if (rm == "RM-2 exp") {
-      rr[i] <- ifelse(year[i] == 2020, init_rr, rr[i-1] * (1 + x))
-      emis[i] <- emis[i-1] * (1 + rr[i])
     } else if (rm == "RM-3 lin") {
       rr[i] <- ifelse(year[i] == 2020, init_rr, rr[i-1] + x)
       emis[i] <- emis[i-1] * (1 + rr[i])
@@ -120,7 +114,6 @@ plot_result <- function(x) {
       geom_label(aes(2060, 1.5, family = "sans-serif", color = "red",
                      label = "No solution for this scenario type - please choose other options!"), size = 3) +
       xlim(2010, 2100) +
-      ylim(0, 3) +
       theme(text = element_text(size = 10, family = "sans-serif"),
             legend.position = "none") +
       labs(x = "Year", y = "Emissions (Gt)")
@@ -145,17 +138,14 @@ plot_result <- function(x) {
       geom_line_interactive(aes(data_id = rm, hover_css = "fill:none;", tooltip = rm)) +
       geom_point_interactive(aes(tooltip = paste0(rm, " (", year, "): ", round(emissions, 2), " Gt"), data_id = data_id),
                              size = 0.6) +
-      geom_point_interactive(data = EU_PAST_EMISSIONS, color = "grey", size = 1,
-                             aes(x = year, y = emissions, data_id = year,
-                                 tooltip = paste0(year, ": ", round(emissions, 2), " Gt"))) +
       annotation_custom(tableGrob(overshoot_amounts(), rows = NULL, theme = ttheme_minimal(base_size = 6, 
                                                                                            # Font colors per column
                                                                                            core = list(fg_params = list(col = as.vector(column_colors()))),
                                                                                            padding = unit(c(2, 2), "mm"))),
-                        xmin = ifelse(date_display_range() == 2100, 2060, 2035), ymin = 1.5, ymax = 3) +
+                        xmin = ifelse(date_display_range() == 2100, 2060, 2035)) +
       theme_classic() +
       scale_x_continuous(breaks = scales::extended_breaks(n = 9)(2010:2100)) +
-      scale_y_continuous(breaks = scales::extended_breaks(n = 9)(-0.5:3.5)) +
+      # scale_y_continuous(breaks = scales::extended_breaks(n = 9)(-0.5:3.5)) +
       labs(x = "Year", y = "Emissions (Gt)", color = "Scenario type", subtitle = "Emissions over time") +
       theme(text = element_text(size = 10),
             legend.title = element_text(size = 7),
@@ -185,7 +175,7 @@ calculate_pathway <- function(rm) {
       # Slightly vary the budget so that an optimum is found for a steady function
       for(j in sequence) {
         
-        create_fun(rm = rm[i], budget = eu_emission_budget_gt() * j, init_rr = INITIAL_REDUCTION_RATE)
+        create_fun(rm = rm[i], budget = input$emission_budget * j, init_rr = INITIAL_REDUCTION_RATE)
         
         opt_x <- optimize_function(fun, neg = neg)
         

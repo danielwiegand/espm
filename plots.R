@@ -1,47 +1,20 @@
 "Plots of the ESPM web app"
 
-# Bar plot: Change compared to 1990
+# Bar plot: Change compared to the reference year
 
-comparison_1990 <- reactive({
-  if(nrow(result()) == 0) {
-    ggplot() + 
-      theme_classic() + 
-      geom_label(aes(2060, 1.5, family = "sans-serif", color = "red",
-                     label = "No solution for this scenario type!"), size = 3) +
-      xlim(2010, 2100) +
-      ylim(0, 3) +
-      theme(text = element_text(size = 10, family = "sans-serif"),
-            legend.position = "none") +
-      labs(x = "Year", y = "Emissions (Gt)")
-    
-  } else {
-    result() %>%
-      filter(year %in% c(2030, 2035, 2040, 2050)) %>%
-      mutate(change = (1 - emissions / EU_EMISSIONS_1990) * -100,
-             year = as.character(year),
-             is_2030 = ifelse(year == 2030, "Y", "N")) %>%
-      rownames_to_column("data_id") %>%
-      ggplot(aes(x = year, y = change, fill = rm, color = is_2030)) +
-      geom_col_interactive(aes(tooltip = paste0(rm, " (", year, "): ", round(change, 1), "%"), data_id = data_id), width = .7) +
-      facet_wrap(~rm) +
-      # geom_label(size = 1.5, aes(label = paste0(round(change, 0), "%")), nudge_y = 20, color = "black") +
-      geom_text(size = 2, aes(label = paste0(round(change, 0), "%")), vjust = -1, color = "black") +
-      theme_classic() +
-      labs(y = "Change (%)", x = "", fill = "Scenario type", subtitle = "Change compared to 1990") +
-      theme(text = element_text(size = 12),
-            axis.text.x = element_text(size = 6, angle = 0),
-            legend.position = "none") +
-      scale_fill_manual(values = c(colors_to_display(), name = "rm")) +
-      scale_color_manual(values = c(NA, "black"))
-  }
+comparison_reference_year <- reactive({
+  result() %>%
+    filter(year %in% c(2020, 2025, 2030, 2035, 2040, 2050)) %>%
+    mutate(change = paste0(as.character(round((1 - emissions / input$reference_year_emissions) * -100, 1)), "%"),
+           year = as.character(year)) %>%
+    select(year, rm, change) %>%
+    pivot_wider(names_from = rm, values_from = change) #%>%
+    # tableGrob(theme = mytheme, rows = NULL, cols = colnames(.))
 })
 
-output$comparison_1990 <- renderGirafe(
-  girafe(ggobj = comparison_1990(), width_svg = 4, height_svg = 3) %>%
-    girafe_options(opts_hover(css = "fill:black; stroke:black;"),
-                   opts_selection(type = "none"))
+output$comparison_reference_year <- renderTable(
+  comparison_reference_year()
 )
-
 
 # Line plot: Emission change rate
 
