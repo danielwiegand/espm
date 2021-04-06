@@ -1,11 +1,9 @@
-"Main file of the ESPM web app containing the server"
+"Main file of the web app containing the server"
 
 FIRST_YEAR <- 2020 # First year for which emissions are calculated
-ANNUAL_GLOBAL_EMISSIONS_GT <- 42.1 # in Gt
 THRESHOLD_LINEAR_RM1 <- 0.136741914720844000 # Threshold from when on the path becomes linear (rm1)
 THRESHOLD_LINEAR_OTHER <- 0.106354822560656 # Threshold from when on the path becomes linear (all other rms)
-INITIAL_REDUCTION_RATE <- -0.02 # Emission reduction rate to start with (in RM 2-5); is assumed EU emission change between 2019 and 2020 (percent)
-
+  
 server <- function(input, output) {
   
   source("pathway.R", local = T)
@@ -75,11 +73,15 @@ server <- function(input, output) {
     return(out)
   })
   
+  initial_reduction_rate <- reactive({
+    calculate_initial_rr()
+  })
   
   # Pathway calculation ####
   
   result <- eventReactive(input$go, {
-    calculate_pathway(rm = input$selected_rm)
+    req(initial_reduction_rate())
+    calculate_pathway(rm = input$selected_rm, init_rr = initial_reduction_rate())
   }, ignoreNULL = F) # Fire also at startup
   
   output$emis_pathway <- renderGirafe({

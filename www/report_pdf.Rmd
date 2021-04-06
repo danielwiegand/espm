@@ -13,6 +13,7 @@ params:
   colors_to_display: NA
   threshold_linear_rm1: NA,
   emission_budget: NA,
+  reference_year_emissions: NA,
   max_negative_emissions_gt: NA
   overshoot_amounts: NA
 mainfont: Carlito # Not working: Calibri
@@ -23,7 +24,7 @@ header-includes:
  - \usepackage[table]{xcolor} # For kable: latex_options="striped"
  - \pagestyle{fancy}
  - \fancyhead[]{}
- - \fancyfoot[L]{\footnotesize Extended Smooth Pathway Model report - `r format(Sys.time(), "%d %b %Y")`}
+ - \fancyfoot[L]{\footnotesize Smooth emission paths - `r format(Sys.time(), "%d %b %Y")`}
  - \fancyfoot[C]{}
  - \fancyfoot[R]{\footnotesize Web app under \href{http://eu.climate-calculator.info/}{http://eu.climate-calculator.info/}}
  - \renewcommand{\footrulewidth}{0.4pt}
@@ -47,29 +48,21 @@ library(grid)
 
 ```{r, eval=TRUE, echo=FALSE, warning=FALSE, fig.width=9, fig.height=3, message=FALSE, error=FALSE}
 mytheme <- gridExtra::ttheme_default(
-    core = list(fg_params=list(hjust = 0, x = 0.1, fontsize = 8)),
-    colhead = list(fg_params=list(fontsize = 8)),
-    rowhead = list(fg_params=list(hjust = 0)))
+    core = list(fg_params = list(hjust = 0, x = 0.1, fontsize = 8)),
+    colhead = list(fg_params = list(fontsize = 8))
+    )
 
 input_data <- tibble(
   "Parameters" = c(
-    # "Global emission budget from 2018 on    ",
-     # "Global budget from 2020 on", 
-     # "Weighting \"population\"", 
-     # "EU emission budget from 2020 on", 
      "Emission budget",
      "Min. value annual emissions"),
   "Value" = c(
-    # paste0(params$global_emission_budget_gt_2018, " Gt CO2"), 
-              # paste0(params$global_emission_budget_gt, " Gt CO2"),
-              # paste0(params$pop_weighting, "%"),
-              # paste0(round(params$eu_emission_budget_gt, 0), " Gt CO2"),
     paste0(round(params$emission_budget, 0), " Gt CO2"),
     paste0(round(params$max_negative_emissions_gt, 0), " Gt CO2")
               )
 )
 
-title <- textGrob("Input parameters", y = unit(0.82, "npc"), x = unit(0.25, "npc"), 
+title <- textGrob("Input parameters", y = unit(0.82, "npc"), x = unit(0.35, "npc"), 
                   vjust=0, gp=gpar(fontsize=12))
 
 table <- tableGrob(input_data, theme = mytheme, rows = NULL, cols = NULL)
@@ -106,41 +99,23 @@ lay = rbind(c(1, 2),
             c(1, 2),
             c(3, 2))
 
-  grid.arrange(gt, plot, ncol = 2, widths = c(1.4, 2.3), layout_matrix = lay)
+grid.arrange(gt, plot, ncol = 2, widths = c(1.4, 2.3), layout_matrix = lay)
 ```
 
 ```{r, eval=TRUE, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE, fig.width=9, fig.height=2.8}
 
-# change_title <- textGrob("Change compared to 1990", y = unit(0.86, "npc"), x = unit(0.25, "npc"), 
-#                   vjust=0, gp=gpar(fontsize=12))
-# 
-# plot1 <- params$result %>%
-#   filter(year %in% c(2020, 2025, 2030, 2035, 2040, 2050)) %>%
-#   mutate(change = paste0(as.character(round((1 - emissions / params$eu_emissions_1990) * -100, 1)), "%"),
-#          year = as.character(year)) %>%
-#   select(year, rm, change) %>%
-#   pivot_wider(names_from = rm, values_from = change) %>%
-#   tableGrob(theme = mytheme, rows = NULL, cols = colnames(.))
-  
-# Old: Make the same plot as in the web app (replaced now by the table above):
-  # filter(year %in% c(2030, 2035, 2040, 2050)) %>%
-  # mutate(change = (1 - emissions / params$eu_emissions_1990) * -100,
-  #        year = as.character(year),
-  #        is_2030 = ifelse(year == 2030, "Y", "N")) %>%
-  # rownames_to_column("data_id") %>%
-  # ggplot(aes(x = year, y = change, fill = rm, color = is_2030)) +
-  #   geom_col(width = .7) +
-  #   facet_wrap(~rm) +
-  #   geom_text(size = 2, aes(label = paste0(round(change, 0), "%")), vjust = -1, color = "black") +
-  #   theme_classic() +
-  #   labs(y = "Change (%)", x = "", fill = "Scenario type", subtitle = "Change compared to 1990") +
-  #   theme(text = element_text(size = 12),
-  #         axis.text.x = element_text(size = 6, angle = 0),
-  #         legend.position = "none") +
-  #   scale_fill_manual(values = c(params$colors_to_display, name = "rm")) +
-  #   scale_color_manual(values = c(NA, "black"))
+change_title <- textGrob("Comparison to reference year", y = unit(0.86, "npc"), x = unit(0.35, "npc"),
+                  vjust=0, gp=gpar(fontsize=12))
 
-# change_table <- gTree(children = gList(change_title, plot1))
+plot1 <- params$result %>%
+  filter(year %in% c(2020, 2025, 2030, 2035, 2040, 2050)) %>%
+  mutate(change = paste0(as.character(round((1 - emissions / params$reference_year_emissions) * -100, 1)), "%"),
+         year = as.character(year)) %>%
+  select(year, rm, change) %>%
+  pivot_wider(names_from = rm, values_from = change) %>%
+  tableGrob(theme = mytheme, rows = NULL, cols = colnames(.))
+
+change_table <- gTree(children = gList(change_title, plot1))
 
 plot2 <- params$result %>%
   mutate(rr_eff = ifelse(emissions > params$threshold_linear_rm1, (emissions / lag(emissions) -1) * 100, 0)) %>%
@@ -157,7 +132,7 @@ plot2 <- params$result %>%
   labs(x = "", y = "Change (%)", subtitle = "Annual emission change rates") +
   scale_color_manual(values = c(params$colors_to_display))
 
-grid.arrange(plot2, ncol = 1)
+grid.arrange(change_table, plot2, ncol = 2, widths = c(1.9, 1.8))
 
 ```
 

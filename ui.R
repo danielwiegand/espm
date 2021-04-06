@@ -9,6 +9,8 @@ library(shinyjs)
 library(gridExtra)
 library(gridtext)
 
+## UI
+
 ui <- fluidPage(
   
   useShinyjs(),
@@ -93,22 +95,23 @@ ui <- fluidPage(
         
         column(12,
                
+               tags$h3("Emissions over time"),
                div(class = "plot-container", style = "clear:left; width:100%;",
                    girafeOutput("emis_pathway")
                    )
         ),
         
-        column(6,
+        column(5,
                
                tags$h3("Comparison to reference year"),
-               div(class = "plot-container", style = "clear:left; width:100%;",
+               div(class = "plot-container", style = "clear:left; width:100%; margin-left:20px; margin-top:20px;",
                    tableOutput("comparison_reference_year")
                )
                
         ),
         
-        column(6,
-               
+        column(7,
+               tags$h3("Annual emission change rates"),
                div(class = "plot-container", style = "clear:left; width:100%;",
                    girafeOutput("emission_change_rates")
                )

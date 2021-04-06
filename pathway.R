@@ -24,7 +24,7 @@ make_horizontal <- function(x) {
   return(x)
 }
 
-create_fun <- function(rm, budget, init_rr) {
+create_fun <- function(rm, budget, init_rr = -0.02) {
   
   fun <<- function(x){
     emis <- rep(input$base_year_emissions, 82)
@@ -142,11 +142,11 @@ plot_result <- function(x) {
                                                                                            # Font colors per column
                                                                                            core = list(fg_params = list(col = as.vector(column_colors()))),
                                                                                            padding = unit(c(2, 2), "mm"))),
-                        xmin = ifelse(date_display_range() == 2100, 2060, 2035)) +
+                        xmin = ifelse(date_display_range() == 2100, 2060, 2035), ymin = input$base_year_emissions / 3) +
       theme_classic() +
-      scale_x_continuous(breaks = scales::extended_breaks(n = 9)(2010:2100)) +
+      scale_x_continuous(breaks = scales::extended_breaks(n = 18)(2010:2100)) +
       # scale_y_continuous(breaks = scales::extended_breaks(n = 9)(-0.5:3.5)) +
-      labs(x = "Year", y = "Emissions (Gt)", color = "Scenario type", subtitle = "Emissions over time") +
+      labs(x = "Year", y = "Emissions (Gt)", color = "Scenario type") +
       theme(text = element_text(size = 10),
             legend.title = element_text(size = 7),
             legend.text = element_text(size = 6),
@@ -155,7 +155,7 @@ plot_result <- function(x) {
   }
 }
 
-calculate_pathway <- function(rm) {
+calculate_pathway <- function(rm, init_rr) {
   
   output <- data.frame(t = numeric(), year = numeric(), emissions = numeric(), rr = numeric(), rm = character())
   
@@ -175,13 +175,13 @@ calculate_pathway <- function(rm) {
       # Slightly vary the budget so that an optimum is found for a steady function
       for(j in sequence) {
         
-        create_fun(rm = rm[i], budget = input$emission_budget * j, init_rr = INITIAL_REDUCTION_RATE)
+        create_fun(rm = rm[i], budget = input$emission_budget * j, init_rr = init_rr)
         
         opt_x <- optimize_function(fun, neg = neg)
         
         if(!is.null(opt_x)) {
           
-          result <- calculate_result(x = opt_x[[1]], rm = rm[i], init_rr = INITIAL_REDUCTION_RATE)
+          result <- calculate_result(x = opt_x[[1]], rm = rm[i], init_rr = init_rr)
           
           is_steady <- abs(sum(result$rr)) == sum(abs(result$rr)) 
           
@@ -212,3 +212,15 @@ calculate_pathway <- function(rm) {
   return(output)
   
 }
+
+calculate_initial_rr <- function() {
+  "Function which determines the initial reduction rate (rr) for scenarios RM2-5. This is defined as 50% of the
+  initial reduction rate of scenario RM-6."
+
+  rr_rm6 <- calculate_pathway(rm = "RM-6 abs", init_rr = 100) %>% # put a dummy value for initial_rr, so that nleqslv does not run recursively. For RM-6 pathway calculation, this variable is not needed.
+    mutate(rr = emissions / lag(emissions) - 1) %>%
+    select(rr)
+  initial_rr = rr_rm6[2,] / 2 # Divide by 2
+  return(initial_rr)
+}
+

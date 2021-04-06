@@ -1,11 +1,11 @@
 "Plots of the ESPM web app"
 
-# Bar plot: Change compared to the reference year
+# Table: Change compared to the reference year
 
 comparison_reference_year <- reactive({
   result() %>%
     filter(year %in% c(2020, 2025, 2030, 2035, 2040, 2050)) %>%
-    mutate(change = paste0(as.character(round((1 - emissions / input$reference_year_emissions) * -100, 1)), "%"),
+    mutate(change = paste0(as.character(round((1 - emissions / input$reference_year_emissions) * -100, 0)), "%"),
            year = as.character(year)) %>%
     select(year, rm, change) %>%
     pivot_wider(names_from = rm, values_from = change) #%>%
@@ -41,17 +41,17 @@ emission_change_rates <- reactive({
       geom_point_interactive(aes(tooltip = paste0(rm, " (", year, "): ", round(rr_eff, 2), " %"), data_id = data_id), 
                              size = 0.6) +
       theme_classic() +
-      scale_x_continuous(breaks = scales::extended_breaks(n = 8)(2020:2100)) +
+      scale_x_continuous(breaks = scales::extended_breaks(n = 16)(2020:2100)) +
       # scale_y_continuous(limits = c(-30, 0)) +
-      theme(axis.text.x = element_text(size = 6),
+      theme(axis.text.x = element_text(size = 10),
             legend.position = "none") +
-      labs(x = "", y = "Change (%)", subtitle = "Annual emission change rates") +
+      labs(x = "", y = "Change (%)") +
       scale_color_manual(values = c(colors_to_display()))
   }
 })
 
 output$emission_change_rates <- renderGirafe(
-  girafe(ggobj = emission_change_rates(), width_svg = 3.8, height_svg = 2.8) %>%
+  girafe(ggobj = emission_change_rates(), width_svg = 4.8, height_svg = 2.2) %>%
     girafe_options(opts_hover(css = "fill:black; stroke:black;"),
                    opts_selection(type = "none"))
 )
