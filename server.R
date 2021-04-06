@@ -28,7 +28,7 @@ server <- function(input, output) {
   output$negative_emissions <- renderTable(
     data.frame(x = "Max. possible net negative emissions p.a.: ",
                # THIS IS ROUNDED TO ONLY ONE DECIMAL PLACE WHICH DECREASES ACCURACY TO MAKE IT COMPATIBLE TO RESULTS IN THE ESPM PAPER. CAN BE CHANGED BACK IN FUTURE.
-               y = paste0(round(max_negative_emissions_gt()*-1, 1), " Gt")), 
+               y = paste0(round(max_negative_emissions_gt()*-1, 1), " ", input$emission_unit)), 
     colnames = F
   )
   
@@ -65,7 +65,7 @@ server <- function(input, output) {
     
     out <- left_join(total_emissions, overshoots) %>%
       select(RM, Budget, 'Overshoot') %>%
-      mutate("Unit" = "Gt") %>%
+      mutate("Unit" = input$emission_unit) %>%
       # in case some paths do not have overshoots, replace NA by 0
       mutate(Overshoot = case_when(is.na(Overshoot) ~ 0, 
                                    TRUE ~ Overshoot))

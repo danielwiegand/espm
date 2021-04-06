@@ -28,7 +28,7 @@ emission_change_rates <- reactive({
       ylim(0, 3) +
       theme(text = element_text(size = 10, family = "sans-serif"),
             legend.position = "none") +
-      labs(x = "Year", y = "Emissions (Gt)")
+      labs(x = "Year", y = paste0("Emissions (", input$emission_unit, ")"))
     
   } else {
     result() %>%

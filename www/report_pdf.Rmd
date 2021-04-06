@@ -13,6 +13,7 @@ params:
   colors_to_display: NA
   threshold_linear_rm1: NA,
   emission_budget: NA,
+  emission_unit: NA,
   reference_year_emissions: NA,
   max_negative_emissions_gt: NA
   overshoot_amounts: NA
@@ -57,8 +58,8 @@ input_data <- tibble(
      "Emission budget",
      "Min. value annual emissions"),
   "Value" = c(
-    paste0(round(params$emission_budget, 0), " Gt CO2"),
-    paste0(round(params$max_negative_emissions_gt, 0), " Gt CO2")
+    paste0(round(params$emission_budget, 0), " ", params$emission_unit, " CO2"),
+    paste0(round(params$max_negative_emissions_gt, 0), " ", params$emission_unit, " CO2")
               )
 )
 
@@ -86,7 +87,7 @@ plot <- params$result %>%
   theme_classic() +
   scale_x_continuous(breaks = scales::extended_breaks(n = 9)(2010:2100)) +
   # scale_y_continuous(breaks = scales::extended_breaks(n = 9)(-0.5:3.5)) +
-  labs(x = "Year", y = "Emissions (Gt)", color = "Scenario type", subtitle = "Emissions over time") +
+  labs(x = "Year", y = paste0("Emissions (", params$emission_unit, ")"), color = "Scenario type", subtitle = "Emissions over time") +
   theme(text = element_text(size = 12),
         legend.title = element_text(size = 7),
         legend.text = element_text(size = 6),

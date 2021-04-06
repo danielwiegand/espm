@@ -116,7 +116,7 @@ plot_result <- function(x) {
       xlim(2010, 2100) +
       theme(text = element_text(size = 10, family = "sans-serif"),
             legend.position = "none") +
-      labs(x = "Year", y = "Emissions (Gt)")
+      labs(x = "Year", y = paste0("Emissions (", input$emission_unit, ")"))
     
   } else {
     
@@ -136,7 +136,7 @@ plot_result <- function(x) {
       geom_hline(yintercept = 0, color = "grey", linetype = "dashed") +
       geom_vline(xintercept = 2019.5, color = "grey", linetype = "dashed") +
       geom_line_interactive(aes(data_id = rm, hover_css = "fill:none;", tooltip = rm)) +
-      geom_point_interactive(aes(tooltip = paste0(rm, " (", year, "): ", round(emissions, 2), " Gt"), data_id = data_id),
+      geom_point_interactive(aes(tooltip = paste0(rm, " (", year, "): ", round(emissions, 2), " ", input$emission_unit), data_id = data_id),
                              size = 0.6) +
       annotation_custom(tableGrob(overshoot_amounts(), rows = NULL, theme = ttheme_minimal(base_size = 6, 
                                                                                            # Font colors per column
@@ -146,7 +146,7 @@ plot_result <- function(x) {
       theme_classic() +
       scale_x_continuous(breaks = scales::extended_breaks(n = 18)(2010:2100)) +
       # scale_y_continuous(breaks = scales::extended_breaks(n = 9)(-0.5:3.5)) +
-      labs(x = "Year", y = "Emissions (Gt)", color = "Scenario type") +
+      labs(x = "Year", y = paste0("Emissions (", input$emission_unit, ")"), color = "Scenario type") +
       theme(text = element_text(size = 10),
             legend.title = element_text(size = 7),
             legend.text = element_text(size = 6),

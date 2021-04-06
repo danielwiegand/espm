@@ -47,6 +47,9 @@ ui <- fluidPage(
       
       h3("2. Budget and past emissions", style = "margin-top:35px;"),
       
+      selectInput("emission_unit", label = "Emissions are expressed in", width = "80%",
+                  choices = c("Gt", "Mt", "kt", "t", "kg"), selected = "Gt"),
+      
       tags$div("Global or regional emission budget (2020-2100)", style = "font-weight:bold; float:left;"),
       actionLink("link_info_budget", "", icon = icon("info-circle"), style = "float:left; margin-left: 10px;"),
       uiOutput("box_info_budget"),
