@@ -123,7 +123,7 @@ change_title <- textGrob("Change compared to 1990", y = unit(0.86, "npc"), x = u
 
 plot1 <- params$result %>%
   filter(year %in% c(2020, 2025, 2030, 2035, 2040, 2050)) %>%
-  mutate(change = paste0(as.character(round((1 - emissions / params$eu_emissions_1990) * -100, 1)), "%"),
+  mutate(change = paste0(as.character(round((1 - emissions / params$eu_emissions_1990) * -100, 0)), "%"),
          year = as.character(year)) %>%
   select(year, rm, change) %>%
   pivot_wider(names_from = rm, values_from = change) %>%
