@@ -15,7 +15,8 @@ ui <- fluidPage(
   
   tags$head(
     tags$link(rel="stylesheet", type="text/css", href = "style.css"),
-    tags$meta(name = "google-site-verification", content = "alKF6-ybz1kHuq9yEcaIxMuaMoSeqsTAdBdE87IC67I") # For Google Search Console
+    tags$meta(name = "google-site-verification", content = "alKF6-ybz1kHuq9yEcaIxMuaMoSeqsTAdBdE87IC67I"), # For Google Search Console
+    tags$script(src = "www/matomo.js")
   ),
 
   titlePanel(title = uiOutput("title"),
