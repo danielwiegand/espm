@@ -20,7 +20,7 @@ ui <- fluidPage(
     ),
 
   titlePanel(title = uiOutput("title"),
-             windowTitle = "Smooth Emission Paths"),
+             windowTitle = "Extended Smooth Pathway Model"),
 
   absolutePanel(top = "10px", right = "10px", actionLink("link_author", label = "Author & Contact", icon = icon("info-circle"))),
   
@@ -50,7 +50,7 @@ ui <- fluidPage(
       selectInput("emission_unit", label = "Emissions are expressed in", width = "80%",
                   choices = c("Gt", "Mt", "kt", "t", "kg"), selected = "Gt"),
       
-      tags$div("Global or regional emission budget (2020-2100)", style = "font-weight:bold; float:left;"),
+      tags$div("Global or regional emission budget 2020-2100", style = "font-weight:bold; float:left;"),
       actionLink("link_info_budget", "", icon = icon("info-circle"), style = "float:left; margin-left: 10px;"),
       uiOutput("box_info_budget"),
       
@@ -59,12 +59,9 @@ ui <- fluidPage(
       tags$div("Base year (2019) emissions", style = "font-weight:bold; float:left;"),
       numericInput("base_year_emissions", label = "", value = 43.1, width = "80%"),
       
-      sliderInput("reference_year", label = "Reference year", 
-                  min = 1990, max = 2020, step = 1, value = 2010, sep = "", width = "80%"),
-      
       numericInput("reference_year_emissions", label = "Reference year emissions", value = 38.5, width = "80%"),
       
-      h3("3. Select negative emissions", style = "float:left;"),
+      h3("3. Net negative emissions", style = "float:left;"),
       
       actionLink("link_info_negative_emissions", "", icon = icon("info-circle"), style = "float:left; margin-top:20px; margin-left:10px;"),
       uiOutput("box_info_negative_emissions"),

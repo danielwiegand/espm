@@ -26,9 +26,9 @@ server <- function(input, output) {
   # Render information for the left column ####
 
   output$negative_emissions <- renderTable(
-    data.frame(x = "Max. possible net negative emissions p.a.: ",
+    data.frame(x = "Minimum annual emissions: ",
                # THIS IS ROUNDED TO ONLY ONE DECIMAL PLACE WHICH DECREASES ACCURACY TO MAKE IT COMPATIBLE TO RESULTS IN THE ESPM PAPER. CAN BE CHANGED BACK IN FUTURE.
-               y = paste0(round(max_negative_emissions_gt()*-1, 1), " ", input$emission_unit)), 
+               y = paste0("-", round(max_negative_emissions_gt()*-1, 1), " ", input$emission_unit)), 
     colnames = F
   )
   
