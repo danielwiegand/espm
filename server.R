@@ -1,10 +1,8 @@
 "Main file of the web app containing the server"
 
 FIRST_YEAR <- 2020 # First year for which emissions are calculated
-THRESHOLD_LINEAR_RM1 <- 0.136741914720844000 # Threshold from when on the path becomes linear (rm1)
-THRESHOLD_LINEAR_OTHER <- 0.106354822560656 # Threshold from when on the path becomes linear (all other rms)
   
-server <- function(input, output) {
+server <- function(input, output, session) {
   
   source("pathway.R", local = T)
   source("plots.R", local = T)
@@ -23,19 +21,16 @@ server <- function(input, output) {
     b <- a[input$selected_rm]
   }) 
   
-  # Render information for the left column ####
-
-  output$negative_emissions <- renderTable(
-    data.frame(x = "Minimum annual emissions: ",
-               # THIS IS ROUNDED TO ONLY ONE DECIMAL PLACE WHICH DECREASES ACCURACY TO MAKE IT COMPATIBLE TO RESULTS IN THE ESPM PAPER. CAN BE CHANGED BACK IN FUTURE.
-               y = paste0("-", round(max_negative_emissions_gt()*-1, 1), " ", input$emission_unit)), 
-    colnames = F
-  )
+  # Thresholds for linear path ####
   
-  # Maximum net negative emissions ####
+  threshold_linear_rm1 <- reactive({
+    # Threshold from when on the path becomes linear (rm1)
+    input$base_year_emissions * 0.045
+  })
   
-  max_negative_emissions_gt <- reactive({
-    input$max_negative_emissions_perc / 100 * input$base_year_emissions * -1
+  threshold_linear_other <- reactive({
+    # Threshold from when on the path becomes linear (all other rms)
+    input$base_year_emissions * 0.035
   })
   
   # Overshoot amounts ####

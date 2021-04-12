@@ -15,9 +15,12 @@ params:
   emission_budget: NA,
   emission_unit: NA,
   reference_year_emissions: NA,
-  max_negative_emissions_gt: NA
+  min_emissions: NA
   overshoot_amounts: NA
-mainfont: Carlito # Not working: Calibri
+  regional_unit: NA
+  emission_scope: NA
+  reference_year: NA
+mainfont: Carlito
 fontsize: 12pt
 tables: true # For kable: booktabs = T
 header-includes:
@@ -55,11 +58,17 @@ mytheme <- gridExtra::ttheme_default(
 
 input_data <- tibble(
   "Parameters" = c(
-     "Emission budget",
-     "Min. annual emissions"),
+     "Emission budget 2020-2100",
+     "Min. annual emissions",
+     "Entity",
+     "Emission scope",
+     "Reference year"),
   "Value" = c(
     paste0(round(params$emission_budget, 0), " ", params$emission_unit, " CO2"),
-    paste0(round(params$max_negative_emissions_gt, 0), " ", params$emission_unit, " CO2")
+    paste0(round(params$min_emissions, 0), " ", params$emission_unit, " CO2"),
+    params$regional_unit,
+    params$emission_scope,
+    params$reference_year
               )
 )
 

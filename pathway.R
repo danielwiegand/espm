@@ -3,11 +3,11 @@
 make_linear <- function(x, rm) {
   for(i in 3:length(x)) {
     if(rm == "RM-1 const") {
-      if(x[i-1] <= THRESHOLD_LINEAR_RM1) {
+      if(x[i-1] <= threshold_linear_rm1()) {
         x[i] <- x[i-1] + x[i-1] - x[i-2]
       }
     } else {
-      if(x[i-1] <= THRESHOLD_LINEAR_OTHER) {
+      if(x[i-1] <= threshold_linear_other()) {
         x[i] <- x[i-1] + x[i-1] - x[i-2]
       }
     }
@@ -17,8 +17,8 @@ make_linear <- function(x, rm) {
 
 make_horizontal <- function(x) {
   for(i in 3:length(x)) {
-    if(x[i] <= max_negative_emissions_gt()) {
-      x[i] <- max_negative_emissions_gt()
+    if(x[i] <= input$min_emissions) {
+      x[i] <- input$min_emissions
     }
   }
   return(x)

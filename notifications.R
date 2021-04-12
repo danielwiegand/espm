@@ -120,9 +120,9 @@ output$box_contact <- renderUI({
 output$box_info_negative_emissions <- renderUI({
   hidden(div(class = "info-box", style = "left:390px; width:500px;", id = "info_negative_emissions", 
              HTML("
- An important question concerns the possibility of future negative emissions. The app allows you specify the potential for net negative emissions by specifying a percentage that is applied to the current emissions. This percentage then determines the negative minimum value of the emission paths by 2100. An indication of 0% is equivalent to net zero emissions by 2100. Setting a positive value as minimum would not make sense in the given context, because the given emission budget would be exceeded through the emissions after the year 2100.<br />
- If net negative emissions are allowed, the budget may be temporarily exceeded. These overshoot amounts will then be offset by net negative emissions by 2100. However, it should be noted that the overshoot amounts can also lead to dangerous <b>tipping points</b> in the climate system being exceeded. Also, it should be pointed out that the <b>costs</b> of actively capturing CO2 are still unclear and that there are major methodological and substantive problems in <b>quantifying</b> sinks and questions regarding their sustainable value.<br />
- The actual overshoot amounts per scenario type are displayed in the table above the emission paths.<br />
+The app allows you specify the minimum annual emissions. An indication of 0 Gt is equivalent to net zero emissions by 2100, while a negative value assumes that net negative annual emissions are possible. Setting a positive value as minimum would not make sense in the given context, because the given emission budget would be exceeded through the emissions after the year 2100.<br />
+If net negative emissions are allowed, the budget may be temporarily exceeded. These overshoot amounts will then be offset by net negative emissions by 2100. However, it should be noted that the overshoot amounts can also lead to dangerous <b>tipping points</b> in the climate system being exceeded. Also, it should be pointed out that the <b>costs</b> of actively capturing CO2 are still unclear and that there are major methodological and substantive problems in <b>quantifying</b> sinks and questions regarding their sustainable value.<br />
+The actual overshoot amounts per scenario type are displayed in the table above the emission paths.<br />
                   "),
              actionLink("close_info_negative_emissions", icon = icon("window-close"), label = "Close")))
 })
@@ -133,4 +133,16 @@ observeEvent(input$link_info_negative_emissions, {
 
 observeEvent(input$close_info_negative_emissions, {
   shinyjs::hide("info_negative_emissions")
+})
+
+observeEvent(input$emission_unit, {
+  updateNumericInput(session, "min_emissions", label = paste0("Minimum possible annual emissions (", input$emission_unit, ")"))
+})
+
+observeEvent(input$toggle_report_questions, {
+  shinyjs::show("report_questions")
+}, ignoreInit = T)
+
+observeEvent(input$close_report_questions, {
+  shinyjs::hide("report_questions")
 })

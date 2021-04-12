@@ -23,11 +23,14 @@ output$report <- downloadHandler(
                    date_display_range = date_display_range(),
                    overshoot_amounts = overshoot_amounts(),
                    colors_to_display = colors_to_display(),
-                   threshold_linear_rm1 = THRESHOLD_LINEAR_RM1,
+                   threshold_linear_rm1 = threshold_linear_rm1(),
                    emission_budget = input$emission_budget,
                    emission_unit= input$emission_unit,
                    reference_year_emissions = input$reference_year_emissions,
-                   max_negative_emissions_gt = max_negative_emissions_gt()*-1
+                   min_emissions = input$min_emissions,
+                   regional_unit = input$regional_unit,
+                   emission_scope = input$emission_scope,
+                   reference_year = input$reference_year
     )
     
     # Knit the document, passing in the `params` list, and eval it in a

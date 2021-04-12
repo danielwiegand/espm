@@ -61,14 +61,12 @@ ui <- fluidPage(
       
       numericInput("reference_year_emissions", label = "Reference year emissions", value = 38.5, width = "80%"),
       
-      h3("3. Net negative emissions", style = "float:left;"),
+      h3("3. Minimum annual emissions", style = "float:left;"),
       
       actionLink("link_info_negative_emissions", "", icon = icon("info-circle"), style = "float:left; margin-top:20px; margin-left:10px;"),
       uiOutput("box_info_negative_emissions"),
       
-      numericInput("max_negative_emissions_perc", label = "Maximum possible net negative emissions (%)", value = 0, width = "80%"),
-      
-      tableOutput("negative_emissions"),
+      numericInput("min_emissions", label = "Minimum possible annual emissions", value = 0, width = "80%"),
       
       div(style = "width:100%; text-align:center;",
           actionButton("go", label = "Update", icon = icon("retweet"))
@@ -85,7 +83,8 @@ ui <- fluidPage(
         labelWidth = "80px"
       ),
       
-      downloadButton("report", "Generate report")
+      actionButton("toggle_report_questions", label = "Generate report")
+      # downloadButton("report", "Generate report")
       
     ),
     
@@ -98,7 +97,17 @@ ui <- fluidPage(
                tags$h3("Emissions over time"),
                div(class = "plot-container", style = "clear:left; width:100%;",
                    girafeOutput("emis_pathway")
-                   )
+                   ),
+               
+               hidden(fixedPanel(id = "report_questions", left = "40%", top = "30%", style = "z-index:10; background-color:white; border:1px solid black; padding:20px; border-radius:5px;",
+                 tags$h3("Download report"),
+                 tags$h4("Optional questions"),
+                 textInput("regional_unit", label = "Which (geographical or organizational) unit does this emission budget refer to?", value = ""),
+                 textInput("emission_scope", label = "What type of emissions are covered (e.g. 'emissions of all greenhouse gases incl. emissions from land use change')", value = ""),
+                 textInput("reference_year", label = "What is the reference year the future emissions are compared with?", value = ""),
+                 downloadButton("report", "Generate report"), tags$br(),
+                 actionLink("close_report_questions", icon = icon("window-close"), label = "Close", style = "float:right;")
+               ))
         ),
         
         column(5,
