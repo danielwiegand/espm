@@ -13,7 +13,8 @@ comparison_reference_year <- reactive({
 })
 
 output$comparison_reference_year <- renderTable(
-  comparison_reference_year()
+  comparison_reference_year(),
+  align = "r"
 )
 
 # Line plot: Emission change rate

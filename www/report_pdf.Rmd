@@ -47,7 +47,7 @@ library(gridExtra)
 library(grid)
 ```
 
-\Huge ESPM: Summary of result
+\Huge ESPM: Summary of results
 \normalsize
 
 ```{r, eval=TRUE, echo=FALSE, warning=FALSE, fig.width=9, fig.height=3, message=FALSE, error=FALSE}
@@ -59,7 +59,7 @@ mytheme <- gridExtra::ttheme_default(
 input_data <- tibble(
   "Parameters" = c(
      "Emission budget 2020-2100",
-     "Min. annual emissions",
+     "Minimum annual emissions",
      "Entity",
      "Emission scope",
      "Reference year"),

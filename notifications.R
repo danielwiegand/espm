@@ -9,8 +9,8 @@ output$title <- renderUI({
   output[[3]] <- hidden(div(class = "info-box", style = "left:330px; width:500px;", id = "info_general", 
                             HTML("
                                  The ESPM makes it possible to identify emission paths that adhere to a predefined emission budget. In this universal tool, this emission budget can be global or based on a national, regional or any other entity.<br /><br />
-                                 The scenario types used to determine the emission paths differ in their assumptions about the annual emission changes (see plot 'Annual emission change rates'). The scenario types RM 1 – 6 cover a full bandwidth of plausible emission paths.<br /><br />
-                                 An important question concerns the possibility of future negative emissions. The app allows you specify the potential for net negative emissions. Please note to the constraints mentioned in the appropriate help text on this page.<br /><br />
+                                 The scenario types used to determine the emission paths differ in their assumptions about the annual emission changes (see plot 'Annual emission change rates'). The scenario types offered cover the range of plausible emission paths well.<br /><br />
+                                 The app allows you specify the minimum annual emissions between 2020 and 2100. Please note to the constraints mentioned in the appropriate help text on this page.<br /><br />
                                  You can find other tools for the calculation of Paris-compatible emission paths at <a href ='http://www.save-the-climate.info'>www.save-the-climate.info</a>.<br /><br />
                                  "),
                             actionLink("close_info_general", icon = icon("window-close"), label = "Close")))
@@ -23,7 +23,7 @@ showModal(modalDialog(
   HTML("
     The Smooth Emission Paths approach makes it possible to determine emission paths that adhere to a predefined emission budget. The emission budget can be global or related to a nation or region.<br /><br />
     The scenario types used to determine the emission paths differ in their assumptions about the annual emission changes (see plot 'Annual emission change rates'). The scenario types offered cover the range of plausible emission paths well.<br /><br />
-    An important question concerns the possibility of future negative emissions. The app allows you specify the potential for net negative emissions. Please note to the constraints mentioned in the appropriate help text on this page.<br /><br />
+    The app allows you specify the minimum annual emissions between 2020 and 2100. Please note the constraints mentioned in the appropriate help text on this page.<br /><br />
     You can find other tools for the calculation of Paris-compatible emission paths at <a href ='http://www.save-the-climate.info'>www.save-the-climate.info</a>.<br />
        "),
   easyClose = FALSE,
@@ -37,7 +37,7 @@ observeEvent(input$link_info_scenario_type, {
 })
 
 output$box_info_scenario_type <- renderUI({
-  hidden(div(class = "info-box", style = "left:330px;", id = "info_scenario_type", HTML(
+  hidden(div(class = "info-box", style = "left:330px; width: 500px;", id = "info_scenario_type", HTML(
   "Scenario types differ regarding the annual emission changes associated with them (see plot 'Annual emission change rates'). Get more information on scenario types here:
   <ul>
     <li>
@@ -50,10 +50,10 @@ output$box_info_scenario_type <- renderUI({
   Compared to the MS Excel tools which can be downloaded at <a href = 'http://save-the-climate.info'>http://save-the-climate.info</a> some simplifications are applied for this online tool:
   <ul>
     <li>
-      The 2020 rate of change for the scenario types RM 3-5 is 50% of the change rate of RM-6 (where the emission path is a straight line). In the Excel tools, this change rate is an input value
+      The 2020 rate of change for the scenario types RM 3-5 is 50% of the change rate of RM-6 (where the emission path is a straight line). In the Excel tools, this change rate is an input value.
     </li>
     <li>
-      In the scenario types RM 1-5, the emission path becomes a straight line when the emissions fall below a given threshold. This threshold is 3.5% of the 2019 emissions for this online tool.
+      In the scenario types RM 1 and 3-5, the emission path becomes a straight line when the emissions fall below a given threshold. This threshold is 3.5% of the 2019 emissions for the scenario types RM 3-6 and 4.5% for RM-1 in this online tool. In the Excel tools, this threshold is an input value.
     </li>
   </ul>"),
              actionLink("close_info_scenario_type", icon = icon("window-close"), label = "Close")
@@ -83,14 +83,15 @@ observeEvent(input$link_info_budget, {
 output$box_info_budget <- renderUI({
   hidden(div(class = "info-box", style = "left:390px; width:650px;", id = "info_budget", 
              HTML("
-Please ensure that the emissions of the budget and those of the base or reference year refer to the same emissions in terms of content. For example, if the emission budget covers emissions from land use change, the emissions in the base and reference year should include emissions from land use change as well.<br />
-The pre-filled figures refer to the global CO2 emissions including emissions from land use change. The budget used is based on a global emission budget of 420 Gt from 2018 on, which was lowered by the emissions of the years 2018 and 2019. 2010 was chosen as a reference year. Regarding the global emission budget, we refer in particular to the IPCC Special Report 2018 (<a href = 'www.ipcc.ch/sr15/' target = '_blank'>www.ipcc.ch/sr15/</a>).<br />
-<a href ='https://www.klima-retten.info/PDF/IPCC_SR15_Remaining_Carbon_Budgets.pdf', target = '_blank'>Here</a> we have summarized the statements of the IPCC. For the determination of national budgets, we refer to e.g.:
+Please ensure that the emissions of the budget and those of the base or reference year refer to the same emissions in terms of content. For example, if the emission budget covers emissions from land use change, the emissions in the base and reference year should include emissions from land use change as well. Regarding the global emission budget, we refer in particular to the IPCC Special Report 2018 (<a href = 'www.ipcc.ch/sr15/' target = '_blank'>www.ipcc.ch/sr15/</a>). <a href ='https://www.klima-retten.info/PDF/IPCC_SR15_Remaining_Carbon_Budgets.pdf', target = '_blank'>Here</a> we have summarized the statements of the IPCC.<br /><br />
+For the determination of national budgets, we refer to e.g.:
 <ul>
   <li>Our web app determining Paris compatible emission paths for the EU: <a href = 'http://eu.climate-calculator.info' target = '_blank'>http://eu.climate-calculator.info</a></li>
   <li>Our further Excel tools for the determination of Paris compatible emission paths for all countries: <a href = 'http://www.save-the-climate.info/' target = '_blank'>http://www.save-the-climate.info/</a></li>
-  <li>Possible data sources: <a href = 'https://www.globalcarbonproject.org/' target = '_blank'>GCP</a>, <a href = 'https://edgar.jrc.ec.europa.eu/' target = '_blank'>EDGAR</a>, EFA</li>
+  <li>Possible data sources: Global Carbon Project (<a href = 'https://www.globalcarbonproject.org/' target = '_blank'>GCP</a>), EU Emissions Database for Global Atmospheric Research (<a href = 'https://edgar.jrc.ec.europa.eu/' target = '_blank'>EDGAR</a>), European Environment Agency (<a href = 'https://www.eea.europa.eu/' target = '_blank'>EEA</a>)</li>
 </ul>
+The pre-filled figures refer to the global CO2 emissions including emissions from land use change. The budget used is based on a global emission budget of 420 Gt from 2018 on, which was lowered by the emissions of the years 2018 and 2019. 2010 was chosen as a reference year.<br /><br />
+The emission paths presented here may show a small divergence in relation to the emission budget specified. This is due to technical reasons: In some cases, the optimization algorithm does not yield a solution, so that the underlying budget has to be varied. The budget which is actually used is displayed in the table above the emission paths.<br /><br />
 "), actionLink("close_info_budget", icon = icon("window-close"), label = "Close")))
 })
 
@@ -120,9 +121,8 @@ output$box_contact <- renderUI({
 output$box_info_negative_emissions <- renderUI({
   hidden(div(class = "info-box", style = "left:390px; width:500px;", id = "info_negative_emissions", 
              HTML("
-The app allows you specify the minimum annual emissions. An indication of 0 Gt is equivalent to net zero emissions by 2100, while a negative value assumes that net negative annual emissions are possible. Setting a positive value as minimum would not make sense in the given context, because the given emission budget would be exceeded through the emissions after the year 2100.<br />
-If net negative emissions are allowed, the budget may be temporarily exceeded. These overshoot amounts will then be offset by net negative emissions by 2100. However, it should be noted that the overshoot amounts can also lead to dangerous <b>tipping points</b> in the climate system being exceeded. Also, it should be pointed out that the <b>costs</b> of actively capturing CO2 are still unclear and that there are major methodological and substantive problems in <b>quantifying</b> sinks and questions regarding their sustainable value.<br />
-The actual overshoot amounts per scenario type are displayed in the table above the emission paths.<br />
+The app allows you specify the minimum annual emissions. An indication of 0 is equivalent to net zero emissions by 2100, while a negative value assumes that net negative annual emissions are possible. Please note that setting a positive value as minimum means that the given emission budget would   be exceeded from 2100 on.<br /><br />
+If net negative emissions are allowed, the budget may be temporarily exceeded. These overshoot amounts will then be offset by net negative emissions by 2100. The actual overshoot amounts per scenario type are displayed in the table above the emission paths. However, it should be noted that the overshoot amounts can also lead to dangerous <b>tipping points</b> in the climate system being exceeded. Also, it should be pointed out that the <b>costs</b> of actively capturing CO2 are still unclear and that there are major methodological and substantive problems in <b>quantifying</b> sinks and questions regarding their sustainable value.<br /><br />
                   "),
              actionLink("close_info_negative_emissions", icon = icon("window-close"), label = "Close")))
 })
@@ -135,9 +135,9 @@ observeEvent(input$close_info_negative_emissions, {
   shinyjs::hide("info_negative_emissions")
 })
 
-observeEvent(input$emission_unit, {
-  updateNumericInput(session, "min_emissions", label = paste0("Minimum possible annual emissions (", input$emission_unit, ")"))
-})
+# observeEvent(input$emission_unit, {
+#   updateNumericInput(session, "min_emissions", label = paste0("Minimum possible annual emissions (", input$emission_unit, ")"))
+# })
 
 observeEvent(input$toggle_report_questions, {
   shinyjs::show("report_questions")

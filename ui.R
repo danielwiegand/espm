@@ -50,7 +50,7 @@ ui <- fluidPage(
       selectInput("emission_unit", label = "Emissions are expressed in", width = "80%",
                   choices = c("Gt", "Mt", "kt", "t", "kg"), selected = "Gt"),
       
-      tags$div("Global or regional emission budget 2020-2100", style = "font-weight:bold; float:left;"),
+      tags$div("Emission budget 2020-2100", style = "font-weight:bold; float:left;"),
       actionLink("link_info_budget", "", icon = icon("info-circle"), style = "float:left; margin-left: 10px;"),
       uiOutput("box_info_budget"),
       
@@ -66,7 +66,7 @@ ui <- fluidPage(
       actionLink("link_info_negative_emissions", "", icon = icon("info-circle"), style = "float:left; margin-top:20px; margin-left:10px;"),
       uiOutput("box_info_negative_emissions"),
       
-      numericInput("min_emissions", label = "Minimum possible annual emissions", value = 0, width = "80%"),
+      numericInput("min_emissions", label = "", value = 0, width = "80%"),
       
       div(style = "width:100%; text-align:center;",
           actionButton("go", label = "Update", icon = icon("retweet"))
@@ -101,9 +101,9 @@ ui <- fluidPage(
                
                hidden(fixedPanel(id = "report_questions", left = "40%", top = "30%", style = "z-index:10; background-color:white; border:1px solid black; padding:20px; border-radius:5px;",
                  tags$h3("Download report"),
-                 tags$h4("Optional questions"),
+                 tags$h4("Optional information for the report"),
                  textInput("regional_unit", label = "Which (geographical or organizational) unit does this emission budget refer to?", value = ""),
-                 textInput("emission_scope", label = "What type of emissions are covered (e.g. 'emissions of all greenhouse gases incl. emissions from land use change')", value = ""),
+                 textInput("emission_scope", label = "What type of emissions are covered (e.g. 'all CO2 emissions incl. land use change')", value = ""),
                  textInput("reference_year", label = "What is the reference year the future emissions are compared with?", value = ""),
                  downloadButton("report", "Generate report"), tags$br(),
                  actionLink("close_report_questions", icon = icon("window-close"), label = "Close", style = "float:right;")
