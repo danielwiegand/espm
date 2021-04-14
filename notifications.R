@@ -19,7 +19,7 @@ output$title <- renderUI({
 })
 
 showModal(modalDialog(
-  title = "Smooth Emission Paths",
+  title = "Extended Smooth Pathway Model",
   HTML("
     The ESPM makes it possible to identify emission paths that adhere to a predefined emission budget. In this universal tool, this emission budget can be global or based on a national, regional or any other entity.<br /><br />
     The scenario types used to determine the emission paths differ in their assumptions about the annual emission changes (see plot 'Annual emission change rates'). The scenario types offered cover the range of plausible emission paths well.<br /><br />
@@ -111,7 +111,7 @@ observeEvent(input$close_author, {
 
 output$box_contact <- renderUI({
   hidden(div(class = "author-box", id = "info_contact", HTML("<img src = 'daniel_wiegand.gif', style = 'float:left; width:200px; margin-right:20px'>Daniel Wiegand works as a CSR consultant and data scientist. Currently he is doing his doctorate in business ethics at the university of philosophy in Munich.<br /><br />
-    For further information regarding the Extended Smooth Pathway model, refer to <a href = 'http://save-the-climate.info', target = '_blank'>www.save-the-climate.info</a>.<br /><br />
+    For further information regarding the Extended Smooth Pathway Model, refer to <a href = 'http://save-the-climate.info', target = '_blank'>www.save-the-climate.info</a>.<br /><br />
     All code to create this website is available on my <a href = 'https://github.com/danielwiegand/espm'>GitHub page</a>. For comments and suggestions contact me on daniel.a.wiegand [at] posteo.de.<br />"),
              actionLink("close_author", icon = icon("window-close"), label = "Close", style = "float:right;")))
 })
