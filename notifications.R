@@ -11,7 +11,7 @@ output$title <- renderUI({
                                  The ESPM makes it possible to identify emission paths that adhere to a predefined emission budget. In this universal tool, this emission budget can be global or based on a national, regional or any other entity.<br /><br />
                                  The scenario types used to determine the emission paths differ in their assumptions about the annual emission changes (see plot 'Annual emission change rates'). The scenario types offered cover the range of plausible emission paths well.<br /><br />
                                  The app allows you specify the minimum annual emissions between 2020 and 2100. Please note to the constraints mentioned in the appropriate help text on this page.<br /><br />
-                                 You can find other tools for the calculation of Paris-compatible emission paths at <a href ='http://www.save-the-climate.info'>www.save-the-climate.info</a>.<br /><br />
+                                 A brief background paper on the ESPM can be found <a href = 'https://www.klima-retten.info/PDF/ESPM_Background.pdf', target = '_blank'>here</a>. You can find other tools for the calculation of Paris-compatible emission paths at <a href ='http://www.save-the-climate.info'>www.save-the-climate.info</a>.<br /><br />
                                  "),
                             actionLink("close_info_general", icon = icon("window-close"), label = "Close")))
   
@@ -24,7 +24,7 @@ showModal(modalDialog(
     The ESPM makes it possible to identify emission paths that adhere to a predefined emission budget. In this universal tool, this emission budget can be global or based on a national, regional or any other entity.<br /><br />
     The scenario types used to determine the emission paths differ in their assumptions about the annual emission changes (see plot 'Annual emission change rates'). The scenario types offered cover the range of plausible emission paths well.<br /><br />
     The app allows you specify the minimum annual emissions between 2020 and 2100. Please note the constraints mentioned in the appropriate help text on this page.<br /><br />
-    You can find other tools for the calculation of Paris-compatible emission paths at <a href ='http://www.save-the-climate.info'>www.save-the-climate.info</a>.<br />
+    A brief background paper on the ESPM can be found <a href = 'https://www.klima-retten.info/PDF/ESPM_Background.pdf', target = '_blank'>here</a>. You can find other tools for the calculation of Paris-compatible emission paths at <a href ='http://www.save-the-climate.info'>www.save-the-climate.info</a>.<br />
        "),
   easyClose = FALSE,
   footer = modalButton("Close")
@@ -53,7 +53,7 @@ output$box_info_scenario_type <- renderUI({
       The 2020 rate of change for the scenario types RM 3-5 is 50% of the change rate of RM-6 (where the emission path is a straight line). In the Excel tools, this change rate is an input value.
     </li>
     <li>
-      In the scenario types RM 1 and 3-5, the emission path becomes a straight line when the emissions fall below a given threshold. This threshold is 3.5% of the 2019 emissions for the scenario types RM 3-6 and 4.5% for RM-1 in this online tool. In the Excel tools, this threshold is an input value.
+      In the scenario types RM 1 and 3-5, the emission path becomes a straight line when the emissions fall below a given threshold. This threshold is 3.5% of the 2019 emissions for the scenario types RM 3-5 and 4.5% for RM-1 in this online tool. In the Excel tools, this threshold is an input value.
     </li>
   </ul>"),
              actionLink("close_info_scenario_type", icon = icon("window-close"), label = "Close")
@@ -122,7 +122,7 @@ output$box_info_negative_emissions <- renderUI({
   hidden(div(class = "info-box", style = "left:390px; width:500px;", id = "info_negative_emissions", 
              HTML("
 The app allows you specify the minimum annual emissions. An indication of 0 is equivalent to net zero emissions by 2100, while a negative value assumes that net negative annual emissions are possible. Please note that setting a positive value as minimum means that the given emission budget would be exceeded from 2101 on.<br /><br />
-If net negative emissions are allowed, the budget may be temporarily exceeded. These overshoot amounts will then be offset by net negative emissions by 2100. The actual overshoot amounts per scenario type are displayed in the table above the emission paths. However, it should be noted that the overshoot amounts can also lead to dangerous <b>tipping points</b> in the climate system being exceeded. Also, it should be pointed out that the <b>costs</b> of actively capturing CO2 are still unclear and that there are major methodological and substantive problems in <b>quantifying</b> sinks and questions regarding their sustainable value.<br /><br />
+If net negative emissions are allowed, the budget may be temporarily exceeded. These overshoot amounts will then be offset by net negative emissions by 2100. The actual overshoot amounts per scenario type are displayed in the table above the emission paths. <br /><br />However, it should be noted that the overshoot amounts can also lead to dangerous <b>tipping points</b> in the climate system being exceeded. Also, it should be pointed out that the <b>costs</b> of actively capturing CO2 are still unclear and that there are major methodological and substantive problems in <b>quantifying</b> sinks and questions regarding their sustainable value.<br /><br />
                   "),
              actionLink("close_info_negative_emissions", icon = icon("window-close"), label = "Close")))
 })
