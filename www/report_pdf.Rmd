@@ -54,7 +54,7 @@ library(grid)
 
 ```{r, eval=TRUE, echo=FALSE, warning=FALSE, fig.width=9, fig.height=3, message=FALSE, error=FALSE}
 mytheme <- gridExtra::ttheme_default(
-    core = list(fg_params=list(hjust = 0, x = 0.1, fontsize = 8)),
+    core = list(fg_params = list(hjust = 1, x = 0.95, fontsize = 8)),
     colhead = list(fg_params=list(fontsize = 8)),
     rowhead = list(fg_params=list(hjust = 0)))
 
