@@ -45,14 +45,15 @@ ui <- fluidPage(
         selected = c("RM-4 quadr", "RM-3 lin", "RM-5 rad", "RM-6 abs")
       ),
       
-      h3("2. Budget and past emissions", style = "margin-top:35px;"),
+      tags$div("2. Budget and past emissions", style = "font-size: 24px; margin-bottom: 10px; float:left;"),
+      
+      actionLink("link_info_budget", "", icon = icon("info-circle"), style = "float:left; margin-left: 10px;"),
+      uiOutput("box_info_budget"),
       
       selectInput("emission_unit", label = "Emissions are expressed in", width = "80%",
                   choices = c("Gt", "Mt", "kt", "t", "kg"), selected = "Gt"),
       
       tags$div("Emission budget 2020-2100", style = "font-weight:bold; float:left;"),
-      actionLink("link_info_budget", "", icon = icon("info-circle"), style = "float:left; margin-left: 10px;"),
-      uiOutput("box_info_budget"),
       
       numericInput("emission_budget", label = "", value = 334, width = "80%"),
       

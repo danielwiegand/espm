@@ -64,8 +64,8 @@ input_data <- tibble(
      "Emission scope",
      "Reference year"),
   "Value" = c(
-    paste0(round(params$emission_budget, 0), " ", params$emission_unit, " CO2"),
-    paste0(round(params$min_emissions, 0), " ", params$emission_unit, " CO2"),
+    paste0(format(round(params$emission_budget, 2), nsmall = 2), " ", params$emission_unit, " CO2"),
+    paste0(format(round(params$min_emissions, 2), nsmall = 2), " ", params$emission_unit, " CO2"),
     params$regional_unit,
     params$emission_scope,
     params$reference_year
