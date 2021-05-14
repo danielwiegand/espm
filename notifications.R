@@ -150,12 +150,13 @@ output$box_info_negative_emissions <- renderUI({
   hidden(div(class = "info-box", style = "left:390px; width:500px;", id = "info_negative_emissions", 
              HTML("An important question concerns the possibility of future negative emissions. The app allows you specify the potential 
                for net negative emissions by specifying a percentage that is applied to the current EU emissions. This percentage then 
-               determines the minimum value of the emission paths by 2100.<br />If net negative emissions are allowed, the EU budget 
+               determines the minimum value of the emission paths by 2100.<br /><br />If net negative emissions are allowed, the EU budget 
                may be temporarily exceeded. This overshoot will then be offset by net negative emissions by 2100. However, it should be 
                noted that overshoot can also lead to dangerous tipping points in the climate system being exceeded. Also, it should be 
                pointed out that the costs of actively capturing CO2 are still unclear and that there are major methodological and substantive 
-               problems in quantifying sinks.<br />The actual overshoot
-               per scenario type is displayed in the table above the emission paths.<br /><br />"),
+               problems in quantifying sinks.<br /><br />The actual overshoot
+               per scenario type is displayed in the table above the emission paths.<br /><br />
+                  Negative CO2 emissions will be a necessity to compensate for other greenhouse gases like methane and nitrous oxide e.g. from agriculture. If you use an emissions budget covering CO2 only, these negative CO2 emissions are not considered here and have to be provided in addition.<br /><br />"),
              actionLink("close_info_negative_emissions", icon = icon("window-close"), label = "Close")))
 })
 

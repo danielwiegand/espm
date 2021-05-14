@@ -64,11 +64,11 @@ input_data <- tibble(
                    "Weighting \"population\"", 
                    "EU emission budget from 2020 on", 
                    "Min. value annual emissions"),
-  "Value" = c(paste0(params$global_emission_budget_gt_2018, " Gt CO2"), 
+  "Value" = c(paste0(format(round(params$global_emission_budget_gt_2018, 2), nsmall = 1), " Gt CO2"), 
               # paste0(params$global_emission_budget_gt, " Gt CO2"),
               paste0(params$pop_weighting, "%"),
               paste0(round(params$eu_emission_budget_gt, 0), " Gt CO2"),
-              paste0(round(params$max_negative_emissions_gt, 0), " Gt CO2")
+              paste0(format(round(params$max_negative_emissions_gt * -1, 1), nsmall = 1), " Gt CO2")
               )
 )
 
