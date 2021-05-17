@@ -156,7 +156,7 @@ output$box_info_negative_emissions <- renderUI({
                pointed out that the costs of actively capturing CO2 are still unclear and that there are major methodological and substantive 
                problems in quantifying sinks.<br /><br />The actual overshoot
                per scenario type is displayed in the table above the emission paths.<br /><br />
-                  Negative CO2 emissions will be a necessity to compensate for other greenhouse gases like methane and nitrous oxide e.g. from agriculture. If you use an emissions budget covering CO2 only, these negative CO2 emissions are not considered here and have to be provided in addition.<br /><br />"),
+                  Negative CO2 emissions will be necessary to compensate for other greenhouse gases like methane and nitrous oxide, e.g. from agriculture, in order to achieve climate neutrality. These negative CO2 emissions are not considered here and must be provided additionally.<br /><br />"),
              actionLink("close_info_negative_emissions", icon = icon("window-close"), label = "Close")))
 })
 
