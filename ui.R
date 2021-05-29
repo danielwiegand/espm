@@ -16,7 +16,8 @@ ui <- fluidPage(
   useShinyjs(),
   
   tags$head(
-    tags$link(rel="stylesheet", type="text/css", href = "style.css")
+    tags$link(rel="stylesheet", type="text/css", href = "style.css"),
+    tags$script(type = "text/javascript", src = "matomo.js")
     ),
 
   titlePanel(title = uiOutput("title"),
