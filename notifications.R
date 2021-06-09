@@ -74,8 +74,8 @@ observeEvent(input$link_info_budget, {
 output$base_data_for_display <- renderTable(
   tibble(
     "Data" = c("Annual emissions EU27", "Annual global emissions"),
-    "1990" = c(3.75, ""),
-    "2018" = c(3.04, 42.10),
+    "1990" = c(3.81, ""),
+    "2019" = c(2.92, 43.05),
     "Unit" = c("Gt", "Gt")
   ), bordered = T
 )

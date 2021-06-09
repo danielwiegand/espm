@@ -2,13 +2,13 @@
 
 FIRST_YEAR <- 2020 # First year for which emissions are calculated
 EU_POPULATION_SHARE <- .058
-EU_EMISSIONS_SHARE <- .072
+EU_EMISSIONS_SHARE <- .068
 ANNUAL_GLOBAL_EMISSIONS_GT <- 42.1 # in Gt
-EU_EMISSIONS_2019 <- 3.03870921601875 # Annual EU emissions in 2019 (Gt)
-EU_EMISSIONS_1990 <- 3.751043368376680 # Annual EU emissions in 1990 (Gt)
+EU_EMISSIONS_2019 <- 2.92 # Annual EU emissions in 2019 (Gt)
+EU_EMISSIONS_1990 <- 3.81 # Annual EU emissions in 1990 (Gt)
 THRESHOLD_LINEAR_RM1 <- 0.136741914720844000 # Threshold from when on the path becomes linear (rm1)
 THRESHOLD_LINEAR_OTHER <- 0.106354822560656 # Threshold from when on the path becomes linear (all other rms)
-INITIAL_REDUCTION_RATE <- -0.02 # Emission reduction rate to start with (in RM 2-5); is assumed EU emission change between 2019 and 2020 (percent)
+INITIAL_REDUCTION_RATE <- -0.04 # Emission reduction rate to start with (in RM 2-5); is assumed EU emission change between 2019 and 2020 (percent)
 EU_PAST_EMISSIONS <- data.frame(
   year = seq(2010, 2019, 1),
   emissions = c(3.347, 3.249, 3.158, 3.070, 2.954, 3.021, 3.043, 3.112, 3.039, EU_EMISSIONS_2019),
@@ -60,7 +60,7 @@ server <- function(input, output) {
   
   output$weighted_key <- renderTable(
     data.frame(x = c("EU share of global emissions", "EU share of global population", "Weighted key", "EU emission budget from 2020 on"),
-               y = c("7.2%", "5.8%", paste0(round(weighted_key() * 100, 1), "%"),
+               y = c("6.8%", "5.8%", paste0(round(weighted_key() * 100, 1), "%"),
                      paste0(round(eu_emission_budget_gt(), 1), " Gt CO2"))),
     colnames = F
   )
