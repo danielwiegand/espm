@@ -100,7 +100,7 @@ observeEvent(input$link_info_emissions_2018, {
 
 output$box_info_emissions_2018 <- renderUI({
   hidden(div(class = "info-box", style = "left:390px; width:500px;", id = "info_emissions_2018", 
-             HTML("Global emissions 2018: 42.1 Gt CO2 (source: <a href = 'https://www.globalcarbonproject.org/', target = '_blank'>Global Carbon Project)</a><br />"),
+             HTML("Global emissions 2018 / 2019: 42.11 / 43.05 Gt CO2 (source: <a href = 'https://www.globalcarbonproject.org/', target = '_blank'>Global Carbon Project)</a><br />"),
              actionLink("close_info_emissions_2018", icon = icon("window-close"), label = "Close")))
 })
 

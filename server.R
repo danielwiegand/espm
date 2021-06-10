@@ -3,7 +3,7 @@
 FIRST_YEAR <- 2020 # First year for which emissions are calculated
 EU_POPULATION_SHARE <- .058
 EU_EMISSIONS_SHARE <- .068
-ANNUAL_GLOBAL_EMISSIONS_GT <- 42.1 # in Gt
+GLOBAL_EMISSIONS_2018_2019_GT <- 42.11 + 43.05 # in Gt
 EU_EMISSIONS_2019 <- 2.92 # Annual EU emissions in 2019 (Gt)
 EU_EMISSIONS_1990 <- 3.81 # Annual EU emissions in 1990 (Gt)
 THRESHOLD_LINEAR_RM1 <- 0.136741914720844000 # Threshold from when on the path becomes linear (rm1)
@@ -35,7 +35,7 @@ server <- function(input, output) {
   }) 
   
   global_emission_budget_gt <- reactive({
-    input$global_emission_budget_gt_2018 - 2 * ANNUAL_GLOBAL_EMISSIONS_GT
+    input$global_emission_budget_gt_2018 - GLOBAL_EMISSIONS_2018_2019_GT
   })
   
   # Relation between temperature and emissions budget ####
@@ -46,7 +46,7 @@ server <- function(input, output) {
   # )
   # 
   # global_emission_budget_gt <- reactive({
-  #   temperature_budget_relation$budget[temperature_budget_relation$temperature == input$temperature_increase]  - 2 * ANNUAL_GLOBAL_EMISSIONS_GT
+  #   temperature_budget_relation$budget[temperature_budget_relation$temperature == input$temperature_increase]  - GLOBAL_EMISSIONS_2018_2019_GT
   # })
   
   
@@ -54,7 +54,7 @@ server <- function(input, output) {
   
   output$global_budget <- renderTable(
     data.frame(x = c("Emissions of 2018 and 2019: ", "Global budget from 2020 on: "), 
-               y = c(paste0(2 * ANNUAL_GLOBAL_EMISSIONS_GT, " Gt CO2"), paste0(global_emission_budget_gt(), " Gt CO2"))),
+               y = c(paste0(GLOBAL_EMISSIONS_2018_2019_GT, " Gt CO2"), paste0(global_emission_budget_gt(), " Gt CO2"))),
     colnames = F, align = c("lr")
   )
   
