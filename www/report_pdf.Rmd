@@ -10,14 +10,13 @@ params:
   first_year: NA
   result: NA
   date_display_range: NA
-  eu_past_emissions: NA
   colors_to_display: NA
   bar_plot: NA
   eu_emissions_1990: NA
   threshold_linear_rm1: NA,
   global_emission_budget_gt: NA,
   pop_weighting: NA,
-  global_emission_budget_gt_2018: NA,
+  global_emission_budget_gt_2020: NA,
   eu_emission_budget_gt: NA
   max_negative_emissions_gt: NA
   warning_text: NA
@@ -26,8 +25,8 @@ mainfont: Carlito # Not working: Calibri
 fontsize: 12pt
 tables: true # For kable: booktabs = T
 header-includes:
+ # - \usepackage[table]{xcolor} # For kable: latex_options="striped". Deactivated, as it causes an error (09/2021)
  - \usepackage{fancyhdr}
- - \usepackage[table]{xcolor} # For kable: latex_options="striped"
  - \pagestyle{fancy}
  - \fancyhead[]{}
  - \fancyfoot[L]{\footnotesize Extended Smooth Pathway Model report - `r format(Sys.time(), "%d %b %Y")`}
@@ -59,12 +58,12 @@ mytheme <- gridExtra::ttheme_default(
     rowhead = list(fg_params=list(hjust = 0)))
 
 input_data <- tibble(
-  "Parameters" = c("Global emission budget from 2018 on    ", # spaces make the table displayed better 
+  "Parameters" = c("Global emission budget from 2020 on    ", # spaces make the table displayed better 
                    # "Global budget from 2020 on", 
                    "Weighting \"population\"", 
                    "EU emission budget from 2020 on", 
                    "Min. value annual emissions"),
-  "Value" = c(paste0(format(round(params$global_emission_budget_gt_2018, 2), nsmall = 1), " Gt CO2"), 
+  "Value" = c(paste0(format(round(params$global_emission_budget_gt_2020, 2), nsmall = 1), " Gt CO2"), 
               # paste0(params$global_emission_budget_gt, " Gt CO2"),
               paste0(params$pop_weighting, "%"),
               paste0(round(params$eu_emission_budget_gt, 0), " Gt CO2"),

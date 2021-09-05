@@ -46,7 +46,7 @@ ui <- fluidPage(
       
       h3("2. Calculate the EU's emission budget", style = "margin-top:35px;"),
       
-      tags$div("Global emission budget from 2018 on (Gt CO2)", style = "font-weight:bold; float:left;"),
+      tags$div("Global emission budget from 2020 on (Gt CO2)", style = "font-weight:bold; float:left;"),
       actionLink("link_info_budget", "", icon = icon("info-circle"), style = "float:left; margin-left: 10px;"),
       uiOutput("box_info_budget"),
       
@@ -58,13 +58,7 @@ ui <- fluidPage(
       #                               width = "90%"
       #                               ),
       
-      numericInput("global_emission_budget_gt_2018", label = "", value = 580, width = "70%"),
-
-      tags$div(style = "float:left;",
-               tableOutput("global_budget")
-      ),
-      actionLink("link_info_emissions_2018", "", icon = icon("info-circle"), style = "float:left; margin-left:10px; margin-top:5px;"),
-      uiOutput("box_info_emissions_2018"),
+      numericInput("global_emission_budget_gt_2020", label = "", value = 500, width = "70%"),
       
       tags$br(),
       

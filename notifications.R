@@ -81,8 +81,8 @@ output$base_data_for_display <- renderTable(
 )
 
 output$box_info_budget <- renderUI({
-  hidden(div(class = "info-box", style = "left:300px; width:650px;", id = "info_budget", 
-             HTML("Regarding the global emission budget, we refer in particular to the IPCC Special Report 2018 (<a href = 'http://ipcc.ch/sr15', target = '_blank'>www.ipcc.ch/sr15/</a>). According to this report, compliance with the 1.5°C limit corresponds with a probability of 67% to a remaining CO2 budget of 420 Gt. <a href ='https://www.klima-retten.info/PDF/IPCC_SR15_Remaining_Carbon_Budgets.pdf', target = '_blank'>Here</a> we have summarized the statements of the IPCC. The following table summarizes the main results:<br /><br />"),
+  hidden(div(class = "info-box", style = "left:380px; width:650px;", id = "info_budget", 
+             HTML("Regarding the global emission budget, we refer in particular to the <a href = 'https://www.ipcc.ch/report/ar6/wg1/downloads/report/IPCC_AR6_WGI_SPM.pdf?__cf_chl_jschl_tk__=pmd_8f233c9747284ea4b54a61a50c00463f9d293c81-1628498145-0-gqNtZGzNAg2jcnBszQeO', target = '_blank'>IPCC Report AR6/WGI</a> from 2021. According to this report, compliance with the 1.5°C limit corresponds with a probability of 67% to a remaining CO2 budget of 400 Gt. <a href ='https://www.klima-retten.info/PDF/IPCC_AR6_Remaining_Carbon_Budgets.pdf', target = '_blank'>Here</a> we have summarized the statements of the IPCC. The following table summarizes the main results:<br /><br />"),
              tags$img(src = "table_ipcc_emission_budgets.png", width = "400px"), tags$br(), tags$br(),
              HTML("The higher the selected budget, the greater the risk that dangerous tipping points in the climate system will be exceeded."), tags$br(), tags$br(),
              actionLink("close_info_budget", icon = icon("window-close"), label = "Close")))
@@ -92,21 +92,6 @@ observeEvent(input$close_info_budget, {
   shinyjs::hide("info_budget")
 })
 
-# Emissions of 2018 ####
-
-observeEvent(input$link_info_emissions_2018, {
-  shinyjs::toggle("info_emissions_2018")
-})
-
-output$box_info_emissions_2018 <- renderUI({
-  hidden(div(class = "info-box", style = "left:390px; width:500px;", id = "info_emissions_2018", 
-             HTML("Global emissions 2018 / 2019: 42.11 / 43.05 Gt CO2 (source: <a href = 'https://www.globalcarbonproject.org/', target = '_blank'>Global Carbon Project)</a><br />"),
-             actionLink("close_info_emissions_2018", icon = icon("window-close"), label = "Close")))
-})
-
-observeEvent(input$close_info_emissions_2018, {
-  shinyjs::hide("info_emissions_2018")
-})
 
 # EU emission budget ####
 
@@ -172,11 +157,11 @@ observeEvent(input$close_info_negative_emissions, {
 # Warning: Too high budget ####
 
 observeEvent(input$go, {
-  if(input$global_emission_budget_gt_2018 > 680 & input$max_negative_emissions_perc > 0) {
+  if(input$global_emission_budget_gt_2020 > 680 & input$max_negative_emissions_perc > 0) {
     showNotification("You have combined a relatively large global budget with possible net negative emissions. Please note that the resulting emission overshoot increases the risk of exceeding tipping points in the climate system.", 
                      type = "warning",
                      duration = 15)
-  } else if(input$global_emission_budget_gt_2018 >= 800 & input$max_negative_emissions_perc == 0) {
+  } else if(input$global_emission_budget_gt_2020 >= 800 & input$max_negative_emissions_perc == 0) {
     showNotification("You have chosen a relatively high global budget. Please note the higher risk that tipping points in the climate system can be exceeded.", 
                      type = "warning",
                      duration = 15)
