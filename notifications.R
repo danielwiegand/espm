@@ -79,7 +79,7 @@ output$box_info_budget <- renderUI({
 In order to calculate emission paths and emission targets with this tool, you need to know the budget to be met and the emissions from 2019 and a reference year.<br /><br />
 Indicate the emission budget for the timeframe 2020 - 2100, which should be met by the emission paths. This emission budget can be global or based on a national, regional or any other entity. Please ensure that the emissions of the budget and those of the base or reference year refer to the same emissions in terms of content. For example, if the emission budget covers emissions from land use change, the emissions in the base and reference year should include emissions from land use change as well.<br /><br />
 <h4>Determination of emission budgets</h4>
-Regarding the global emission budget, we refer in particular to the <a href = 'https://www.ipcc.ch/report/ar6/wg1/downloads/report/IPCC_AR6_WGI_SPM.pdf?__cf_chl_jschl_tk__=pmd_8f233c9747284ea4b54a61a50c00463f9d293c81-1628498145-0-gqNtZGzNAg2jcnBszQeO', target = '_blank'>IPCC Report AR6/WGI</a> from 2021. According to this report, compliance with the 1.5°C limit corresponds with a probability of 67% to a remaining CO2 budget of 400 Gt. <a href ='https://www.klima-retten.info/PDF/IPCC_AR6_Remaining_Carbon_Budgets.pdf', target = '_blank'>Here</a> we have summarized the statements of the IPCC. The following table summarizes the main results:<br /><br />
+Regarding the global emission budget, we refer in particular to the <a href = 'https://www.ipcc.ch/report/ar6/wg1/downloads/report/IPCC_AR6_WGI_SPM.pdf?__cf_chl_jschl_tk__=pmd_8f233c9747284ea4b54a61a50c00463f9d293c81-1628498145-0-gqNtZGzNAg2jcnBszQeO', target = '_blank'>IPCC Report AR6/WGI</a> from 2021. <a href ='https://www.klima-retten.info/PDF/IPCC_AR6_Remaining_Carbon_Budgets.pdf', target = '_blank'>Here</a> we have summarized the statements of the IPCC.<br /><br />
 Regarding a remaining budget for the EU and Germany, the '<a href = 'https://www.klima-retten.info/PDF/2020_08_environmental_report_chapter_02.pdf' target = '_blank'>Environmental Report 2020</a>' by the German Advisory Council on the Environment can be of use.<br /><br />
 The following principles can be relevant for the calculation of country budgets:
 <ul>
@@ -87,7 +87,7 @@ The following principles can be relevant for the calculation of country budgets:
   <li>economical capacities</li>
   <li>equality / justice</li>
   <li>present state of things (grandfathering)</li>
-  <li>Cost efficiency</li>
+  <li>cost efficiency</li>
 </ul>
 This tool is intended to enable users to derive emission paths for a country budget which has been derived with whatever way.<br /><br />
 With our Excel tools for the calculation of Paris-compatible emission paths (download under <a href = 'http://save-the-climate.info' target ='_blank'>www.save-the-climate.info</a>), national emission budgets can be determined. For the EU, we provide a dedicated web app (<a href = 'http://eu.climate-calculator.info' target = '_blank'>http://eu.climate-calculator.info</a>) which determines a budget for the EU as well.<br /><br />
