@@ -58,7 +58,7 @@ ui <- fluidPage(
       #                               width = "90%"
       #                               ),
       
-      numericInput("global_emission_budget_gt_2020", label = "", value = 500, width = "70%"),
+      numericInput("global_emission_budget_gt_2020", label = "", value = 550, width = "70%"),
       
       tags$br(),
       
