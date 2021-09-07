@@ -94,7 +94,7 @@ With our Excel tools for the calculation of Paris-compatible emission paths (dow
 <h4>Data sources</h4>
 We recommend the EU's 'Emissions Database for Global Atmospheric Research' (<a href = 'https://edgar.jrc.ec.europa.eu/' target = '_blank'>EDGAR</a>) and the <a href = 'https://www.globalcarbonproject.org' target = '_blank'>Global Carbon Project</a>. For detailed information about the EU's emissions, we refer to the European Environment Agency (<a href = 'https://www.eea.europa.eu/' target = '_blank'>EEA</a>).<br /><br />
 <h4>Pre-filled figures</h4>
-The pre-filled budget of 400 Gt corresponds to a 67% probability of staying below the 1.5°C threshold according to IPCC. 2010 was chosen as a reference year.<br /><br />
+The pre-filled budget of 400 Gt corresponds to a 67% probability of keeping the 1.5°C limit according to IPCC. 2010 was chosen as a reference year.<br /><br />
 <h4>Divergence of emission budget</h4>
 The emission paths presented here may show a small divergence in relation to the emission budget specified. This is due to technical reasons: In some cases, the optimization algorithm does not yield a solution, so that the underlying budget has to be varied. The budget which is actually used is displayed in the table above the emission paths.<br /><br />
 "), actionLink("close_info_budget", icon = icon("window-close"), label = "Close")))
