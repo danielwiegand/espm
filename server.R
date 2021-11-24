@@ -2,7 +2,7 @@
 
 FIRST_YEAR <- 2020 # First year for which emissions are calculated
 EU_POPULATION_SHARE <- .058
-EU_EMISSIONS_SHARE <- .068
+EU_EMISSIONS_SHARE <- .072
 EU_EMISSIONS_2019 <- 2.92 # Annual EU emissions in 2019 (Gt)
 EU_EMISSIONS_1990 <- 3.81 # Annual EU emissions in 1990 (Gt)
 THRESHOLD_LINEAR_RM1 <- 0.136741914720844000 # Threshold from when on the path becomes linear (rm1)
@@ -53,7 +53,7 @@ server <- function(input, output) {
   
   output$weighted_key <- renderTable(
     data.frame(x = c("EU share of global emissions", "EU share of global population", "Weighted key", "EU emission budget from 2020 on"),
-               y = c("6.8%", "5.8%", paste0(round(weighted_key() * 100, 1), "%"),
+               y = c("7.2%", "5.8%", paste0(round(weighted_key() * 100, 1), "%"),
                      paste0(round(eu_emission_budget_gt(), 1), " Gt CO2"))),
     colnames = F
   )
