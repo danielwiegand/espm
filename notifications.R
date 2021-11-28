@@ -156,15 +156,15 @@ observeEvent(input$close_info_negative_emissions, {
 
 # Warning: Too high budget ####
 
-observeEvent(input$go, {
-  if(input$global_emission_budget_gt_2020 > 680 & input$max_negative_emissions_perc > 0) {
-    showNotification("You have combined a relatively large global budget with possible net negative emissions. Please note that the resulting emission overshoot increases the risk of exceeding tipping points in the climate system.", 
-                     type = "warning",
-                     duration = 15)
-  } else if(input$global_emission_budget_gt_2020 >= 800 & input$max_negative_emissions_perc == 0) {
-    showNotification("You have chosen a relatively high global budget. Please note the higher risk that tipping points in the climate system can be exceeded.", 
-                     type = "warning",
-                     duration = 15)
-  }
-})
+# observeEvent(input$go, {
+#   if(input$global_emission_budget_gt_2020 > 680 & input$max_negative_emissions_perc > 0) {
+#     showNotification("You have combined a relatively large global budget with possible net negative emissions. Please note that the resulting emission overshoot increases the risk of exceeding tipping points in the climate system.",
+#                      type = "warning",
+#                      duration = 15)
+#   } else if(input$global_emission_budget_gt_2020 >= 800 & input$max_negative_emissions_perc == 0) {
+#     showNotification("You have chosen a relatively high global budget. Please note the higher risk that tipping points in the climate system can be exceeded.",
+#                      type = "warning",
+#                      duration = 15)
+#   }
+# })
 
