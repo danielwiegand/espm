@@ -81,6 +81,8 @@ Indicate the emission budget for the timeframe 2020 - 2100, which should be met 
 <h4>Determination of emission budgets</h4>
 Regarding the global emission budget, we refer in particular to the <a href = 'https://www.ipcc.ch/report/ar6/wg1/downloads/report/IPCC_AR6_WGI_SPM.pdf?__cf_chl_jschl_tk__=pmd_8f233c9747284ea4b54a61a50c00463f9d293c81-1628498145-0-gqNtZGzNAg2jcnBszQeO', target = '_blank'>IPCC Report AR6/WGI</a> from 2021. <a href ='https://www.klima-retten.info/PDF/IPCC_AR6_Remaining_Carbon_Budgets.pdf', target = '_blank'>Here</a> we have summarized the statements of the IPCC.<br /><br />
 Regarding a remaining budget for the EU and Germany, the '<a href = 'https://www.klima-retten.info/PDF/2020_08_environmental_report_chapter_02.pdf' target = '_blank'>Environmental Report 2020</a>' by the German Advisory Council on the Environment can be of use.<br /><br />
+<a href = 'https://doi.org/10.5281/zenodo.5837866' target = '_blank'>Here</a> we offer a tool to calculate national budgets for all countries of the world on the basis of EDGAR data using a weighted distribution key.
+<br /><br />
 The following principles can be relevant for the calculation of country budgets:
 <ul>
   <li>historical responsibility</li>
