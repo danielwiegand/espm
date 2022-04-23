@@ -47,7 +47,7 @@ output$box_info_scenario_type <- renderUI({
       <a href = 'https://www.klima-retten.info/Downloads/RM-Scenario-Types.pdf', target = '_blank'>Comprehensive mathematical description</a>
     </li>
   </ul>
-  Compared to the Excel tools (download at <a href = 'http://save-the-climate.info' target = '_blank'>http://save-the-climate.info</a>), here the rate of change for 2020 in the scenario types RM 3 - 5 is 50% of the rate of change that results for RM-6. In the Excel tools, this rate of change 2020 is an input value and a temporary corona effect can also be taken into account there.<br /><br />"),
+  The rate of change for 2020 in the scenario types RM 3 - 5 is the actual value in 2019. In the Excel tools (download at <a href = 'http://save-the-climate.info' target = '_blank'>http://save-the-climate.info</a>), this rate of change 2020 is an input value.<br /><br />"),
              actionLink("close_info_scenario_type", icon = icon("window-close"), label = "Close")
   ))
 })
@@ -76,8 +76,8 @@ output$box_info_budget <- renderUI({
   hidden(div(class = "info-box", style = "left:390px; width:650px;", id = "info_budget", 
              HTML("
 <h4>Data input</h4>
-In order to calculate emission paths and emission targets with this tool, you need to know the budget to be met and the emissions from 2019 and a reference year.<br /><br />
-Indicate the emission budget for the timeframe 2020 - 2100, which should be met by the emission paths. This emission budget can be global or based on a national, regional or any other entity. Please ensure that the emissions of the budget and those of the base or reference year refer to the same emissions in terms of content. For example, if the emission budget covers emissions from land use change, the emissions in the base and reference year should include emissions from land use change as well.<br /><br />
+In order to calculate emission paths and emission targets with this tool, the budget to be adhered to and the emissions in 2018, 2019 and a reference year must be entered.<br /><br />
+Indicate the emission budget for the timeframe 2020 - 2100, which should be met by the emission paths. This emission budget can be global or based on a national, regional or any other entity. Please ensure that the emissions of the budget and annual emissions refer to the same emissions in terms of content. For example, if the emission budget covers emissions from land-use change, the annual emissions should include emissions from land-use change as well.<br /><br />
 <h4>Determination of emission budgets</h4>
 Regarding the global emission budget, we refer in particular to the <a href = 'https://www.ipcc.ch/report/ar6/wg1/downloads/report/IPCC_AR6_WGI_SPM.pdf?__cf_chl_jschl_tk__=pmd_8f233c9747284ea4b54a61a50c00463f9d293c81-1628498145-0-gqNtZGzNAg2jcnBszQeO', target = '_blank'>IPCC Report AR6/WGI</a> from 2021. <a href ='https://www.klima-retten.info/PDF/IPCC_AR6_Remaining_Carbon_Budgets.pdf', target = '_blank'>Here</a> we have summarized the statements of the IPCC.<br /><br />
 Regarding a remaining budget for the EU and Germany, the '<a href = 'https://www.klima-retten.info/PDF/2020_08_environmental_report_chapter_02.pdf' target = '_blank'>Environmental Report 2020</a>' by the German Advisory Council on the Environment can be of use.<br /><br />
@@ -96,7 +96,7 @@ With our Excel tools for the calculation of Paris-compatible emission paths (dow
 <h4>Data sources</h4>
 We recommend the EU's 'Emissions Database for Global Atmospheric Research' (<a href = 'https://edgar.jrc.ec.europa.eu/' target = '_blank'>EDGAR</a>) and the <a href = 'https://www.globalcarbonproject.org' target = '_blank'>Global Carbon Project</a>. For detailed information about the EU's emissions, we refer to the European Environment Agency (<a href = 'https://www.eea.europa.eu/' target = '_blank'>EEA</a>).<br /><br />
 <h4>Pre-filled figures</h4>
-The pre-filled budget of 400 Gt corresponds to a 67% probability of keeping the 1.5°C limit according to IPCC. 2010 was chosen as a reference year.<br /><br />
+The pre-filled global CO2 budget of 400 Gt corresponds to a 67% probability of keeping the 1.5°C limit according to IPCC. 2010 was chosen as a reference year. Source for annual emissions: Global Carbon Project.<br /><br />
 <h4>Divergence of emission budget</h4>
 The emission paths presented here may show a small divergence in relation to the emission budget specified. This is due to technical reasons: In some cases, the optimization algorithm does not yield a solution, so that the underlying budget has to be varied. The budget which is actually used is displayed in the table above the emission paths.<br /><br />
 "), actionLink("close_info_budget", icon = icon("window-close"), label = "Close")))

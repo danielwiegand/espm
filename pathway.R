@@ -214,13 +214,19 @@ calculate_pathway <- function(rm, init_rr) {
 }
 
 calculate_initial_rr <- function() {
-  "Function which determines the initial reduction rate (rr) for scenarios RM2-5. This is defined as 50% of the
-  initial reduction rate of scenario RM-6."
+  "Function which determines the initial reduction rate (rr) for scenarios RM2-5. It is defined as rr_19 - the reduction rate between the base year and the year before."
 
-  rr_rm6 <- calculate_pathway(rm = "RM-6 abs", init_rr = 100) %>% # put a dummy value for initial_rr, so that nleqslv does not run recursively. For RM-6 pathway calculation, this variable is not needed.
-    mutate(rr = emissions / lag(emissions) - 1) %>%
-    select(rr)
-  initial_rr = rr_rm6[2,] / 2 # Divide by 2
+  initial_rr <- input$base_year_emissions / input$year_before_base_year_emissions - 1
+  
+  print(initial_rr)
+  
+  # Before, this was defined as 50% of the initial reduction rate of scenario RM-6:
+  
+  # rr_rm6 <- calculate_pathway(rm = "RM-6 abs", init_rr = 100) %>% # put a dummy value for initial_rr, so that nleqslv does not run recursively. For RM-6 pathway calculation, this variable is not needed.
+  #   mutate(rr = emissions / lag(emissions) - 1) %>%
+  #   select(rr)
+  # initial_rr = rr_rm6[2,] / 2 # Divide by 2
+  
   return(initial_rr)
 }
 
