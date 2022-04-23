@@ -218,8 +218,6 @@ calculate_initial_rr <- function() {
 
   initial_rr <- input$base_year_emissions / input$year_before_base_year_emissions - 1
   
-  print(initial_rr)
-  
   # Before, this was defined as 50% of the initial reduction rate of scenario RM-6:
   
   # rr_rm6 <- calculate_pathway(rm = "RM-6 abs", init_rr = 100) %>% # put a dummy value for initial_rr, so that nleqslv does not run recursively. For RM-6 pathway calculation, this variable is not needed.
