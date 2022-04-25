@@ -58,7 +58,7 @@ ui <- fluidPage(
       
       numericInput("emission_budget", label = "", value = 400, width = "80%"),
       
-      tags$div("Year before base year (2018) emissions", style = "font-weight:bold; float:left;"),
+      tags$div("Emissions 2018 (basis change rate 2020)", style = "font-weight:bold; float:left;"),
       numericInput("year_before_base_year_emissions", label = "", value = 40.5, width = "80%"),
       
       tags$div("Base year (2019) emissions", style = "font-weight:bold; float:left;"),

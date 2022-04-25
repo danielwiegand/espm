@@ -36,7 +36,7 @@ emission_change_rates <- reactive({
       mutate(rr_eff = ifelse(emissions > threshold_linear_rm1(), (emissions / lag(emissions) -1) * 100, 0)) %>%
       rownames_to_column("data_id") %>%
       filter(year <= date_display_range() & year > 2019,
-             rr_eff < 0 | rr_eff > 0) %>%
+             rr_eff != 0 | year == FIRST_YEAR) %>% # filter out zeros in later years when the change rate goes back to zero
       ggplot(aes(x = year, y = rr_eff, color = rm)) +
       geom_line_interactive(aes(data_id = rm, hover_css = "fill:none;", tooltip = rm)) +
       geom_point_interactive(aes(tooltip = paste0(rm, " (", year, "): ", round(rr_eff, 2), " %"), data_id = data_id), 
@@ -50,6 +50,8 @@ emission_change_rates <- reactive({
       scale_color_manual(values = c(colors_to_display()))
   }
 })
+
+observe(print(emission_change_rates()))
 
 output$emission_change_rates <- renderGirafe(
   girafe(ggobj = emission_change_rates(), width_svg = 4.8, height_svg = 2.2) %>%
