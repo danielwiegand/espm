@@ -51,8 +51,6 @@ emission_change_rates <- reactive({
   }
 })
 
-observe(print(emission_change_rates()))
-
 output$emission_change_rates <- renderGirafe(
   girafe(ggobj = emission_change_rates(), width_svg = 4.8, height_svg = 2.2) %>%
     girafe_options(opts_hover(css = "fill:black; stroke:black;"),
