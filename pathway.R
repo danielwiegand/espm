@@ -206,7 +206,7 @@ calculate_pathway <- function(rm, init_rr) {
   }) # end withProgress
   
   if(length(rms_with_no_result) > 0) {
-    showNotification(paste0("No result was found for ", stringr::str_flatten(rms_with_no_result, collapse = ", ")), type = "error")
+    showNotification(paste0("No result was found for ", stringr::str_flatten(rms_with_no_result, collapse = ", "), ". Please use our Excel tools for the parameters chosen."), type = "error")
   }
   
   return(output)
