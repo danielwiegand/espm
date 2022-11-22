@@ -80,10 +80,8 @@ In order to calculate emission paths and emission targets with this tool, the bu
 Indicate the emission budget for the timeframe 2020 - 2100, which should be met by the emission paths. This emission budget can be global or based on a national, regional or any other entity. Please ensure that the emissions of the budget and annual emissions refer to the same emissions in terms of content. For example, if the emission budget covers emissions from land-use change, the annual emissions should include emissions from land-use change as well.<br /><br />
 <h4>Determination of emission budgets</h4>
 Regarding the global emission budget, we refer in particular to the <a href = 'https://www.ipcc.ch/report/ar6/wg1/downloads/report/IPCC_AR6_WGI_SPM.pdf?__cf_chl_jschl_tk__=pmd_8f233c9747284ea4b54a61a50c00463f9d293c81-1628498145-0-gqNtZGzNAg2jcnBszQeO', target = '_blank'>IPCC Report AR6/WGI</a> from 2021. <a href ='https://www.klima-retten.info/PDF/IPCC_AR6_Remaining_Carbon_Budgets.pdf', target = '_blank'>Here</a> we have summarized the statements of the IPCC.<br /><br />
-Regarding a remaining budget for the EU and Germany, the '<a href = 'https://www.klima-retten.info/PDF/2020_08_environmental_report_chapter_02.pdf' target = '_blank'>Environmental Report 2020</a>' by the German Advisory Council on the Environment can be of use.
-Regarding a remaining budget for the EU and Germany, the reports of the <a href = 'https://www.umweltrat.de'>German Advisory Council on the Environment</a> can provide indications.<br /><br />
-We offer a web app that can be used to derive national budgets from a global budget for all countries in the world using a weighted distribution key: <a href = 'http://national-budgets.climate-calculator.info'>http://national-budgets.climate-calculator.info</a>. The other data are also given there in order to be able to derive corresponding emission paths here.<br /><br />
-<a href = 'https://doi.org/10.5281/zenodo.5837866' target = '_blank'>Here</a> we offer a tool to calculate national budgets for all countries of the world using a weighted distribution key.
+Regarding a remaining budget for the EU and Germany, the reports of the <a href = 'https://www.umweltrat.de', target = '_blank'>German Advisory Council on the Environment</a> can provide indications.<br /><br />
+We offer a web app that can be used to derive national budgets from a global budget for all countries in the world using a weighted distribution key: <a href = 'http://national-budgets.climate-calculator.info', target = '_blank'>http://national-budgets.climate-calculator.info</a>. The other data are also given there in order to be able to derive corresponding emission paths here.<br /><br />
 <br /><br />
 The following principles can be relevant for the calculation of country budgets:
 <ul>
@@ -100,7 +98,7 @@ We recommend the EU's 'Emissions Database for Global Atmospheric Research' (<a h
 <h4>Pre-filled figures</h4>
 The pre-filled global CO2 budget of 400 Gt corresponds to a 67% probability of keeping the 1.5°C limit according to IPCC. 2010 was chosen as a reference year. Source for annual emissions: Global Carbon Project.<br /><br />
 <h4>Divergence of emission budget</h4>
-The emission paths presented here may show a divergence in relation to the emission budget specified. This is due to technical reasons: In some cases, the optimization algorithm does not yield a solution, so that the underlying budget has to be varied. If the budget had to be adjusted more than x%, a corresponding message appears. The budget which is actually used is displayed in the table above the emission paths.<br /><br />
+The emission paths presented here may show a divergence in relation to the emission budget specified. This is due to technical reasons: In some cases, the optimization algorithm does not yield a solution, so that the underlying budget has to be varied.<br /><br />
 "), actionLink("close_info_budget", icon = icon("window-close"), label = "Close")))
 })
 
