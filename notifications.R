@@ -10,8 +10,8 @@ output$title <- renderUI({
                             HTML("
                                  The ESPM makes it possible to identify emission paths that adhere to a predefined emission budget. This allows <b>Paris-compatible emission targets</b> to be identified.<br /><br />
                                  Starting from a <b>budget you set</b>, this universal ESPM tool allows you to derive the <b>full range of plausible emission paths</b> that meet that budget. This range is provided by the RM Scenario Types, which differ in their <b>assumptions</b> about the <b>course</b> of <b>annual changes</b> (see plot 'Annual emission change rates'). Which scenario type is appropriate in each case must be decided from a scientifically based overall climate policy view.<br /><br />
-                                 The emissions budget you set can be global or refer to a national, regional, or other unit.<br /><br />
-                                 A brief background paper on the ESPM can be found <a href = 'https://www.klima-retten.info/PDF/ESPM_Background.pdf', target = '_blank'>here</a>. Further tools with additional features for calculating emission paths can be found at <a href ='http://www.save-the-climate.info'>www.save-the-climate.info</a>. These tools can also be used to determine Paris-compatible national budgets.<br /><br />
+                                 The emissions budget you set can be global or refer to a national, regional, or other unit. Here we offer the possibility to calculate national CO2 budgets for all countries of the world with a web app: <a href ='http://national-budgets.climate-calculator.info'>http://national-budgets.climate-calculator.info</a>.<br /><br />
+                                 A brief background paper on the ESPM can be found <a href = 'https://www.klima-retten.info/PDF/ESPM_Background.pdf', target = '_blank'>here</a>. Further tools with additional features for calculating emission paths can be found at <a href ='http://www.save-the-climate.info'>www.save-the-climate.info</a>. Here is an overview of our tools: <a href = 'https://climate-calculator.info'>https://climate-calculator.info</a>.<br /><br />
                                  "),
                             actionLink("close_info_general", icon = icon("window-close"), label = "Close")))
   
@@ -80,7 +80,9 @@ In order to calculate emission paths and emission targets with this tool, the bu
 Indicate the emission budget for the timeframe 2020 - 2100, which should be met by the emission paths. This emission budget can be global or based on a national, regional or any other entity. Please ensure that the emissions of the budget and annual emissions refer to the same emissions in terms of content. For example, if the emission budget covers emissions from land-use change, the annual emissions should include emissions from land-use change as well.<br /><br />
 <h4>Determination of emission budgets</h4>
 Regarding the global emission budget, we refer in particular to the <a href = 'https://www.ipcc.ch/report/ar6/wg1/downloads/report/IPCC_AR6_WGI_SPM.pdf?__cf_chl_jschl_tk__=pmd_8f233c9747284ea4b54a61a50c00463f9d293c81-1628498145-0-gqNtZGzNAg2jcnBszQeO', target = '_blank'>IPCC Report AR6/WGI</a> from 2021. <a href ='https://www.klima-retten.info/PDF/IPCC_AR6_Remaining_Carbon_Budgets.pdf', target = '_blank'>Here</a> we have summarized the statements of the IPCC.<br /><br />
-Regarding a remaining budget for the EU and Germany, the '<a href = 'https://www.klima-retten.info/PDF/2020_08_environmental_report_chapter_02.pdf' target = '_blank'>Environmental Report 2020</a>' by the German Advisory Council on the Environment can be of use.<br /><br />
+Regarding a remaining budget for the EU and Germany, the '<a href = 'https://www.klima-retten.info/PDF/2020_08_environmental_report_chapter_02.pdf' target = '_blank'>Environmental Report 2020</a>' by the German Advisory Council on the Environment can be of use.
+Regarding a remaining budget for the EU and Germany, the reports of the <a href = 'https://www.umweltrat.de'>German Advisory Council on the Environment</a> can provide indications.<br /><br />
+We offer a web app that can be used to derive national budgets from a global budget for all countries in the world using a weighted distribution key: <a href = 'http://national-budgets.climate-calculator.info'>http://national-budgets.climate-calculator.info</a>. The other data are also given there in order to be able to derive corresponding emission paths here.<br /><br />
 <a href = 'https://doi.org/10.5281/zenodo.5837866' target = '_blank'>Here</a> we offer a tool to calculate national budgets for all countries of the world using a weighted distribution key.
 <br /><br />
 The following principles can be relevant for the calculation of country budgets:
@@ -92,13 +94,13 @@ The following principles can be relevant for the calculation of country budgets:
   <li>cost efficiency</li>
 </ul>
 This tool is intended to enable users to derive emission paths for a country budget which has been derived with whatever way.<br /><br />
-With our Excel tools for the calculation of Paris-compatible emission paths (download under <a href = 'http://save-the-climate.info' target ='_blank'>www.save-the-climate.info</a>), national emission budgets can be determined. For the EU, we provide a dedicated web app (<a href = 'http://eu.climate-calculator.info' target = '_blank'>http://eu.climate-calculator.info</a>) which determines a budget for the EU as well.<br /><br />
+With our Excel tools for the calculation of Paris-compatible emission paths with the Regensburg Model or the Extended Smooth Pathway Model (download under <a href = 'http://save-the-climate.info' target ='_blank'>www.save-the-climate.info</a>), also national emission budgets can be determined. Here is an overview of our ESPM tools: <a href = 'https://climate-calculator.info'>https://climate-calculator.info</a>.<br /><br />
 <h4>Data sources</h4>
 We recommend the EU's 'Emissions Database for Global Atmospheric Research' (<a href = 'https://edgar.jrc.ec.europa.eu/' target = '_blank'>EDGAR</a>) and the <a href = 'https://www.globalcarbonproject.org' target = '_blank'>Global Carbon Project</a>. For detailed information about the EU's emissions, we refer to the European Environment Agency (<a href = 'https://www.eea.europa.eu/' target = '_blank'>EEA</a>).<br /><br />
 <h4>Pre-filled figures</h4>
 The pre-filled global CO2 budget of 400 Gt corresponds to a 67% probability of keeping the 1.5°C limit according to IPCC. 2010 was chosen as a reference year. Source for annual emissions: Global Carbon Project.<br /><br />
 <h4>Divergence of emission budget</h4>
-The emission paths presented here may show a small divergence in relation to the emission budget specified. This is due to technical reasons: In some cases, the optimization algorithm does not yield a solution, so that the underlying budget has to be varied. The budget which is actually used is displayed in the table above the emission paths.<br /><br />
+The emission paths presented here may show a divergence in relation to the emission budget specified. This is due to technical reasons: In some cases, the optimization algorithm does not yield a solution, so that the underlying budget has to be varied. If the budget had to be adjusted more than x%, a corresponding message appears. The budget which is actually used is displayed in the table above the emission paths.<br /><br />
 "), actionLink("close_info_budget", icon = icon("window-close"), label = "Close")))
 })
 
