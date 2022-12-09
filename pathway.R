@@ -214,9 +214,10 @@ calculate_pathway <- function(rm, init_rr) {
 }
 
 calculate_initial_rr <- function() {
-  "Function which determines the initial reduction rate (rr) for scenarios RM2-5. It is defined as rr_19 - the reduction rate between the base year and the year before."
-
-  initial_rr <- input$base_year_emissions / input$year_before_base_year_emissions - 1
+  "Function which determines the initial reduction rate (rr) for scenarios RM2-5. It is defined as rr_19 - the reduction rate between the base year and the year before. In case rr_19 is positive, the optimization algorithm does not find a solution. In this case, the initial reduction rate is set to 0 for this reason."
+  
+  rr_19 <- input$base_year_emissions / input$year_before_base_year_emissions - 1
+  initial_rr <- ifelse(rr_19 < 0, rr_19, 0)
   
   # Before, this was defined as 50% of the initial reduction rate of scenario RM-6:
   

@@ -62,9 +62,9 @@ ui <- fluidPage(
       numericInput("year_before_base_year_emissions", label = "", value = 41.0, width = "80%"),
       
       tags$div("Base year (2019) emissions", style = "font-weight:bold; float:left;"),
-      numericInput("base_year_emissions", label = "", value = 41.0, width = "80%"),
+      numericInput("base_year_emissions", label = "", value = 41.6, width = "80%"),
       
-      numericInput("reference_year_emissions", label = "Reference year emissions", value = 38.0, width = "80%"),
+      numericInput("reference_year_emissions", label = "Reference year emissions", value = 41.6, width = "80%"),
       
       h3("3. Minimum annual emissions", style = "float:left;"),
       
