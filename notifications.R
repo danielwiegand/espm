@@ -7,33 +7,43 @@ output$title <- renderUI({
   output[[1]] <- HTML("Extended Smooth Pathway Model (ESPM)<br><span style = 'font-size:20px;'>Calculating Paris compatible emission paths and targets using the example of the EU</span>")
   output[[2]] <- actionLink("link_info_general", "", icon = icon("info-circle"), style = "font-size:20px; margin-top:20px; margin-left:10px;")
   output[[3]] <- hidden(div(class = "info-box", style = "left:330px; width:500px;", id = "info_general", 
-                            HTML("The Extended Smooth Pathway Model (ESPM) is a model to determine 
-    emission paths which are in line with the Paris Agreement. It consists of two calculation steps: Determination 
-    of a <b>national budget</b> and derivation of plausible <b>national emission paths</b> from this budget.<br /><br />
-    This app focuses on the EU. A <b>weighting model</b> is offered to determine its <b>emission budget</b>. The 
-    weighting is based on the EU's share of global emissions and of global population. The weighted 
-    key is then applied to the global budget to determine the EU's budget 2020 - 2100. <br /><br />The scenario 
-    types used to determine the emission paths differ in their <b>assumptions</b> about the <b>annual emission 
-    changes</b> (see plot 'Annual emission change rates').<br /> <br />
-    An important question concerns the possibility of future <b>negative emissions</b>. The app allows you specify the 
-    potential for net negative emissions. Please refer to the notes in the corresponding help text.<br /><br />
-    A <b>brief background</b> paper on the <b>ESPM</b> can be found <a href = 'https://www.klima-retten.info/PDF/ESPM_Background.pdf', target = '_blank'>here</a>. More information about the ESPM and other tools at: <a href = 'http://www.save-the-climate.info', target = '_blank'>www.save-the-climate.info</a>.<br /><br />"),
-                            actionLink("close_info_general", icon = icon("window-close"), label = "Close")))
+                            HTML("
+
+The Extended Smooth Pathway Model (ESPM) is a model to determine emission paths which are in line with the Paris Agreement. It consists of two calculation steps: (1) Determination of a <b>national budget</b> and (2) derivation of plausible <b>national emission paths</b> from this budget. A <b>brief background</b> paper on the <b>ESPM</b> can be found <a href = 'https://www.klima-retten.info/PDF/ESPM_Background.pdf', target = '_blank'>here</a>.<br /><br />
+This app focuses on the EU. A <b>weighting model</b> is offered to determine its <b>emission budget</b>. The weighting is based on the EU's share of global emissions and of global population in the year 2019. The weighted key is then applied to the global budget to determine the EU's budget 2020 - 2100. <br /><br />
+The scenario types used to determine the emission paths differ in their <b>assumptions</b> about the <b>annual emission changes</b> (see plot 'Annual emission change rates' and corresponding help text).<br /> <br />
+An important question concerns the possibility of future <b>negative emissions</b>. The app allows you specify the potential for net negative emissions. Please refer to the notes in the corresponding help text.<br /><br />
+More information about the ESPM and other tools at: <a href = 'http://www.save-the-climate.info', target = '_blank'>www.save-the-climate.info</a>.<br /><br />
+We would also like to point out our web apps for calculating Paris-compatible budgets and emission paths for all countries of the world:
+<ul>
+<li>CO2 budgets for all countries in the world: <a href = 'http://national-budgets.climate-calculator.info', target = '_blank'>http://national-budgets.climate-calculator.info</a></li>
+<li>Emission paths that adhere to a predefined budget: <a href = 'http://paths.climate-calculator.info', target = '_blank'>http://paths.climate-calculator.info</a></li>
+</ul><br /><br />
+
+"),
+actionLink("close_info_general", icon = icon("window-close"), label = "Close")))
   
   return(output)
 })
 
 showModal(modalDialog(
   title = "The Extended Smooth Pathway Model (ESPM)",
-  HTML("The Extended Smooth Pathway Model (ESPM) is a model to determine emission paths which are in line with the Paris Agreement.
-    It consists of two calculation steps: Determination of a <b>national budget</b> and derivation of plausible <b>national emission paths</b> from this budget.<br /><br />
-    This app focuses on the EU. A <b>weighting model</b> is offered to determine its <b>emission budget</b>. The weighting is based on the EU's share
-    of global emissions and of global population. The weighted key is then applied to the global budget to determine the EU's budget 2020 - 2100.<br /><br />
-    The scenario types used to determine the emission paths differ in their <b>assumptions</b> about the <b>annual emission changes</b> (see plot 'Annual emission change rates').<br /><br />
-    An important question concerns the possibility of future <b>negative emissions</b>. The app allows you specify the potential for net negative emissions. Please refer to the notes in the corresponding help text.<br /><br />
-    A <b>brief background</b> paper on the <b>ESPM</b> can be found <a href = 'https://www.klima-retten.info/PDF/ESPM_Background.pdf', target = '_blank'>here</a>. More information about the ESPM and other tools at: <a href = 'http://www.save-the-climate.info', target = '_blank'>www.save-the-climate.info</a>."),
-  easyClose = FALSE,
-  footer = modalButton("Close")
+  HTML("
+
+The Extended Smooth Pathway Model (ESPM) is a model to determine emission paths which are in line with the Paris Agreement. It consists of two calculation steps: (1) Determination of a <b>national budget</b> and (2) derivation of plausible <b>national emission paths</b> from this budget. A <b>brief background</b> paper on the <b>ESPM</b> can be found <a href = 'https://www.klima-retten.info/PDF/ESPM_Background.pdf', target = '_blank'>here</a>.<br /><br />
+This app focuses on the EU. A <b>weighting model</b> is offered to determine its <b>emission budget</b>. The weighting is based on the EU's share of global emissions and of global population in the year 2019. The weighted key is then applied to the global budget to determine the EU's budget 2020 - 2100. <br /><br />
+The scenario types used to determine the emission paths differ in their <b>assumptions</b> about the <b>annual emission changes</b> (see plot 'Annual emission change rates' and corresponding help text).<br /> <br />
+An important question concerns the possibility of future <b>negative emissions</b>. The app allows you specify the potential for net negative emissions. Please refer to the notes in the corresponding help text.<br /><br />
+More information about the ESPM and other tools at: <a href = 'http://www.save-the-climate.info', target = '_blank'>www.save-the-climate.info</a>.<br /><br />
+We would also like to point out our web apps for calculating Paris-compatible budgets and emission paths for all countries of the world:
+<ul>
+<li>CO2 budgets for all countries in the world: <a href = 'http://national-budgets.climate-calculator.info', target = '_blank'>http://national-budgets.climate-calculator.info</a></li>
+<li>Emission paths that adhere to a predefined budget: <a href = 'http://paths.climate-calculator.info', target = '_blank'>http://paths.climate-calculator.info</a></li>
+</ul><br /><br />
+
+"),
+easyClose = FALSE,
+footer = modalButton("Close")
 ))
 
 # Scenario type ####
@@ -43,11 +53,15 @@ observeEvent(input$link_info_scenario_type, {
 })
 
 output$box_info_scenario_type <- renderUI({
-  hidden(div(class = "info-box", style = "left:330px;", id = "info_scenario_type", HTML("Scenario types differ regarding the annual 
-               emission changes associated with them (see plot 'Annual emission change rates'). Get more information on scenario types here:
+  hidden(div(class = "info-box", style = "left:330px;", id = "info_scenario_type", HTML("
+
+Scenario types differ regarding the annual emission changes associated with them (see plot 'Annual emission change rates'). Get more information on scenario types here:
                <ul><li><a href = 'https://www.klima-retten.info/Downloads/RM-Scenario-Types_short.pdf', target = '_blank'>Short description</a></li>
-               <li><a href = 'https://www.klima-retten.info/Downloads/RM-Scenario-Types.pdf', target = '_blank'>Comprehensive mathematical description</a></li></ul>"),
-             actionLink("close_info_scenario_type", icon = icon("window-close"), label = "Close")
+               <li><a href = 'https://www.klima-retten.info/Downloads/RM-Scenario-Types.pdf', target = '_blank'>Comprehensive mathematical description</a></li></ul><br><br>
+The 2020 starting change rate used in this web app is the change in emissions from 2018 to 2019.<br><br>
+
+"),
+actionLink("close_info_scenario_type", icon = icon("window-close"), label = "Close")
   ))
 })
 
@@ -82,10 +96,18 @@ output$base_data_for_display <- renderTable(
 
 output$box_info_budget <- renderUI({
   hidden(div(class = "info-box", style = "left:380px; width:650px;", id = "info_budget", 
-             HTML("Regarding the global emission budget, we refer in particular to the <a href = 'https://www.ipcc.ch/report/ar6/wg1/downloads/report/IPCC_AR6_WGI_SPM.pdf?__cf_chl_jschl_tk__=pmd_8f233c9747284ea4b54a61a50c00463f9d293c81-1628498145-0-gqNtZGzNAg2jcnBszQeO', target = '_blank'>IPCC Report AR6/WGI</a> from 2021. According to this report, compliance with the 1.5°C limit corresponds with a probability of 67% to a remaining CO2 budget of 400 Gt. <a href ='https://www.klima-retten.info/PDF/IPCC_AR6_Remaining_Carbon_Budgets.pdf', target = '_blank'>Here</a> we have summarized the statements of the IPCC. The following table summarizes the main results:<br /><br />"),
-             tags$img(src = "table_ipcc_emission_budgets.png", width = "400px"), tags$br(), tags$br(),
-             HTML("The higher the selected budget, the greater the risk that dangerous tipping points in the climate system will be exceeded."), tags$br(), tags$br(),
-             actionLink("close_info_budget", icon = icon("window-close"), label = "Close")))
+             HTML("
+
+Regarding the global emission budget, we refer in particular to the <a href = 'https://www.ipcc.ch/report/ar6/wg1/downloads/report/IPCC_AR6_WGI_SPM.pdf', target = '_blank'>IPCC Report AR6/WGI</a> from 2021. According to this report, compliance with the 1.5°C limit corresponds with a probability of 67% to a remaining CO2 budget of 400 Gt. <a href ='https://www.klima-retten.info/PDF/IPCC_AR6_Remaining_Carbon_Budgets.pdf', target = '_blank'>Here</a> we have summarized the statements of the IPCC. The following table summarizes the main results:<br /><br />
+
+"),
+tags$img(src = "table_ipcc_emission_budgets.png", width = "400px"), tags$br(), tags$br(),
+HTML("
+
+The higher the selected budget, the greater the risk that dangerous tipping points in the climate system will be exceeded.
+
+"), tags$br(), tags$br(),
+actionLink("close_info_budget", icon = icon("window-close"), label = "Close")))
 })
 
 observeEvent(input$close_info_budget, {
@@ -123,17 +145,22 @@ observeEvent(input$close_author, {
 })
 
 output$box_contact <- renderUI({
-  hidden(div(class = "author-box", id = "info_contact", HTML("<img src = 'daniel_wiegand.gif', style = 'float:left; width:200px; margin-right:20px'>Daniel Wiegand works as a CSR consultant and data scientist. Currently he is doing his doctorate in business ethics at the university of philosophy in Munich.<br /><br />
-    For information regarding the Extended Smooth Pathway Model, refer to <a href = 'http://save-the-climate.info', target = '_blank'>www.save-the-climate.info</a>.<br /><br />
-    All code to create this website is available on my <a href = 'https://github.com/danielwiegand/espm'>GitHub page</a>. For comments and suggestions contact me on daniel.a.wiegand [at] posteo.de.<br />"),
-             actionLink("close_author", icon = icon("window-close"), label = "Close", style = "float:right;")))
+  hidden(div(class = "author-box", id = "info_contact", HTML("<img src = 'daniel_wiegand.gif', style = 'float:left; width:200px; margin-right:20px'>
+
+Programmed by Daniel Wiegand. All code to create this website is available on my <a href = 'https://github.com/danielwiegand/espm', target= '_blank'>GitHub page</a>. For comments and suggestions contact me on daniel.a.wiegand [at] posteo.de.<br><br>
+For further information regarding the Extended Smooth Pathway Model, refer to <a href = 'http://save-the-climate.info', target= '_blank'>www.save-the-climate.info</a>.<br>
+
+"),
+actionLink("close_author", icon = icon("window-close"), label = "Close", style = "float:right;")))
 })
 
 # Negative emissions ####
 
 output$box_info_negative_emissions <- renderUI({
   hidden(div(class = "info-box", style = "left:390px; width:500px;", id = "info_negative_emissions", 
-             HTML("An important question concerns the possibility of future negative emissions. The app allows you specify the potential 
+             HTML("
+
+An important question concerns the possibility of future negative emissions. The app allows you specify the potential 
                for net negative emissions by specifying a percentage that is applied to the current EU emissions. This percentage then 
                determines the minimum value of the emission paths by 2100.<br /><br />If net negative emissions are allowed, the EU budget 
                may be temporarily exceeded. This overshoot will then be offset by net negative emissions by 2100. However, it should be 
@@ -141,8 +168,10 @@ output$box_info_negative_emissions <- renderUI({
                pointed out that the costs of actively capturing CO2 are still unclear and that there are major methodological and substantive 
                problems in quantifying sinks.<br /><br />The actual overshoot
                per scenario type is displayed in the table above the emission paths.<br /><br />
-                  Negative CO2 emissions will be necessary to compensate for other greenhouse gases like methane and nitrous oxide, e.g. from agriculture, in order to achieve climate neutrality. These negative CO2 emissions are not considered here and must be provided additionally.<br /><br />"),
-             actionLink("close_info_negative_emissions", icon = icon("window-close"), label = "Close")))
+                  Negative CO2 emissions will be necessary to compensate for other greenhouse gases like methane and nitrous oxide, e.g. from agriculture, in order to achieve climate neutrality. These negative CO2 emissions are not considered here and must be provided additionally.<br /><br />
+
+"),
+actionLink("close_info_negative_emissions", icon = icon("window-close"), label = "Close")))
 })
 
 observeEvent(input$link_info_negative_emissions, {
