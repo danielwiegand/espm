@@ -13,10 +13,10 @@ The Extended Smooth Pathway Model (ESPM) is a model to determine emission paths 
 This app focuses on the EU. A <b>weighting model</b> is offered to determine its <b>emission budget</b>. The weighting is based on the EU's share of global emissions and of global population in the year 2019. The weighted key is then applied to the global budget to determine the EU's budget 2020 - 2100. <br /><br />
 The scenario types used to determine the emission paths differ in their <b>assumptions</b> about the <b>annual emission changes</b> (see plot 'Annual emission change rates' and corresponding help text).<br /> <br />
 An important question concerns the possibility of future <b>negative emissions</b>. The app allows you specify the potential for net negative emissions. Please refer to the notes in the corresponding help text.<br /><br />
-More information about the ESPM and other tools at: <a href = 'http://www.save-the-climate.info', target = '_blank'>www.save-the-climate.info</a>.<br /><br />
+More information about the ESPM, other tools, and publications at: <a href = 'http://www.save-the-climate.info', target = '_blank'>www.save-the-climate.info</a>.<br /><br />
 We would also like to point out our web apps for calculating Paris-compatible budgets and emission paths for all countries of the world:
 <ul>
-<li>CO2 budgets for all countries in the world: <a href = 'http://national-budgets.climate-calculator.info', target = '_blank'>http://national-budgets.climate-calculator.info</a></li>
+<li>CO2 budgets and linear emission paths for all countries in the world: <a href = 'http://national-budgets.climate-calculator.info', target = '_blank'>http://national-budgets.climate-calculator.info</a></li>
 <li>Emission paths that adhere to a predefined budget: <a href = 'http://paths.climate-calculator.info', target = '_blank'>http://paths.climate-calculator.info</a></li>
 </ul><br /><br />
 
@@ -34,10 +34,10 @@ The Extended Smooth Pathway Model (ESPM) is a model to determine emission paths 
 This app focuses on the EU. A <b>weighting model</b> is offered to determine its <b>emission budget</b>. The weighting is based on the EU's share of global emissions and of global population in the year 2019. The weighted key is then applied to the global budget to determine the EU's budget 2020 - 2100. <br /><br />
 The scenario types used to determine the emission paths differ in their <b>assumptions</b> about the <b>annual emission changes</b> (see plot 'Annual emission change rates' and corresponding help text).<br /> <br />
 An important question concerns the possibility of future <b>negative emissions</b>. The app allows you specify the potential for net negative emissions. Please refer to the notes in the corresponding help text.<br /><br />
-More information about the ESPM and other tools at: <a href = 'http://www.save-the-climate.info', target = '_blank'>www.save-the-climate.info</a>.<br /><br />
+More information about the ESPM, other tools, and publications at: <a href = 'http://www.save-the-climate.info', target = '_blank'>www.save-the-climate.info</a>.<br /><br />
 We would also like to point out our web apps for calculating Paris-compatible budgets and emission paths for all countries of the world:
 <ul>
-<li>CO2 budgets for all countries in the world: <a href = 'http://national-budgets.climate-calculator.info', target = '_blank'>http://national-budgets.climate-calculator.info</a></li>
+<li>CO2 budgets and linear emission paths for all countries in the world: <a href = 'http://national-budgets.climate-calculator.info', target = '_blank'>http://national-budgets.climate-calculator.info</a></li>
 <li>Emission paths that adhere to a predefined budget: <a href = 'http://paths.climate-calculator.info', target = '_blank'>http://paths.climate-calculator.info</a></li>
 </ul><br /><br />
 
@@ -89,7 +89,7 @@ output$base_data_for_display <- renderTable(
   tibble(
     "Data" = c("Annual emissions EU27", "Annual global emissions"),
     "1990" = c(3.80, ""),
-    "2019" = c(2.93, 41.64),
+    "2019" = c(2.91, 41.64),
     "Unit" = c("Gt", "Gt")
   ), bordered = T
 )
