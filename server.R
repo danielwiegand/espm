@@ -2,7 +2,7 @@
 
 FIRST_YEAR <- 2020 # First year for which emissions are calculated
 EU_POPULATION_SHARE <- .058
-EU_EMISSIONS_SHARE <- .070
+EU_EMISSIONS_SHARE <- .071
 EU_EMISSIONS_2019 <- 2.914 # Annual EU emissions in 2019 (Gt)
 EU_EMISSIONS_1990 <- 3.800 # Annual EU emissions in 1990 (Gt)
 THRESHOLD_LINEAR_RM1 <- 0.136741914720844000 # Threshold from when on the path becomes linear (rm1)
