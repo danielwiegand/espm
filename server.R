@@ -53,7 +53,7 @@ server <- function(input, output) {
 
   output$weighted_key <- renderTable(
     data.frame(x = c("EU share of global emissions", "EU share of global population", "Weighted key", "EU emission budget from 2020 on"),
-               y = c("7.0%", "5.8%", paste0(round(weighted_key() * 100, 1), "%"),
+               y = c("7.1%", "5.8%", paste0(round(weighted_key() * 100, 1), "%"),
                      paste0(round(eu_emission_budget_gt(), 1), " Gt CO2"))),
     colnames = F
   )
