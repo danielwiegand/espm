@@ -89,7 +89,7 @@ output$base_data_for_display <- renderTable(
   tibble(
     "Data" = c("Annual emissions EU27", "Annual global emissions"),
     "1990" = c(3.80, ""),
-    "2019" = c(2.91, 41.64),
+    "2019" = c(2.91, 40.9),
     "Unit" = c("Gt", "Gt")
   ), bordered = T
 )
