@@ -43,7 +43,7 @@ ui <- fluidPage(
         choiceNames = c("RM-1", "RM-3", "RM-4", "RM-5", "RM-6"),
         choiceValues = c("RM-1 const", "RM-3 lin", "RM-4 quadr", "RM-5 rad", "RM-6 abs"),
         # selected = c("RM-1 const", RM-3 lin", "RM-4 quadr", "RM-5 rad", "RM-6 abs")
-        selected = c("RM-4 quadr", "RM-3 lin", "RM-5 rad", "RM-6 abs")
+        selected = c("RM-1 const", "RM-4 quadr", "RM-3 lin", "RM-5 rad", "RM-6 abs")
       ),
       
       tags$div("2. Budget and past emissions", style = "font-size: 24px; margin-bottom: 10px; float:left;"),
@@ -59,12 +59,12 @@ ui <- fluidPage(
       numericInput("emission_budget", label = "", value = 400, width = "80%"),
       
       tags$div("Emissions 2018 (basis change rate 2020)", style = "font-weight:bold; float:left;"),
-      numericInput("year_before_base_year_emissions", label = "", value = 40.3, width = "80%"),
+      numericInput("year_before_base_year_emissions", label = "", value = 39.8, width = "80%"),
       
       tags$div("Base year (2019) emissions", style = "font-weight:bold; float:left;"),
-      numericInput("base_year_emissions", label = "", value = 40.9, width = "80%"),
+      numericInput("base_year_emissions", label = "", value = 40.2, width = "80%"),
       
-      numericInput("reference_year_emissions", label = "Reference year emissions", value = 40.9, width = "80%"),
+      numericInput("reference_year_emissions", label = "Reference year emissions", value = 40.2, width = "80%"),
       
       h3("3. Minimum annual emissions", style = "float:left;"),
       

@@ -25,12 +25,26 @@ server <- function(input, output, session) {
   
   threshold_linear_rm1 <- reactive({
     # Threshold from when on the path becomes linear (rm1)
-    input$base_year_emissions * 0.045
+    if(input$min_emissions < 0) {
+      min(
+        -(input$min_emissions/input$base_year_emissions) * 1.85,
+        input$base_year_emissions * 0.045
+        )
+    } else {
+      input$base_year_emissions * 0.045
+    }
   })
   
   threshold_linear_other <- reactive({
     # Threshold from when on the path becomes linear (all other rms)
-    input$base_year_emissions * 0.035
+    if(input$min_emissions < 0) {
+      min(
+        -(input$min_emissions/input$base_year_emissions) * 1.5,
+        input$base_year_emissions * 0.035
+      )
+    } else {
+      input$base_year_emissions * 0.035
+    }
   })
   
   # Overshoot amounts ####
