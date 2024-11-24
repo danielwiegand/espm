@@ -3,11 +3,11 @@
 make_linear <- function(x, rm) {
   for(i in 3:length(x)) {
     if(rm == "RM-1 const") {
-      if(x[i-1] <= THRESHOLD_LINEAR_RM1) {
+      if(x[i-1] <= threshold_linear_rm1()) {
         x[i] <- x[i-1] + x[i-1] - x[i-2]
       }
     } else {
-      if(x[i-1] <= THRESHOLD_LINEAR_OTHER) {
+      if(x[i-1] <= threshold_linear_other()) {
         x[i] <- x[i-1] + x[i-1] - x[i-2]
       }
     }

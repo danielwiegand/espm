@@ -59,7 +59,7 @@ emission_change_rates <- reactive({
     
   } else {
     result() %>%
-      mutate(rr_eff = ifelse(emissions > THRESHOLD_LINEAR_RM1, (emissions / lag(emissions) -1) * 100, 0)) %>%
+      mutate(rr_eff = ifelse(emissions > threshold_linear_rm1(), (emissions / lag(emissions) -1) * 100, 0)) %>%
       rownames_to_column("data_id") %>%
       filter(year <= date_display_range() & year > 2019,
              rr_eff < 0 | rr_eff > 0) %>%

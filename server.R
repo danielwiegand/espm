@@ -5,8 +5,6 @@ EU_POPULATION_SHARE <- .058
 EU_EMISSIONS_SHARE <- .073
 EU_EMISSIONS_2019 <- 2.914 # Annual EU emissions in 2019 (Gt)
 EU_EMISSIONS_1990 <- 3.800 # Annual EU emissions in 1990 (Gt)
-THRESHOLD_LINEAR_RM1 <- 0.136741914720844000 # Threshold from when on the path becomes linear (rm1)
-THRESHOLD_LINEAR_OTHER <- 0.106354822560656 # Threshold from when on the path becomes linear (all other rms)
 INITIAL_REDUCTION_RATE <- -0.0428 # Emission reduction rate to start with (in RM 2-5); is assumed EU emission change between 2019 and 2020 (percent)
 EU_PAST_EMISSIONS <- data.frame(
   year = seq(2010, 2019, 1),
@@ -35,6 +33,32 @@ server <- function(input, output) {
 
   global_emission_budget_gt <- reactive({
     input$global_emission_budget_gt_2020
+  })
+  
+  threshold_linear_rm1 <- reactive({
+    # Threshold from when on the path becomes linear (rm1)
+    multiplication_factor <- if_else(
+      max_negative_emissions_gt() > 0,
+      max(
+        -(-max_negative_emissions_gt()/EU_EMISSIONS_2019) * 1.85,
+        0.045
+      ),
+      0.045
+    )
+    EU_EMISSIONS_2019 * multiplication_factor
+  })
+  
+  threshold_linear_other <- reactive({
+    # Threshold from when on the path becomes linear (all other rms)
+    multiplication_factor <- if_else(
+      max_negative_emissions_gt() > 0,
+      max(
+        -(-max_negative_emissions_gt()/EU_EMISSIONS_2019) * 1.5,
+        0.035
+      ),
+      0.035
+    )
+    EU_EMISSIONS_2019 * multiplication_factor
   })
 
   # Relation between temperature and emissions budget ####
