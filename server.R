@@ -38,9 +38,9 @@ server <- function(input, output) {
   threshold_linear_rm1 <- reactive({
     # Threshold from when on the path becomes linear (rm1)
     multiplication_factor <- if_else(
-      max_negative_emissions_gt() > 0,
+      max_negative_emissions_gt() < 0,
       max(
-        -(-max_negative_emissions_gt()/EU_EMISSIONS_2019) * 1.85,
+        -(max_negative_emissions_gt()/EU_EMISSIONS_2019) * 1.85,
         0.045
       ),
       0.045
@@ -48,12 +48,14 @@ server <- function(input, output) {
     EU_EMISSIONS_2019 * multiplication_factor
   })
   
+  observe(print(threshold_linear_other()))
+  
   threshold_linear_other <- reactive({
     # Threshold from when on the path becomes linear (all other rms)
     multiplication_factor <- if_else(
-      max_negative_emissions_gt() > 0,
+      max_negative_emissions_gt() < 0,
       max(
-        -(-max_negative_emissions_gt()/EU_EMISSIONS_2019) * 1.5,
+        -(max_negative_emissions_gt()/EU_EMISSIONS_2019) * 1.5,
         0.035
       ),
       0.035
