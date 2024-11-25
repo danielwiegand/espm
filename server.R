@@ -48,8 +48,6 @@ server <- function(input, output) {
     EU_EMISSIONS_2019 * multiplication_factor
   })
   
-  observe(print(threshold_linear_other()))
-  
   threshold_linear_other <- reactive({
     # Threshold from when on the path becomes linear (all other rms)
     multiplication_factor <- if_else(
