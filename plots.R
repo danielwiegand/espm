@@ -3,8 +3,11 @@
 # Table: Change compared to the reference year
 
 comparison_reference_year <- reactive({
+  years <- seq(from = input$start_year, to = 2050, by = 1)
+  filtered_years <- years[years %% 5 == 0]
+  
   result() %>%
-    filter(year %in% c(2020, 2025, 2030, 2035, 2040, 2050)) %>%
+    filter(year %in% filtered_years) %>%
     mutate(change = paste0(as.character(round((1 - emissions / input$reference_year_emissions) * -100, 0)), "%"),
            year = as.character(year)) %>%
     select(year, rm, change) %>%
@@ -35,14 +38,14 @@ emission_change_rates <- reactive({
     result() %>%
       mutate(rr_eff = ifelse(emissions > threshold_linear_rm1(), (emissions / lag(emissions) -1) * 100, 0)) %>%
       rownames_to_column("data_id") %>%
-      filter(year <= date_display_range() & year > 2019,
-             rr_eff != 0 | year == FIRST_YEAR) %>% # filter out zeros in later years when the change rate goes back to zero
+      filter(year <= date_display_range() & year > (input$start_year - 1),
+             rr_eff != 0 | year == input$start_year) %>% # filter out zeros in later years when the change rate goes back to zero
       ggplot(aes(x = year, y = rr_eff, color = rm)) +
       geom_line_interactive(aes(data_id = rm, hover_css = "fill:none;", tooltip = rm)) +
       geom_point_interactive(aes(tooltip = paste0(rm, " (", year, "): ", round(rr_eff, 2), " %"), data_id = data_id), 
                              size = 0.6) +
       theme_classic() +
-      scale_x_continuous(breaks = scales::extended_breaks(n = 16)(2020:2100)) +
+      scale_x_continuous(breaks = scales::extended_breaks(n = 16)(input$start_year:2100)) +
       # scale_y_continuous(limits = c(-30, 0)) +
       theme(axis.text.x = element_text(size = 10),
             legend.position = "none") +

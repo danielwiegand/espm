@@ -24,25 +24,28 @@ make_horizontal <- function(x) {
   return(x)
 }
 
-create_fun <- function(rm, budget, init_rr = -0.02) {
+create_fun <- function(rm, budget, base_year, init_rr = -0.02) {
+  
+  start_year = base_year + 1
+  nr_years_to_calculate = 2100 - base_year + 1
   
   fun <<- function(x){
-    emis <- rep(input$base_year_emissions, 82)
-    t <- 0:81
-    year <- 2019:2100
-    rr <- rep(init_rr, 82)
+    emis <- rep(input$base_year_emissions, nr_years_to_calculate)
+    t <- 0:(nr_years_to_calculate - 1)
+    year <- base_year:2100
+    rr <- rep(init_rr, nr_years_to_calculate)
     
-    for(i in 2:82){
+    for(i in 2:nr_years_to_calculate){
       if(rm == "RM-1 const") {
         emis[i] <- emis[i-1] * (1 + x)
       } else if (rm == "RM-3 lin") {
-        rr[i] <- ifelse(year[i] == 2020, init_rr, rr[i-1] + x)
+        rr[i] <- ifelse(year[i] == start_year, init_rr, rr[i-1] + x)
         emis[i] <- emis[i-1] * (1 + rr[i])
       } else if (rm == "RM-4 quadr") {
-        rr[i] <- ifelse(year[i] == 2020, init_rr, x * (year[i] - FIRST_YEAR)^2 + init_rr)
+        rr[i] <- ifelse(year[i] == start_year, init_rr, x * (year[i] - start_year)^2 + init_rr)
         emis[i] <- emis[i-1] * (1 + rr[i])
       } else if (rm == "RM-5 rad") {
-        rr[i] <- ifelse(year[i] == 2020, init_rr, x * sqrt(year[i] - 0.5 - FIRST_YEAR) + init_rr)
+        rr[i] <- ifelse(year[i] == start_year, init_rr, x * sqrt(year[i] - 0.5 - start_year) + init_rr)
         emis[i] <- emis[i-1] * (1 + rr[i])
       } else if (rm == "RM-6 abs") {
         emis[i] <- emis[i-1] + x
@@ -72,23 +75,27 @@ optimize_function <- function(fun, neg) {
   return(opt_x)
 }
 
-calculate_result <- function(x, rm, init_rr) {
-  emis <- rep(input$base_year_emissions, 82)
-  t <- 0:81
-  year <- 2019:2100
-  rr <- rep(init_rr, 82)
+calculate_result <- function(x, rm, base_year, init_rr) {
   
-  for(i in 2:82){
+  start_year = base_year + 1
+  nr_years_to_calculate = 2100 - base_year + 1
+  
+  emis <- rep(input$base_year_emissions, nr_years_to_calculate)
+  t <- 0:(nr_years_to_calculate - 1)
+  year <- base_year:2100
+  rr <- rep(init_rr, nr_years_to_calculate)
+  
+  for(i in 2:nr_years_to_calculate){
     if(rm == "RM-1 const") {
       emis[i] <- emis[i-1] * (1 + x)
     } else if (rm == "RM-3 lin") {
-      rr[i] <- ifelse(year[i] == 2020, init_rr, rr[i-1] + x)
+      rr[i] <- ifelse(year[i] == start_year, init_rr, rr[i-1] + x)
       emis[i] <- emis[i-1] * (1 + rr[i])
     } else if (rm == "RM-4 quadr") {
-      rr[i] <- ifelse(year[i] == 2020, init_rr, x * (year[i] - FIRST_YEAR)^2 + init_rr)
+      rr[i] <- ifelse(year[i] == start_year, init_rr, x * (year[i] - start_year)^2 + init_rr)
       emis[i] <- emis[i-1] * (1 + rr[i])
     } else if (rm == "RM-5 rad") {
-      rr[i] <- ifelse(year[i] == 2020, init_rr, x * sqrt(year[i] - 0.5 - FIRST_YEAR) + init_rr)
+      rr[i] <- ifelse(year[i] == start_year, init_rr, x * sqrt(year[i] - 0.5 - start_year) + init_rr)
       emis[i] <- emis[i-1] * (1 + rr[i])
     } else if (rm == "RM-6 abs") {
       emis[i] <- emis[i-1] + x
@@ -134,7 +141,7 @@ plot_result <- function(x) {
       filter(year <= date_display_range()) %>%
       ggplot(aes(x = year, y = emissions, color = rm)) +
       geom_hline(yintercept = 0, color = "grey", linetype = "dashed") +
-      geom_vline(xintercept = 2019.5, color = "grey", linetype = "dashed") +
+      geom_vline(xintercept = input$start_year -0.5, color = "grey", linetype = "dashed") +
       geom_line_interactive(aes(data_id = rm, hover_css = "fill:none;", tooltip = rm)) +
       geom_point_interactive(aes(tooltip = paste0(rm, " (", year, "): ", round(emissions, 2), " ", input$emission_unit), data_id = data_id),
                              size = 0.6) +
@@ -142,7 +149,7 @@ plot_result <- function(x) {
                                                                                            # Font colors per column
                                                                                            core = list(fg_params = list(col = as.vector(column_colors()))),
                                                                                            padding = unit(c(2, 2), "mm"))),
-                        xmin = ifelse(date_display_range() == 2100, 2060, 2035), ymin = input$base_year_emissions / 3) +
+                        xmin = ifelse(date_display_range() == 2100, 2060, 2040), ymin = input$base_year_emissions / 3) +
       theme_classic() +
       scale_x_continuous(breaks = scales::extended_breaks(n = 18)(2010:2100)) +
       # scale_y_continuous(breaks = scales::extended_breaks(n = 9)(-0.5:3.5)) +
@@ -175,13 +182,23 @@ calculate_pathway <- function(rm, init_rr) {
       # Slightly vary the budget so that an optimum is found for a steady function
       for(j in sequence) {
         
-        create_fun(rm = rm[i], budget = input$emission_budget * j, init_rr = init_rr)
+        create_fun(
+          rm = rm[i],
+          budget = input$emission_budget * j,
+          base_year = input$start_year - 1,
+          init_rr = init_rr
+          )
         
         opt_x <- optimize_function(fun, neg = neg)
         
         if(!is.null(opt_x)) {
           
-          result <- calculate_result(x = opt_x[[1]], rm = rm[i], init_rr = init_rr)
+          result <- calculate_result(
+            x = opt_x[[1]],
+            rm = rm[i],
+            base_year = input$start_year - 1,
+            init_rr = init_rr
+            )
           
           is_steady <- abs(sum(result$rr)) == sum(abs(result$rr)) 
           
@@ -212,20 +229,3 @@ calculate_pathway <- function(rm, init_rr) {
   return(output)
   
 }
-
-calculate_initial_rr <- function() {
-  "Function which determines the initial reduction rate (rr) for scenarios RM2-5. It is defined as rr_19 - the reduction rate between the base year and the year before. In case rr_19 is positive, the optimization algorithm does not find a solution. In this case, the initial reduction rate is set to 0 for this reason."
-  
-  rr_19 <- input$base_year_emissions / input$year_before_base_year_emissions - 1
-  initial_rr <- ifelse(rr_19 < 0, rr_19, 0)
-  
-  # Before, this was defined as 50% of the initial reduction rate of scenario RM-6:
-  
-  # rr_rm6 <- calculate_pathway(rm = "RM-6 abs", init_rr = 100) %>% # put a dummy value for initial_rr, so that nleqslv does not run recursively. For RM-6 pathway calculation, this variable is not needed.
-  #   mutate(rr = emissions / lag(emissions) - 1) %>%
-  #   select(rr)
-  # initial_rr = rr_rm6[2,] / 2 # Divide by 2
-  
-  return(initial_rr)
-}
-

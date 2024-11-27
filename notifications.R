@@ -154,6 +154,19 @@ If net negative emissions are allowed, the budget may be temporarily exceeded. T
 actionLink("close_info_negative_emissions", icon = icon("window-close"), label = "Close")))
 })
 
+output$infotext_initial_change_rate <- renderUI({
+  tags$div(paste("Percental emissions change between", input$start_year - 1, "and", input$start_year), style = "font-weight:bold; float:left;")
+})
+
+output$infotext_emission_budget <- renderUI({
+  tags$div(paste("Emission budget between", input$start_year, "and 2100"), style = "font-weight:bold; float:left;")
+})
+
+output$infotext_base_year_emissions <- renderUI({
+  tags$div(paste0("Base year (", input$start_year - 1, ") emissions"), style = "font-weight:bold; float:left;")
+})
+
+
 observeEvent(input$link_info_negative_emissions, {
   shinyjs::toggle("info_negative_emissions")
 })
