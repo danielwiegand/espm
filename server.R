@@ -1,5 +1,7 @@
 "Main file of the web app containing the server"
 
+FIRST_YEAR <- 2020 # First year for which emissions are calculated
+  
 server <- function(input, output, session) {
   
   source("pathway.R", local = T)
@@ -82,11 +84,15 @@ server <- function(input, output, session) {
     return(out)
   })
   
+  initial_reduction_rate <- reactive({
+    calculate_initial_rr()
+  })
+  
   # Pathway calculation ####
   
   result <- eventReactive(input$go, {
-    req(input$initial_change_rate)
-    calculate_pathway(rm = input$selected_rm, init_rr = input$initial_change_rate)
+    req(initial_reduction_rate())
+    calculate_pathway(rm = input$selected_rm, init_rr = initial_reduction_rate())
   }, ignoreNULL = F) # Fire also at startup
   
   output$emis_pathway <- renderGirafe({
