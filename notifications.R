@@ -10,7 +10,7 @@ output$title <- renderUI({
                             HTML("
 
 The Extended Smooth Pathway Model (ESPM) allows Paris-compatible emission targets to be identified. A brief background paper on the ESPM can be found <a href = 'https://www.klima-retten.info/PDF/ESPM_Background.pdf', target= '_blank'>here</a>.<br><br>
-Starting from a budget you set, this web app allows you to derive the full range of plausible emission paths that meet that budget.<br><br>
+Starting from a budget you set, this web app allows you to derive the full range of <b>plausible emission paths</b> that meet that budget.<br><br>
 Here we offer a possibility to calculate national CO2 budgets for all countries of the world with a web app: <a href = 'http://national-budgets.climate-calculator.info', target= '_blank'>http://national-budgets.climate-calculator</a>.<br><br>
 Here is an overview of our tools and recent publications: <a href = 'http://www.climate-calculator.info', target= '_blank'>www.climate-calculator.info</a>.<br><br>
 Our main page: <a href = 'http://www.save-the-climate.info', target= '_blank'>www.save-the-climate.info</a>.<br><br>
@@ -26,7 +26,7 @@ showModal(modalDialog(
   HTML("
 
 The Extended Smooth Pathway Model (ESPM) allows Paris-compatible emission targets to be identified. A brief background paper on the ESPM can be found <a href = 'https://www.klima-retten.info/PDF/ESPM_Background.pdf', target= '_blank'>here</a>.<br><br>
-Starting from a budget you set, this web app allows you to derive the full range of plausible emission paths that meet that budget.<br><br>
+Starting from a budget you set, this web app allows you to derive the full range of <b>plausible emission paths</b> that meet that budget.<br><br>
 Here we offer a possibility to calculate national CO2 budgets for all countries of the world with a web app: <a href = 'http://national-budgets.climate-calculator.info', target= '_blank'>http://national-budgets.climate-calculator</a>.<br><br>
 Here is an overview of our tools and recent publications: <a href = 'http://www.climate-calculator.info', target= '_blank'>www.climate-calculator.info</a>.<br><br>
 Our main page: <a href = 'http://www.save-the-climate.info', target= '_blank'>www.save-the-climate.info</a>.<br><br>
@@ -46,6 +46,7 @@ output$box_info_scenario_type <- renderUI({
   hidden(div(class = "info-box", style = "left:330px; width: 500px;", id = "info_scenario_type", HTML(
     "
 
+<b>The Regensburg Model Scenario Types</b><br><br>
 The Scenario types differ regarding the annual emission changes associated with them (see plot 'Annual emission change rates'). More information about the RM Scenario Types can be found here:
   <ul>
     <li>
@@ -55,15 +56,6 @@ The Scenario types differ regarding the annual emission changes associated with 
       <a href = 'https://www.klima-retten.info/Downloads/RM-Scenario-Types.pdf', target = '_blank'>Comprehensive mathematical description</a>
     </li>
   </ul>
-
-<b>Starting rate of change 2020 RM 3 – 5</b><br><br>
-The rate of change for 2020 is basically an input value in the RM Scenario Types 3 - 5, which serves as a starting value for the determination of the following rates of change. However, due to the temporary corona effect in 2020, it does not make sense to use the actual value for 2020. A normalised value should be used.<br><br>
-<b>Start rate of change 2020 in the web app</b><br><br>
-In this web app, the change in emissions from 2018 to 2019 is generally used as the normalised starting change rate 2020.<br><br>
-However, the iterative solution procedure in this web app cannot process a positive starting change rate. Therefore, if emissions increase from 2018 to 2019, 0% is set as the starting rate of change for 2020.<br><br>
-In the corresponding Excel tool (download <a href = 'https://doi.org/10.5281/zenodo.4568839', target= '_blank'>here</a>), a positive starting change rate can also be used.<br><br>
-<b>Emissions after the base year 2019</b><br><br>
-In the corresponding Excel tool (download <a href = 'https://doi.org/10.5281/zenodo.4568839', target= '_blank'>here</a>), actual emissions after the base year 2019 can also be taken into account.<br><br>
 
 "),
 actionLink("close_info_scenario_type", icon = icon("window-close"), label = "Close")
@@ -95,20 +87,30 @@ output$box_info_budget <- renderUI({
              HTML("
 
 <b>Data input</b><br><br>
-In order to calculate emission paths and emission targets with this tool, the budget to be adhered to and the emissions in 2018, 2019 and a reference year must be entered.<br><br>
 
-Indicate the emission budget for the timeframe 2020 - 2100, which should be met by the emission paths. This emissions budget can be global or relate to a national, regional or other entity such as a company.<br><br>
-Please ensure that the emissions of the budget and annual emissions refer to the same emissions in terms of content. For example, if the emission budget covers emissions from land-use change, the annual emissions should include emissions from land-use change as well.<br><br>
-<b>Determination of emission budgets</b><br><br>
-Regarding the global emission budget, we refer in particular to the <a href = 'https://www.ipcc.ch/assessment-report/ar6/', target= '_blank'>IPCC Report AR6/WGI</a> from 2021. <a href = 'https://www.klima-retten.info/PDF/IPCC_AR6_Remaining_Carbon_Budgets.pdf', target= '_blank'>Here</a> we have summarized the statements of the IPCC.<br><br>
+In order to calculate emission paths and emission targets with this tool, the start year of the budget period (<i>SY</i>) and the budget to be adhered to must be entered.<br>
+In addition, the actual emissions in the base year (<i>SY</i>-1) and in a freely selectable reference year must be input.<br>
+The start change rate in the start year must also be specified (see the corresponding notes there).<br><br>
+
+The emissions budget can be global or relate to a national, regional or other entity such as a company. Please ensure that the emissions of the budget and annual emissions refer to the same emissions in terms of content. For example, if the emission budget covers emissions from land-use change, the annual emissions should include emissions from land-use change as well.<br><br>
+
+<b>Determination of emissions budget</b><br><br>
+
+Regarding the global emission budget, we refer in particular to the <a href = 'https://www.ipcc.ch/assessment-report/ar6/', target= '_blank'>IPCC Report AR6/WGI</a> from 2021. <a http://ipcc-co2-budgets-short.climate-calculator.info', target= '_blank'>Here</a> we provide an overview of the budgets according to the IPCC.<br><br>
 
 We offer a web app that can be used to derive <b>national CO2 budgets</b> from a global budget for <b>all countries</b> in the world using a weighted distribution key: <a href = 'http://national-budgets.climate-calculator.info', target= '_blank'>http://national-budgets.climate-calculator.info</a>. The other data are also given there in order to be able to derive corresponding emission paths here.<br><br>
+
 <b>Data sources</b><br><br>
+
 We recommend the EU's 'Emissions Database for Global Atmospheric Research (<a href = 'https://edgar.jrc.ec.europa.eu/', target= '_blank'>EDGAR</a>) and the <a href = 'https://www.globalcarbonproject.org', target= '_blank'>Global Carbon Project</a>. On the EU, we refer to the European Environment Agency (<a href = 'https://www.eea.europa.eu/', target= '_blank'>EEA</a>).<br><br>
-Our web app <a href = 'http://national-budgets.climate-calculator.info', target= '_blank'>http://national-budgets.climate-calculator.info</a> provides the corresponding data for all countries in the world and also the global values.<br><br>
+Our <a href = 'http://national-budgets.climate-calculator.info', target= '_blank'>web app</a> and the special one for the <a href = 'http://EU.national-budgets.climate-calculator.info', target= '_blank'>EU</a> provide the corresponding data for all countries in the world and also the global values.<br><br>
+
 <b>Pre-filled figures</b><br><br>
-The pre-filled values refer to global CO2 emissions. The global CO2 budget of 400 Gt corresponds to a 67% probability of keeping the 1.5°C limit according to IPCC. 2019 was chosen as the reference year. Source for global CO2 emissions: Global Carbon Project resp. our web app <a href = 'http://national-budgets.climate-calculator.info', target= '_blank'>http://national-budgets.climate-calculator.info</a>.<br><br>
+
+The pre-filled values refer to global CO2 emissions. The global CO2 budget of 400 Gt from 2020 on corresponds to a 67% probability of keeping the 1.5°C limit according to IPCC. 2019 was chosen as the reference year. Source for global CO2 emissions: Global Carbon Project resp. our <a href = 'http://EU.national-budgets.climate-calculator.info', target= '_blank'>web app</a>.<br><br>
+
 <b>Divergence of emission budget</b><br><br>
+
 In some cases, the optimisation algorithm does not lead to a solution, so the underlying budget has to be varied slightly. The final budget used is shown in the table above the emission path graph.<br><br>
 
 "), actionLink("close_info_budget", icon = icon("window-close"), label = "Close")))
@@ -157,14 +159,17 @@ actionLink("close_info_negative_emissions", icon = icon("window-close"), label =
 # Initial change rate ####
 
 output$infotext_initial_change_rate <- renderUI({
-  tags$div(paste("Percental emissions change between", input$start_year - 1, "and", input$start_year), style = "font-weight:bold; float:left;")
+  tags$div(paste("percental emissions change between", input$start_year - 1, "vs.", input$start_year), style = "font-weight:bold; float:left;")
 })
 
 output$box_info_initial_change_rate <- renderUI({
   hidden(div(
     class = "info-box", style = "left:390px; width:500px;", id = "info_initial_change_rate",
-    paste0("How much did emissions change between ", input$start_year - 1, " and ", input$start_year, "? Example: Input \"-1\" if emissions went down by 1 percent. Note that some scenario types are not able to find solutions with positive values."),
-    HTML("<br /><br />"),
+    paste0("In the scenario types RM 3 - 5, the start change rate must be specified: How much should emissions change between ", input$start_year - 1, " and ", input$start_year, "?"),
+    HTML("<br/><br/>
+Example: Input \"-1\" if emissions went down by 1 percent.<br><br>
+Since this starting change rate is the basis for all the following ones, it should represent a normalised value (without exceptional events).<br><br>
+Due to the solution algorithm used here, no positive starting change rate is possible. If you enter a positive value, only the results for the scenario types RM-1 and RM-6 are displayed. If you want to use a positive value, we can refer to our <a href = ‘http://climate-calculator.info’, target= ‘_blank’>Excel tools</a>.<br /><br />"),
     actionLink("close_info_initial_change_rate", icon = icon("window-close"), label = "Close")
     ))
 })
