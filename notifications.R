@@ -154,9 +154,22 @@ If net negative emissions are allowed, the budget may be temporarily exceeded. T
 actionLink("close_info_negative_emissions", icon = icon("window-close"), label = "Close")))
 })
 
+# Initial change rate ####
+
 output$infotext_initial_change_rate <- renderUI({
   tags$div(paste("Percental emissions change between", input$start_year - 1, "and", input$start_year), style = "font-weight:bold; float:left;")
 })
+
+output$box_info_initial_change_rate <- renderUI({
+  hidden(div(
+    class = "info-box", style = "left:390px; width:500px;", id = "info_initial_change_rate",
+    paste0("How much did emissions change between ", input$start_year - 1, " and ", input$start_year, "? Example: Input \"-1\" if emissions went down by 1 percent. Note that some scenario types are not able to find solutions with positive values."),
+    HTML("<br /><br />"),
+    actionLink("close_info_initial_change_rate", icon = icon("window-close"), label = "Close")
+    ))
+})
+
+# Others ####
 
 output$infotext_emission_budget <- renderUI({
   tags$div(paste("Emission budget between", input$start_year, "and 2100"), style = "font-weight:bold; float:left;")
@@ -175,14 +188,18 @@ observeEvent(input$close_info_negative_emissions, {
   shinyjs::hide("info_negative_emissions")
 })
 
-# observeEvent(input$emission_unit, {
-#   updateNumericInput(session, "min_emissions", label = paste0("Minimum possible annual emissions (", input$emission_unit, ")"))
-# })
-
 observeEvent(input$toggle_report_questions, {
   shinyjs::show("report_questions")
 }, ignoreInit = T)
 
 observeEvent(input$close_report_questions, {
   shinyjs::hide("report_questions")
+})
+
+observeEvent(input$link_info_initial_change_rate, {
+  shinyjs::toggle("info_initial_change_rate")
+})
+
+observeEvent(input$close_info_initial_change_rate, {
+  shinyjs::hide("info_initial_change_rate")
 })

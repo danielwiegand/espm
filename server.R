@@ -86,7 +86,7 @@ server <- function(input, output, session) {
   
   result <- eventReactive(input$go, {
     req(input$initial_change_rate)
-    calculate_pathway(rm = input$selected_rm, init_rr = input$initial_change_rate)
+    calculate_pathway(rm = input$selected_rm, init_rr = input$initial_change_rate / 100)
   }, ignoreNULL = F) # Fire also at startup
   
   output$emis_pathway <- renderGirafe({

@@ -18,7 +18,7 @@ output$report <- downloadHandler(
     file.copy("www/style.css", tempReport2, overwrite = TRUE)
     
     # Set up parameters to pass to Rmd document
-    params <- list(first_year = FIRST_YEAR,
+    params <- list(first_year = input$start_year,
                    result = result(),
                    date_display_range = date_display_range(),
                    overshoot_amounts = overshoot_amounts(),

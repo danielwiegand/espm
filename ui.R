@@ -54,24 +54,21 @@ ui <- fluidPage(
       selectInput("emission_unit", label = "Emissions are expressed in", width = "80%",
                   choices = c("Gt", "Mt", "kt", "t", "kg"), selected = "Gt"),
       
-      ###################
-      
       tags$div("Start year of budget period", style = "font-weight:bold; float:left;"),
       numericInput("start_year", label = "", value = 2024, width = "80%"),
       
       uiOutput("infotext_base_year_emissions"),
       numericInput("base_year_emissions", label = "", value = 40.2, width = "80%"),
       
-      # TODO darf das nicht positiv sein?
       uiOutput("infotext_initial_change_rate"),
+      actionLink("link_info_initial_change_rate", "", icon = icon("info-circle"), style = "float:left; margin-left:10px;"),
+      uiOutput("box_info_initial_change_rate"),
       numericInput("initial_change_rate", label = "", value = 0.0, width = "80%"),
       
       uiOutput("infotext_emission_budget"),
       numericInput("emission_budget", label = "", value = 550, width = "80%"),
       
       numericInput("reference_year_emissions", label = "Reference year emissions", value = 40.2, width = "80%"),
-      
-      #######################
       
       h3("3. Minimum annual emissions", style = "float:left;"),
       
