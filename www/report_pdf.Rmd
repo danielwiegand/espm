@@ -58,7 +58,7 @@ mytheme <- gridExtra::ttheme_default(
 
 input_data <- tibble(
   "Parameters" = c(
-     "Emission budget 2020-2100",
+     paste0("Emission budget ", params$first_year, "-2100"),
      "Minimum annual emissions",
      "Entity",
      "Emission scope",
@@ -88,7 +88,7 @@ plot <- params$result %>%
   filter(year <= params$date_display_range) %>%
   ggplot(aes(x = year, y = emissions, color = rm)) +
   geom_hline(yintercept = 0, color = "grey", linetype = "dashed") +
-  geom_vline(xintercept = 2019.5, color = "grey", linetype = "dashed") +
+  geom_vline(xintercept = params$first_year - 0.5, color = "grey", linetype = "dashed") +
   geom_line() +
   geom_point(size = 0.6) +
   annotation_custom(tableGrob(params$overshoot_amounts, rows = NULL, theme = ttheme_minimal(base_size = 6, core = list(fg_params = list(col = as.vector(column_colors))), padding = unit(c(2, 2), "mm"))),
@@ -130,13 +130,13 @@ change_table <- gTree(children = gList(change_title, plot1))
 plot2 <- params$result %>%
   mutate(rr_eff = ifelse(emissions > params$threshold_linear_rm1, (emissions / lag(emissions) -1) * 100, 0)) %>%
   rownames_to_column("data_id") %>%
-  filter(year <= params$date_display_range & year > 2019,
+  filter(year <= params$date_display_range & year > (params$first_year - 1),
     rr_eff != 0 | year == params$first_year) %>%
   ggplot(aes(x = year, y = rr_eff, color = rm)) +
   geom_line() +
   geom_point(size = 0.6) +
   theme_classic() +
-  scale_x_continuous(breaks = scales::extended_breaks(n = 8)(2020:2100)) +
+  scale_x_continuous(breaks = scales::extended_breaks(n = 16)(params$first_year:2100)) +
   theme(axis.text.x = element_text(size = 6),
     legend.position = "none") +
   labs(x = "", y = "Change (%)", subtitle = "Annual emission change rates") +
