@@ -70,7 +70,7 @@ ui <- fluidPage(
       uiOutput("infotext_initial_change_rate"),
       actionLink("link_info_initial_change_rate", "", icon = icon("info-circle"), style = "float:left; margin-left:10px;"),
       uiOutput("box_info_initial_change_rate"),
-      numericInput("initial_change_rate", label = "", value = 0.0, width = "80%"),
+      numericInput("initial_change_rate", label = "", value = 0.0, width = "80%", max = 0),
       
       h3("3. Minimum annual emissions", style = "float:left;"),
       
