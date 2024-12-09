@@ -16,7 +16,7 @@ Here is an overview of our tools and recent publications: <a href = 'http://www.
 Our main page: <a href = 'http://www.save-the-climate.info', target= '_blank'>www.save-the-climate.info</a>.<br><br>
 
 "),
-actionLink("close_info_general", icon = icon("window-close"), label = "Close")))
+                            actionLink("close_info_general", icon = icon("window-close"), label = "Close")))
   
   return(output)
 })
@@ -32,8 +32,8 @@ Here is an overview of our tools and recent publications: <a href = 'http://www.
 Our main page: <a href = 'http://www.save-the-climate.info', target= '_blank'>www.save-the-climate.info</a>.<br><br>
 
 "),
-easyClose = FALSE,
-footer = modalButton("Close")
+  easyClose = FALSE,
+  footer = modalButton("Close")
 ))
 
 # Scenario type ####
@@ -47,7 +47,9 @@ output$box_info_scenario_type <- renderUI({
     "
 
 <b>The Regensburg Model Scenario Types</b><br><br>
-The scenario types differ regarding the annual emission changes associated with them (see plot 'Annual emission change rates'). More information about the RM Scenario Types can be found here:
+The scenario types differ regarding the <b>annual emission changes</b> associated with them (see plot 'Annual emission change rates').
+<br>
+More information about the RM Scenario Types can be found here:
   <ul>
     <li><a href = 'https://www.klima-retten.info/Downloads/RM-Scenario-Types_short.pdf', target = '_blank'>Brief description</a></li>
     <li><a href = 'https://doi.org/10.5281/zenodo.4540475', target = '_blank'>Comprehensive mathematical description</a></li>
@@ -61,10 +63,10 @@ The following questions may help you decide on a scenario type:
 	<li>Do initially rapidly increasing reduction rates (RM-3 and RM-5) convey a more credible climate protection policy that creates planning security for public and private investments in a fossil-free future?</li>
 </ul>
 <br>
-Scenario types RM 3 - 5 have the advantage that the starting rate of change can be specified on the basis of the real situation (see below). In RM-1 (constant annual reduction rate) and RM-6 (constant annual reduction amount, linear emissions path), on the other hand, the starting rate of change is endogenous.
+Scenario types RM 3 - 5 have the advantage that the starting rate of change can be specified on the basis of the real situation (see input below). In RM-1 (constant annual reduction rate) and RM-6 (constant annual reduction amount, linear emissions path), on the other hand, the starting rate of change is endogenous.<br><br>
 
 "),
-actionLink("close_info_scenario_type", icon = icon("window-close"), label = "Close")
+    actionLink("close_info_scenario_type", icon = icon("window-close"), label = "Close")
   ))
 })
 
@@ -106,7 +108,7 @@ To use this tool to calculate emission paths and emission targets, the following
 
 The emissions budget can be global or relate to a national, regional or other entity such as a company. Please ensure that the emissions of the budget and annual emissions refer to the same emissions in terms of content. For example, if the emission budget covers emissions from land-use change, the annual emissions should include emissions from land-use change as well.<br><br>
 
-<b>Determination of emissions budget</b><br><br>
+<b>Determination of the emissions budget</b><br><br>
 
 Regarding the <b>global emissions budget</b>, we refer in particular to the IPCC Report AR6 from 2021. <a href = 'http://ipcc-co2-budgets-short.climate-calculator.info', target= '_blank'>Here</a> we provide an overview of the budgets according to the IPCC.<br><br>
 
@@ -117,15 +119,15 @@ We offer a web app that can be used to derive <b>national CO2 budgets</b> from a
 We recommend:
 <ul>
 	<li>Fossil CO2 emissions data for all countries in the world: EU's Emissions Database for Global Atmospheric Research (<a href = 'https://edgar.jrc.ec.europa.eu/', target= '_blank'>EDGAR</a>)</li>
-	<li>Data on global emissions: <a href = 'https://www.globalcarbonproject.org', target= '_blank'>Global Carbon Project (GCP)</a></li>
+	<li>Data on global emissions: Global Carbon Project <a href = 'https://www.globalcarbonproject.org', target= '_blank'>(GCP)</a></li>
 	<li>Total CO2 emissions data EU and EU members: European Environment Agency (<a href = 'https://www.eea.europa.eu/', target= '_blank'>EEA</a>)</li>
 </ul>
 <br>
-Our <a href = 'http://national-budgets.climate-calculator.info', target= '_blank'>web app</a>, which is based on the EDGAR database, provides the corresponding data for all countries in the world and also the corresponding global values. The app for the <a href = 'http://EU.national-budgets.climate-calculator.info', target= '_blank'>EU</a>, provides the corresponding data based on the EEA and GCP databases.<br><br>
+Our <a href = 'http://national-budgets.climate-calculator.info', target= '_blank'>web app</a>, which is based on the EDGAR database, provides the corresponding data for all countries in the world and also the global values based on EDGAR and GCP. Our app for the <a href = 'http://EU.national-budgets.climate-calculator.info', target= '_blank'>EU and EU members</a>, provides the data based on the EEA.<br><br>
 
 <b>Pre-filled figures</b><br><br>
 
-The pre-filled values refer to global CO2 emissions. The global CO2 budget of 400 Gt from 2020 on corresponds to a 67% probability of keeping the 1.5°C limit according to IPCC. 2019 was chosen as the reference year. Source for global CO2 emissions: GCP resp. our <a href = 'http://EU.national-budgets.climate-calculator.info', target= '_blank'>web app</a>.<br><br>
+The pre-filled values refer to global CO2 emissions. The global CO2 budget of 400 Gt from 2020 on corresponds to a 67% probability of keeping the 1.5°C limit according to IPCC. 2019 was chosen as the reference year. Source for global CO2 emissions: GCP resp. our <a href = 'http://national-budgets.climate-calculator.info', target= '_blank'>web app</a>.<br><br>
 
 <b>Divergence of emission budget</b><br><br>
 
@@ -155,7 +157,7 @@ Programmed by Daniel Wiegand. All code to create this website is available on my
 For further information regarding the Extended Smooth Pathway Model, refer to <a href = 'http://save-the-climate.info', target= '_blank'>www.save-the-climate.info</a>.<br>
 
 "),
-actionLink("close_author", icon = icon("window-close"), label = "Close", style = "float:right;")))
+             actionLink("close_author", icon = icon("window-close"), label = "Close", style = "float:right;")))
 })
 
 # Negative emissions ####
@@ -168,11 +170,11 @@ Here you can set the lowest possible value for annual emissions. An indication o
 
 Please note that setting a positive value as minimum means that the given emission budget would be exceeded from 2101 on.<br><br>
 
-If net negative emissions are allowed, the budget may be temporarily exceeded. These overshoot amounts will then be offset by net negative emissions by 2100. The actual overshoot amounts per scenario type are displayed in the table above the emission paths.<br><br>
+If net negative emissions are allowed, the budget may be temporarily exceeded. These <b>overshoot</b> amounts will then be offset by net negative emissions by 2100. The actual overshoot amounts per scenario type are displayed in the table above the emission paths.<br><br>
 <a href = 'http://luc.climate-calculator.info', target= '_blank'>Here</a> is a background text on determining the scope of net negative CO2 emissions.<br><br>
 
 "),
-actionLink("close_info_negative_emissions", icon = icon("window-close"), label = "Close")))
+             actionLink("close_info_negative_emissions", icon = icon("window-close"), label = "Close")))
 })
 
 # Initial change rate ####
@@ -194,7 +196,7 @@ Since this starting change rate is the basis for all the following ones, it shou
 Due to the solution algorithm used here, no positive starting change rate is possible. If you want to use a positive value, we can refer to our <a href = 'http://climate-calculator.info', target= '_blank'>Excel tools</a>.<br /><br />
 
 "),actionLink("close_info_initial_change_rate", icon = icon("window-close"), label = "Close")
-    ))
+  ))
 })
 
 # Others ####
@@ -202,10 +204,10 @@ Due to the solution algorithm used here, no positive starting change rate is pos
 observe({
   if (input$initial_change_rate > 0) {
     showModal(
-    modalDialog(
-      title = "Input restriction", p("Initial change rate can only be 0 or negative.", style = "font-size:16px"),
-      footer = modalButton("Close")
-    ))
+      modalDialog(
+        title = "Input restriction", p("Initial change rate can only be 0 or negative.", style = "font-size:16px"),
+        footer = modalButton("Close")
+      ))
     updateNumericInput(session, "initial_change_rate", value = 0)
   }
 })
